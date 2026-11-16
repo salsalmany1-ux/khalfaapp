@@ -128,7 +128,7 @@
                 <div class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> تاج ذهبي مميز وإطار متألق لاسمك</div>
                 <div class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> زيادة هائلة في عدد الاتصالات والطلبات اليومية</div>
             </div>
-            <a href="https://wa.me/9647833837468?text=مرحباً،%20أريد%20الاشتراك%20في%20حساب%20VIP%20لتطبيق%20خلفة" target="_blank" class="block w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-center py-3.5 rounded-xl text-sm shadow-xl hover:scale-102 transition">تواصل معنا للاشتراك (عبر واتساب)</a>
+            <button onclick="openStandardWhatsApp('مرحباً، أريد الاشتراك في حساب VIP لتطبيق خلفة')" class="block w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-center py-3.5 rounded-xl text-sm shadow-xl hover:scale-102 transition">تواصل معنا للاشتراك (عبر واتساب)</button>
         </div>
     </div>
 
@@ -138,7 +138,7 @@
             <button onclick="closeAdvertiseModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">أعلن في تطبيق خلفة</h3>
             <p class="text-xs text-slate-400 mb-4">ضع إعلان محلك أو ورشتك في الموصل ليصل إلى آلاف المستخدمين يومياً.</p>
-            <a href="https://wa.me/9647833837468?text=مرحباً،%20أريد%20حجز%20مساحة%20إعلانية%20في%20تطبيق%20خلفة" target="_blank" class="block w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold text-center py-3.5 rounded-xl text-sm hover:bg-slate-800/80 transition">تواصل معنا لحجز مساحتك الإعلانية</a>
+            <button onclick="openStandardWhatsApp('مرحباً، أريد حجز مساحة إعلانية في تطبيق خلفة')" class="block w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold text-center py-3.5 rounded-xl text-sm hover:bg-slate-800/80 transition">تواصل معنا لحجز مساحتك الإعلانية</button>
         </div>
     </div>
 
@@ -171,8 +171,20 @@
     </div>
 
     <script>
-        // رابط جدول بيانات Google Sheets المربوط مباشرة بالتطبيق
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
+        const ADMIN_PHONE = "9647833837468";
+
+        // دالة لفتح تطبيق واتساب العادي مباشرة
+        function openStandardWhatsApp(message) {
+            const encodedMsg = encodeURIComponent(message);
+            const appUrl = `whatsapp://send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
+            const webUrl = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
+            
+            window.location.href = appUrl;
+            setTimeout(() => {
+                window.open(webUrl, '_blank');
+            }, 1500);
+        }
 
         let khalafas = [
             { id: 1, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", vip: true, rating: 4.9, ratingsCount: 38 },
@@ -183,7 +195,6 @@
         let pendingCategories = [];
         let currentCategory = "الكل";
 
-        // تفعيل Manifest ديناميكياً لظهور الأيقونة مباشرة على الشاشة الرئيسية
         const manifestData = {
             name: "خلفة - دليل الحرفيين",
             short_name: "خلفة",
@@ -200,14 +211,12 @@
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-        // تسجيل Service Worker صامت لتمكين التثبيت المباشر بدون رسائل
         if ('serviceWorker' in navigator) {
             const swCode = `self.addEventListener('fetch', function(event) {});`;
             const swBlob = new Blob([swCode], {type: 'application/javascript'});
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
         }
 
-        // دالة تحليل سطور CSV بدقة
         function parseCSVRow(row) {
             const result = [];
             let current = '';
@@ -227,7 +236,6 @@
             return result;
         }
 
-        // جلب البيانات من ملف Google Sheets وتحديث التطبيق تلقائياً
         async function loadFromSheet() {
             if (!SHEET_CSV_URL) return;
             try {
@@ -311,7 +319,7 @@
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-800/60">
                         <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-amber-400 transition shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-phone"></i> اتصال</a>
-                        <a href="https://wa.me/${k.phone.replace(/^0/, '964')}?text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" target="_blank" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
+                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}&text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
                         <button onclick="openRatingModal(${k.id})" class="px-3 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs hover:text-amber-400 transition"><i class="fa-solid fa-star"></i></button>
                     </div>
                 </div>`).join('');
@@ -379,7 +387,6 @@
             kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
         }
 
-        // التقاط حدث التثبيت المباشر من النظام دون إظهار أي رسائل نصية
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
