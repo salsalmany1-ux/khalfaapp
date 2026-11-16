@@ -86,7 +86,7 @@
         </button>
     </div>
 
-    <!-- نافذة التسجيل -->
+    <!-- نافذة التسجيل (محدثة بقوائم منسدلة للمناطق والجوانب) -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -109,8 +109,28 @@
                     <input type="text" id="reg-new-category" placeholder="مثال: كهربائي سيارات" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المنطقة في الموصل</label>
-                    <input type="text" id="reg-area" required placeholder="مثال: الجانب الأيسر - حي الزهور" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs text-slate-400 mb-1">المنطقة والجوانب في الموصل</label>
+                    <select id="reg-area" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <option value="">اختر الجانب والمنطقة...</option>
+                        <optgroup label="الجانب الأيسر">
+                            <option value="الجانب الأيسر - حي الزهور">حي الزهور</option>
+                            <option value="الجانب الأيسر - حي البكر">حي البكر</option>
+                            <option value="الجانب الأيسر - حي المثنى">حي المثنى</option>
+                            <option value="الجانب الأيسر - حي المحددين">حي المحددين</option>
+                            <option value="الجانب الأيسر - النبي يونس">النبي يونس</option>
+                            <option value="الجانب الأيسر - القوسيات">القوسيات</option>
+                            <option value="الجانب الأيسر - البنوك والمصارف">البنوك والمصارف</option>
+                        </optgroup>
+                        <optgroup label="الجانب الأيمن">
+                            <option value="الجانب الأيمن - الدواسة">الدواسة</option>
+                            <option value="الجانب الأيمن - الدندان">الدندان</option>
+                            <option value="الجانب الأيمن - الفاروق">الفاروق</option>
+                            <option value="الجانب الأيمن - حي العامل">حي العامل</option>
+                            <option value="الجانب الأيمن - الطيران">الطيران</option>
+                            <option value="الجانب الأيمن - الميدان">الميدان</option>
+                            <option value="الجانب الأيمن - وادي حجر">وادي حجر</option>
+                        </optgroup>
+                    </select>
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف</label>
@@ -151,12 +171,12 @@
         </div>
     </div>
 
-    <!-- نافذة دخول الأدمن -->
+    <!-- نافذة دخول الأدمن (الرمز الجديد: 7223) -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
             <button onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-base font-black text-amber-400 mb-4">لوحة تحكم الإدارة</h3>
-            <input type="password" id="admin-pass-input" placeholder="أدخل رمز المرور (1234)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
+            <input type="password" id="admin-pass-input" placeholder="أدخل رمز المرور (7223)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
             <button onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm hover:bg-amber-400 transition">دخول</button>
         </div>
     </div>
@@ -407,11 +427,14 @@
         function openAdminLogin() { document.getElementById('admin-login-modal').classList.remove('hidden'); }
         function closeAdminLogin() { document.getElementById('admin-login-modal').classList.add('hidden'); }
         
+        // التحقق من رمز الأدمن الجديد (7223)
         function checkAdminPassword() {
-            if (document.getElementById('admin-pass-input').value === '1234') {
+            if (document.getElementById('admin-pass-input').value === '7223') {
                 closeAdminLogin();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
                 renderAdminDashboard();
+            } else {
+                alert('رمز المرور غير صحيح!');
             }
         }
         function closeAdminDashboard() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); }
