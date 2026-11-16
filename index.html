@@ -164,7 +164,7 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب</button>
+                <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب عبر الواتساب</button>
             </form>
         </div>
     </div>
@@ -381,7 +381,7 @@
                             category: cat,
                             area: areaVal,
                             phone: cols[3] || "",
-                            workingHours: cols[7] || "يومياً (غير محدد)",
+                            workingHours: cols[4] || "يومياً (غير محدد)",
                             vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
                             rating: finalRating,
                             ratingsCount: finalCount
@@ -543,53 +543,43 @@
             const workingHours = document.getElementById('reg-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
 
-            if (!name) {
-                showFormError('يرجى إدخال الاسم أو اسم الورشة.');
-                return;
-            }
-            if (!cat) {
-                showFormError('يرجى اختيار التخصص أو المهنة.');
-                return;
-            }
-            if (cat === 'new_option' && !newCatInput) {
-                showFormError('يرجى كتابة اسم التخصص الجديد في الحقل المخصص.');
-                return;
-            }
-            if (!area) {
-                showFormError('يرجى اختيار المنطقة أو القضاء.');
-                return;
-            }
-            if (area === 'new_area_option' && !newAreaInput) {
-                showFormError('يرجى كتابة اسم المنطقة أو الحي الجديد في الحقل المخصص.');
-                return;
-            }
-            if (!workingHours) {
-                showFormError('يرجى إدخال ساعات وأيام العمل (الحقل إجباري ليعرف الزبون أوقات الدوام).');
-                return;
-            }
+            if (!name) { showFormError('يرجى إدخال الاسم أو اسم الورشة.'); return; }
+            if (!cat) { showFormError('يرجى اختيار التخصص أو المهنة.'); return; }
+            if (cat === 'new_option' && !newCatInput) { showFormError('يرجى كتابة اسم التخصص الجديد.'); return; }
+            if (!area) { showFormError('يرجى اختيار المنطقة أو القضاء.'); return; }
+            if (area === 'new_area_option' && !newAreaInput) { showFormError('يرجى كتابة اسم المنطقة أو الحي الجديد.'); return; }
+            if (!workingHours) { showFormError('يرجى إدخال ساعات وأيام العمل.'); return; }
 
-            // التحقق من أن رقم الهاتف 11 خانة ويبدأ بـ 07
             const phoneRegex = /^07\d{9}$/;
             if (!phoneRegex.test(phone)) {
-                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 11 رقمًا حصراً ويبدأ بـ 07 (مثال: 07701234567).');
+                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 11 رقماً حصراً ويبدأ بـ 07 (مثال: 07701234567).');
                 return;
             }
 
-            if (cat === 'new_option') {
-                pendingCategories.push(newCatInput);
-                cat = newCatInput;
-            }
-            if (area === 'new_area_option') {
-                pendingCategories.push(newAreaInput);
-                area = newAreaInput;
-            }
+            if (cat === 'new_option') { cat = newCatInput; }
+            if (area === 'new_area_option') { area = newAreaInput; }
 
+            // تجهيز نص الرسالة التي ستصلك حصراً على الواتساب الشخصي
+            const message = `🔔 *طلب انضمام حرفي جديد لتطبيق خلفة:*\n\n` +
+                            `👤 *الاسم / الورشة:* ${name}\n` +
+                            `🛠️ *التخصص:* ${cat}\n` +
+                            `📍 *المنطقة:* ${area}\n` +
+                            `⏰ *ساعات العمل:* ${workingHours}\n` +
+                            `📞 *رقم الهاتف:* ${phone}`;
+
+            const encodedMsg = encodeURIComponent(message);
+            const whatsappUrl = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
+
+            // فتح الواتساب تلقائياً لإرسال الطلب لبياناتك الشخصية دون أن يظهر رقمك للحرفي كجهة اتصال مباشرة
+            window.open(whatsappUrl, '_blank');
+
+            // إضافة الحرفي محلياً مؤقتاً بالواجهة
             khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
             closeRegisterModal();
             renderKhalafas();
             document.getElementById('register-form').reset();
             document.getElementById('form-error-box').classList.add('hidden');
-            alert('تم إرسال طلبك بنجاح وسيتم إضافتك للدليل!');
+            alert('تم تجهيز طلبك! يرجى إرسال الرسالة عبر الواتساب لتأكيد انضمامك للدليل.');
         }
 
         function checkNewCategory(select) {
@@ -604,10 +594,7 @@
 
         function sendSupportWhatsApp() {
             const msg = document.getElementById('support-msg-text').value.trim();
-            if (!msg) {
-                alert('يرجى كتابة نص الرسالة أو الشكوى أولاً');
-                return;
-            }
+            if (!msg) { alert('يرجى كتابة نص الرسالة أو الشكوى أولاً'); return; }
             const fullText = `[شكوى / دعم فني تطبيق خلفة]:\n${msg}`;
             openStandardWhatsApp(fullText);
             closeSupportModal();
@@ -616,10 +603,7 @@
 
         function sendSupportEmail() {
             const msg = document.getElementById('support-msg-text').value.trim();
-            if (!msg) {
-                alert('يرجى كتابة نص الرسالة أو الشكوى أولاً');
-                return;
-            }
+            if (!msg) { alert('يرجى كتابة نص الرسالة أو الشكوى أولاً'); return; }
             const subject = encodeURIComponent("شكوى / دعم فني - تطبيق خلفة");
             const body = encodeURIComponent(msg);
             window.location.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
