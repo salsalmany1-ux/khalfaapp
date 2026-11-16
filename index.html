@@ -19,11 +19,14 @@
         body { font-family: 'Cairo', sans-serif; }
     </style>
 
-    <!-- Social Bar Script (32317599) -->
-    <script type='text/javascript' src='//plz.adsterradt.com/v1/32317599/salsalmany1-ux.github.io/invoke.js'></script>
+    <!-- 1. Popunder Script -->
+    <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
     
-    <!-- Popunder Script (32317598) -->
-    <script type='text/javascript' src='//plz.adsterradt.com/32317598/invoke.js'></script>
+    <!-- 2. Social Bar Script -->
+    <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
+
+    <!-- 4. Native Banner Head Script -->
+    <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
@@ -40,6 +43,10 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <!-- 3. Smartlink Button -->
+            <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
+                <i class="fa-solid fa-bolt text-amber-400"></i> عروض مميزة
+            </a>
             <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
                 <i class="fa-solid fa-download"></i> تثبيت
             </button>
@@ -68,13 +75,13 @@
         <div class="space-y-3 mb-6">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
-                <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
+                <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور، تلعفر)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
             </div>
 
             <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
         </div>
 
-        <!-- قائمة الحرفيين + الإعلانات المدمجة -->
+        <!-- قائمة الحرفيين + الإعلانات (تشمل Native Banner) -->
         <div id="khalafas-list" class="space-y-4"></div>
 
     </main>
@@ -86,9 +93,9 @@
         </button>
     </div>
 
-    <!-- نافذة التسجيل (محدثة بقوائم منسدلة للمناطق والجوانب) -->
+    <!-- نافذة التسجيل (مع كل أقضية ومناطق نينوى والموصل) -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-4">انضم إلى دليل خلفة في الموصل</h3>
             <form id="register-form" onsubmit="submitKhalfa(event)" class="space-y-4">
@@ -109,19 +116,33 @@
                     <input type="text" id="reg-new-category" placeholder="مثال: كهربائي سيارات" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المنطقة والجوانب في الموصل</label>
+                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى</label>
                     <select id="reg-area" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
-                        <option value="">اختر الجانب والمنطقة...</option>
-                        <optgroup label="الجانب الأيسر">
+                        <option value="">اختر المنطقة أو القضاء...</option>
+                        <optgroup label="--- الجانب الأيسر (الموصل) ---">
                             <option value="الجانب الأيسر - حي الزهور">حي الزهور</option>
                             <option value="الجانب الأيسر - حي البكر">حي البكر</option>
                             <option value="الجانب الأيسر - حي المثنى">حي المثنى</option>
                             <option value="الجانب الأيسر - حي المحددين">حي المحددين</option>
                             <option value="الجانب الأيسر - النبي يونس">النبي يونس</option>
                             <option value="الجانب الأيسر - القوسيات">القوسيات</option>
-                            <option value="الجانب الأيسر - البنوك والمصارف">البنوك والمصارف</option>
+                            <option value="الجانب الأيسر - المصارف">المصارف</option>
+                            <option value="الجانب الأيسر - حي المهندسين">حي المهندسين</option>
+                            <option value="الجانب الأيسر - حي الجامعة">حي الجامعة</option>
+                            <option value="الجانب الأيسر - حي الشرطة">حي الشرطة</option>
+                            <option value="الجانب الأيسر - حي السكر">حي السكر</option>
+                            <option value="الجانب الأيسر - حي البريد">حي البريد</option>
+                            <option value="الجانب الأيسر - حي المالية">حي المالية</option>
+                            <option value="الجانب الأيسر - حي النور">حي النور</option>
+                            <option value="الجانب الأيسر - حي الاعتماد">حي الاعتماد</option>
+                            <option value="الجانب الأيسر - حي التحرير">حي التحرير</option>
+                            <option value="الجانب الأيسر - حي القادسية">حي القادسية</option>
+                            <option value="الجانب الأيسر - حي الحدباء">حي الحدباء</option>
+                            <option value="الجانب الأيسر - حي العربي">حي العربي</option>
+                            <option value="الجانب الأيسر - الصديق">الصديق</option>
+                            <option value="الجانب الأيسر - الوريورات">الوريورات</option>
                         </optgroup>
-                        <optgroup label="الجانب الأيمن">
+                        <optgroup label="--- الجانب الأيمن (الموصل) ---">
                             <option value="الجانب الأيمن - الدواسة">الدواسة</option>
                             <option value="الجانب الأيمن - الدندان">الدندان</option>
                             <option value="الجانب الأيمن - الفاروق">الفاروق</option>
@@ -129,6 +150,26 @@
                             <option value="الجانب الأيمن - الطيران">الطيران</option>
                             <option value="الجانب الأيمن - الميدان">الميدان</option>
                             <option value="الجانب الأيمن - وادي حجر">وادي حجر</option>
+                            <option value="الجانب الأيمن - وادي عكاب">وادي عكاب</option>
+                            <option value="الجانب الأيمن - المأمون">المأمون</option>
+                            <option value="الجانب الأيمن - التنك">التنك</option>
+                            <option value="الجانب الأيمن - الهرمات">الهرمات</option>
+                            <option value="الجانب الأيمن - رجم التشظي">رجم التشظي</option>
+                            <option value="الجانب الأيمن - الشفاء">الشفاء</option>
+                            <option value="الجانب الأيمن - باب سنجار">باب سنجار</option>
+                            <option value="الجانب الأيمن - باب لكش">باب لكش</option>
+                            <option value="الجانب الأيمن - المشاهدة">المشاهدة</option>
+                            <option value="الجانب الأيمن - راس الجادة">راس الجادة</option>
+                            <option value="الجانب الأيمن - الكورنيش">الكورنيش</option>
+                        </optgroup>
+                        <optgroup label="--- أقضية ونواحي محافظة نينوى ---">
+                            <option value="قضاء تلكيف ونواحيها">قضاء تلكيف (باطناش، ربيعة، زمار)</option>
+                            <option value="قضاء الحمدانية ونواحيها">قضاء الحمدانية (بخديدا، برطلة، كرمليس)</option>
+                            <option value="قضاء شيخان ونواحيها">قضاء شيخان (بعشيقة، القوش)</option>
+                            <option value="قضاء تلعفر ونواحيها">قضاء تلعفر (العياضية، المحلبية)</option>
+                            <option value="قضاء سنجار ونواحيها">قضاء سنجار (سنوني)</option>
+                            <option value="قضاء مخمور ونواحيها">قضاء مخمور (الكوير)</option>
+                            <option value="قضاء الحضر ونواحيها">قضاء الحضر</option>
                         </optgroup>
                     </select>
                 </div>
@@ -171,7 +212,7 @@
         </div>
     </div>
 
-    <!-- نافذة دخول الأدمن (الرمز الجديد: 7223) -->
+    <!-- نافذة دخول الأدمن (رمز المرور: 7223) -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
             <button onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -363,6 +404,14 @@
                     </div>
                 </div>`;
 
+                // دمج Native Banner في المنتصف بين الحرفيين
+                if (index === 1) {
+                    html += `
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4 overflow-hidden">
+                        <div id="container-193518952cb65746281f7b50a674ba6c"></div>
+                    </div>`;
+                }
+
                 if ((index + 1) % 2 === 0 && SPONSORED_ADS.length > 0) {
                     const ad = SPONSORED_ADS[0];
                     html += `
@@ -427,7 +476,6 @@
         function openAdminLogin() { document.getElementById('admin-login-modal').classList.remove('hidden'); }
         function closeAdminLogin() { document.getElementById('admin-login-modal').classList.add('hidden'); }
         
-        // التحقق من رمز الأدمن الجديد (7223)
         function checkAdminPassword() {
             if (document.getElementById('admin-pass-input').value === '7223') {
                 closeAdminLogin();
