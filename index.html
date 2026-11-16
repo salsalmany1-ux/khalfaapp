@@ -5,20 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
     
-    <!-- إعدادات تطبيق الويب (PWA) ليظهر كأيقونة على الشاشة الرئيسية -->
-    <link rel="manifest" href="data:application/manifest+json,{
-        &quot;name&quot;: &quot;خلفة - دليل الحرفيين&quot;,
-        &quot;short_name&quot;: &quot;خلفة&quot;,
-        &quot;start_url&quot;: &quot;./&quot;,
-        &quot;display&quot;: &quot;standalone&quot;,
-        &quot;background_color&quot;: &quot;#020617&quot;,
-        &quot;theme_color&quot;: &quot;#f59e0b&quot;,
-        &quot;icons&quot;: [{
-            &quot;src&quot;: &quot;https://cdn-icons-png.flaticon.com/512/2954/2954848.png&quot;,
-            &quot;sizes&quot;: &quot;512x512&quot;,
-            &quot;type&quot;: &quot;image/png&quot;
-        }]
-    }">
+    <!-- إعدادات PWA للتثبيت المباشر كأيقونة تطبيق -->
+    <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -33,16 +21,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- شريط التثبيت العلوي -->
-    <div id="pwa-install-banner" class="hidden bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 px-4 py-3 flex items-center justify-between shadow-lg text-sm font-bold z-50">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-mobile-screen-button text-lg"></i>
-            <span>ثبّت تطبيق خلفة على شاشة موبايلك الآن!</span>
-        </div>
-        <button onclick="installPWA()" class="bg-slate-950 text-amber-400 px-3 py-1.5 rounded-lg text-xs hover:bg-slate-900 transition shadow">تثبيت</button>
-    </div>
-
-    <!-- الشريط العلوي (Header) -->
+    <!-- الشريط العلوي -->
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-md">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-400/30">
@@ -55,8 +34,8 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- زر تثبيت يدوي يظهر دائماً -->
-            <button onclick="installPWA()" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition" title="تثبيت التطبيق على الموبايل">
+            <!-- زر التثبيت المباشر بدون رسائل -->
+            <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
                 <i class="fa-solid fa-download"></i> تثبيت
             </button>
             <button onclick="openVipModal()" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
@@ -68,7 +47,7 @@
         </div>
     </header>
 
-    <!-- شريط الإعلانات للربح -->
+    <!-- شريط الإعلانات -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
@@ -82,27 +61,23 @@
         <div class="space-y-3 mb-6">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
-                <input type="text" id="search-input" oninput="filterKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
+                <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
             </div>
 
-            <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-                <button onclick="filterCategory('الكل')" class="category-btn bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs whitespace-nowrap shadow-md transition">الكل</button>
-                <button onclick="filterCategory('كهربائي')" class="category-btn bg-slate-900 border border-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs whitespace-nowrap hover:border-amber-500/50 transition">كهربائي</button>
-                <button onclick="filterCategory('مجاري')" class="category-btn bg-slate-900 border border-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs whitespace-nowrap hover:border-amber-500/50 transition">مجاري</button>
-            </div>
+            <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
         </div>
 
         <div id="khalafas-list" class="space-y-4"></div>
     </main>
 
-    <!-- زر عائم للتسجيل -->
+    <!-- زر تسجيل خلفة -->
     <div class="fixed bottom-6 left-6 z-30">
         <button onclick="openRegisterModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform">
             <i class="fa-solid fa-plus text-base"></i> سجّل كـ خلفة
         </button>
     </div>
 
-    <!-- النافذة المنسدلة للتسجيل -->
+    <!-- نافذة التسجيل -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -129,7 +104,7 @@
                     <input type="text" id="reg-area" required placeholder="مثال: الجانب الأيسر - حي الزهور" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (للاتصال والواتساب)</label>
+                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف</label>
                     <input type="tel" id="reg-phone" required placeholder="07700000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب</button>
@@ -191,6 +166,9 @@
     </div>
 
     <script>
+        // رابط جدول بيانات Google Sheets المربوط مباشرة بالتطبيق
+        const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
+
         let khalafas = [
             { id: 1, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", vip: true, rating: 4.9, ratingsCount: 38 },
             { id: 2, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", vip: false, rating: 4.7, ratingsCount: 19 }
@@ -200,9 +178,93 @@
         let pendingCategories = [];
         let currentCategory = "الكل";
 
-        window.onload = function() {
+        // تفعيل Manifest ديناميكياً لظهور الأيقونة مباشرة على الشاشة الرئيسية
+        const manifestData = {
+            name: "خلفة - دليل الحرفيين",
+            short_name: "خلفة",
+            start_url: window.location.href,
+            display: "standalone",
+            background_color: "#020617",
+            theme_color: "#f59e0b",
+            icons: [{
+                src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png",
+                sizes: "512x512",
+                type: "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
+
+        // تسجيل Service Worker صامت لتمكين التثبيت المباشر بدون رسائل
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(event) {});`;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+        }
+
+        // دالة تحليل سطور CSV بدقة (تدعم النصوص التي تحتوي على فواصل)
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        // جلب البيانات من ملف Google Sheets وتحديث التطبيق تلقائياً
+        async function loadFromSheet() {
+            if (!SHEET_CSV_URL) return;
+            try {
+                const res = await fetch(SHEET_CSV_URL + "&t=" + Date.now());
+                const text = await res.text();
+                const rows = text.split(/\r?\n/).slice(1);
+                const loaded = [];
+                const updatedCategories = new Set(["كهربائي", "مجاري"]);
+
+                rows.forEach((row, idx) => {
+                    if (!row.trim()) return;
+                    const cols = parseCSVRow(row);
+                    if (cols.length >= 4 && cols[0] !== '') {
+                        const cat = cols[1] || "عام";
+                        updatedCategories.add(cat);
+                        loaded.push({
+                            id: idx + 100,
+                            name: cols[0],
+                            category: cat,
+                            area: cols[2] || "الموصل",
+                            phone: cols[3] || "",
+                            vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
+                            rating: parseFloat(cols[5]) || 5.0,
+                            ratingsCount: parseInt(cols[6]) || 1
+                        });
+                    }
+                });
+                if (loaded.length > 0) {
+                    khalafas = loaded;
+                    categories = Array.from(updatedCategories);
+                    renderCategories();
+                    renderKhalafas();
+                }
+            } catch (e) {
+                console.error("Error loading sheet:", e);
+            }
+        }
+
+        window.onload = async function() {
             renderCategories();
             renderKhalafas();
+            await loadFromSheet();
         };
 
         function renderCategories() {
@@ -215,7 +277,6 @@
         }
 
         function filterCategory(cat) { currentCategory = cat; renderCategories(); renderKhalafas(); }
-        function filterKhalafas() { renderKhalafas(); }
 
         function renderKhalafas() {
             const list = document.getElementById('khalafas-list');
@@ -232,9 +293,7 @@
                 return;
             }
 
-            let html = '';
-            filtered.forEach(k => {
-                html += `
+            list.innerHTML = filtered.map(k => `
                 <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg shadow-amber-500/5' : 'border-slate-800'} rounded-2xl p-4 relative transition hover:border-slate-700">
                     ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1 shadow"><i class="fa-solid fa-crown"></i> VIP</span>' : ''}
                     <div class="mb-2">
@@ -247,12 +306,10 @@
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-800/60">
                         <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-amber-400 transition shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-phone"></i> اتصال</a>
-                        <a href="https://wa.me/${k.phone}?text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" target="_blank" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
-                        <button onclick="openRatingModal(${k.id})" class="px-3 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs hover:text-amber-400 transition" title="قيّم الخلفة"><i class="fa-solid fa-star"></i></button>
+                        <a href="https://wa.me/${k.phone.replace(/^0/, '964')}?text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" target="_blank" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
+                        <button onclick="openRatingModal(${k.id})" class="px-3 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs hover:text-amber-400 transition"><i class="fa-solid fa-star"></i></button>
                     </div>
-                </div>`;
-            });
-            list.innerHTML = html;
+                </div>`).join('');
         }
 
         function submitKhalfa(e) {
@@ -266,19 +323,17 @@
             if (cat === 'new_option' && newCatInput.trim() !== '') {
                 pendingCategories.push(newCatInput.trim());
                 cat = newCatInput.trim();
-                alert('تم إرسال تخصصك المقترح إلى الإدارة للمراجعة!');
             }
 
             khalafas.push({ id: Date.now(), name, category: cat, area, phone, vip: false, rating: 5.0, ratingsCount: 1 });
             closeRegisterModal();
             renderKhalafas();
-            alert('تم تسجيلك بنجاح في تطبيق خلفة!');
             document.getElementById('register-form').reset();
         }
 
         function checkNewCategory(select) {
             const newDiv = document.getElementById('new-category-div');
-            if (select.value === 'new_option') { newDiv.classList.remove('hidden'); } else { newDiv.classList.add('hidden'); }
+            select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
         }
 
         function openRatingModal(id) {
@@ -289,7 +344,6 @@
                     k.rating = ((k.rating * k.ratingsCount + Number(rating)) / (k.ratingsCount + 1)).toFixed(1);
                     k.ratingsCount++;
                     renderKhalafas();
-                    alert('شكراً لتقييمك!');
                 }
             }
         }
@@ -308,7 +362,7 @@
                 closeAdminLogin();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
                 renderAdminDashboard();
-            } else { alert('كلمة المرور غير صحيحة!'); }
+            }
         }
         function closeAdminDashboard() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); }
 
@@ -320,24 +374,20 @@
             kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
         }
 
+        // التقاط حدث التثبيت المباشر من النظام دون إظهار أي رسائل نصية
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
-            document.getElementById('pwa-install-banner').classList.remove('hidden');
+            document.getElementById('install-btn').classList.remove('hidden');
         });
 
-        function installPWA() {
+        async function triggerDirectInstall() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('pwa-install-banner').classList.add('hidden');
-                    }
-                    deferredPrompt = null;
-                });
-            } else {
-                alert('لتثبيت التطبيق على هاتفك:\n- أجهزة أندرويد (Chrome): اضغط على القائمة (⋮) ثم اختر "إضافة إلى الشاشة الرئيسية" أو "تثبيت التطبيق".\n- أجهزة آيفون (Safari): اضغط على زر المشاركة (📤) ثم اختر "إضافة إلى الشاشة الرئيسية".');
+                await deferredPrompt.userChoice;
+                deferredPrompt = null;
+                document.getElementById('install-btn').classList.add('hidden');
             }
         }
     </script>
