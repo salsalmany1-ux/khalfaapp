@@ -18,6 +18,9 @@
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
         body { font-family: 'Cairo', sans-serif; }
     </style>
+
+    <!-- تفعيل Social Bar أو كود رأس الصفحة من أدستيرا تلقائياً -->
+    <script type='text/javascript' src='//plz.adsterradt.com/6206039/invoke.js'></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
@@ -34,7 +37,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- زر التثبيت المباشر بدون رسائل -->
             <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
                 <i class="fa-solid fa-download"></i> تثبيت
             </button>
@@ -47,7 +49,7 @@
         </div>
     </header>
 
-    <!-- شريط الإعلانات -->
+    <!-- شريط الإعلانات النصي العلوي -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
@@ -58,6 +60,14 @@
 
     <!-- المحتوى الرئيسي -->
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
+
+        <!-- مساحة بنر إعلاني علوي متصل بالرقم 6206039 -->
+        <div id="container-6206039" class="mb-4 text-center overflow-hidden rounded-2xl bg-slate-900/50 border border-slate-800 p-2">
+            <script async="async" data-cfasync="false" src="//plz.adsterradt.com/6206039/invoke.js"></script>
+            <div id="container-6206039"></div>
+        </div>
+
+        <!-- البحث والأقسام -->
         <div class="space-y-3 mb-6">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
@@ -67,7 +77,9 @@
             <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
         </div>
 
+        <!-- قائمة الحرفيين + الإعلانات المدمجة -->
         <div id="khalafas-list" class="space-y-4"></div>
+
     </main>
 
     <!-- زر تسجيل خلفة -->
@@ -174,7 +186,15 @@
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
         const ADMIN_PHONE = "9647833837468";
 
-        // دالة لفتح تطبيق واتساب العادي مباشرة
+        const SPONSORED_ADS = [
+            {
+                title: "مجمع النور للمواد الكهربائية والإنارة - الموصل",
+                desc: "تجهيز كامل للمنازل والورش بأسعار الجملة - الجانب الأيسر / حي المثنى",
+                phone: "9647833837468",
+                badge: "راعي رسمي"
+            }
+        ];
+
         function openStandardWhatsApp(message) {
             const encodedMsg = encodeURIComponent(message);
             const appUrl = `whatsapp://send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
@@ -306,7 +326,9 @@
                 return;
             }
 
-            list.innerHTML = filtered.map(k => `
+            let html = '';
+            filtered.forEach((k, index) => {
+                html += `
                 <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg shadow-amber-500/5' : 'border-slate-800'} rounded-2xl p-4 relative transition hover:border-slate-700">
                     ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1 shadow"><i class="fa-solid fa-crown"></i> VIP</span>' : ''}
                     <div class="mb-2">
@@ -322,7 +344,25 @@
                         <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}&text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
                         <button onclick="openRatingModal(${k.id})" class="px-3 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs hover:text-amber-400 transition"><i class="fa-solid fa-star"></i></button>
                     </div>
-                </div>`).join('');
+                </div>`;
+
+                if ((index + 1) % 2 === 0 && SPONSORED_ADS.length > 0) {
+                    const ad = SPONSORED_ADS[0];
+                    html += `
+                    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/30 border border-amber-500/30 rounded-2xl p-4 relative">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-bold">${ad.badge}</span>
+                            <button onclick="openAdvertiseModal()" class="text-[10px] text-slate-400 hover:text-amber-400 underline">احجز هذا المكان لإعلانك</button>
+                        </div>
+                        <h4 class="text-sm font-black text-amber-300">${ad.title}</h4>
+                        <p class="text-xs text-slate-300 mt-1 mb-3">${ad.desc}</p>
+                        <a href="whatsapp://send?phone=${ad.phone}&text=مرحباً،%20رأيت%20إعلانكم%20في%20تطبيق%20خلفة" class="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-amber-500/30 transition">
+                            <i class="fa-brands fa-whatsapp"></i> تواصل مع المعلن
+                        </a>
+                    </div>`;
+                }
+            });
+            list.innerHTML = html;
         }
 
         function submitKhalfa(e) {
