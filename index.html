@@ -104,14 +104,21 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-4">انضم إلى دليل خلفة في الموصل</h3>
+            
+            <!-- صندوق التنبيهات الفورية للأخطاء -->
+            <div id="form-error-box" class="hidden mb-4 bg-rose-500/10 border border-rose-500/40 text-rose-400 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2">
+                <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
+                <span id="form-error-text"></span>
+            </div>
+
             <form id="register-form" onsubmit="submitKhalfa(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">الاسم أو اسم الورشة <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-name" required placeholder="مثال: أبو عمر لتصليح السبالت" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <input type="text" id="reg-name" placeholder="مثال: أبو عمر لتصليح السبالت" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">المهنة / التخصص <span class="text-amber-500">*</span></label>
-                    <select id="reg-category" required onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <select id="reg-category" onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                         <option value="">اختر التخصص...</option>
                         <option value="كهربائي">كهربائي</option>
                         <option value="مجاري">مجاري</option>
@@ -132,65 +139,18 @@
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى <span class="text-amber-500">*</span></label>
-                    <select id="reg-area" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <select id="reg-area" onchange="checkNewArea(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                         <option value="">اختر المنطقة أو القضاء...</option>
-                        <optgroup label="--- الجانب الأيسر (الموصل) ---">
-                            <option value="الجانب الأيسر - حي الزهور">حي الزهور</option>
-                            <option value="الجانب الأيسر - حي البكر">حي البكر</option>
-                            <option value="الجانب الأيسر - حي المثنى">حي المثنى</option>
-                            <option value="الجانب الأيسر - حي المحددين">حي المحددين</option>
-                            <option value="الجانب الأيسر - النبي يونس">النبي يونس</option>
-                            <option value="الجانب الأيسر - القوسيات">القوسيات</option>
-                            <option value="الجانب الأيسر - المصارف">المصارف</option>
-                            <option value="الجانب الأيسر - حي المهندسين">حي المهندسين</option>
-                            <option value="الجانب الأيسر - حي الجامعة">حي الجامعة</option>
-                            <option value="الجانب الأيسر - حي الشرطة">حي الشرطة</option>
-                            <option value="الجانب الأيسر - حي السكر">حي السكر</option>
-                            <option value="الجانب الأيسر - حي البريد">حي البريد</option>
-                            <option value="الجانب الأيسر - حي المالية">حي المالية</option>
-                            <option value="الجانب الأيسر - حي النور">حي النور</option>
-                            <option value="الجانب الأيسر - حي الاعتماد">حي الاعتماد</option>
-                            <option value="الجانب الأيسر - حي التحرير">حي التحرير</option>
-                            <option value="الجانب الأيسر - حي القادسية">حي القادسية</option>
-                            <option value="الجانب الأيسر - حي الحدباء">حي الحدباء</option>
-                            <option value="الجانب الأيسر - حي العربي">حي العربي</option>
-                            <option value="الجانب الأيسر - الصديق">الصديق</option>
-                            <option value="الجانب الأيسر - الوريورات">الوريورات</option>
-                        </optgroup>
-                        <optgroup label="--- الجانب الأيمن (الموصل) ---">
-                            <option value="الجانب الأيمن - الدواسة">الدواسة</option>
-                            <option value="الجانب الأيمن - الدندان">الدندان</option>
-                            <option value="الجانب الأيمن - الفاروق">الفاروق</option>
-                            <option value="الجانب الأيمن - حي العامل">حي العامل</option>
-                            <option value="الجانب الأيمن - الطيران">الطيران</option>
-                            <option value="الجانب الأيمن - الميدان">الميدان</option>
-                            <option value="الجانب الأيمن - وادي حجر">وادي حجر</option>
-                            <option value="الجانب الأيمن - وادي عكاب">وادي عكاب</option>
-                            <option value="الجانب الأيمن - المأمون">المأمون</option>
-                            <option value="الجانب الأيمن - التنك">التنك</option>
-                            <option value="الجانب الأيمن - الهرمات">الهرمات</option>
-                            <option value="الجانب الأيمن - رجم التشظي">رجم التشظي</option>
-                            <option value="الجانب الأيمن - الشفاء">الشُفاء</option>
-                            <option value="الجانب الأيمن - باب سنجار">باب سنجار</option>
-                            <option value="الجانب الأيمن - باب لكش">باب لكش</option>
-                            <option value="الجانب الأيمن - المشاهدة">المشاهدة</option>
-                            <option value="الجانب الأيمن - راس الجادة">راس الجادة</option>
-                            <option value="الجانب الأيمن - الكورنيش">الكورنيش</option>
-                        </optgroup>
-                        <optgroup label="--- أقضية ونواحي محافظة نينوى ---">
-                            <option value="قضاء تلكيف ونواحيها">قضاء تلكيف (باطناش، ربيعة، زمار)</option>
-                            <option value="قضاء الحمدانية ونواحيها">قضاء الحمدانية (بخديدا، برطلة، كرمليس)</option>
-                            <option value="قضاء شيخان ونواحيها">قضاء شيخان (بعشيقة، القوش)</option>
-                            <option value="قضاء تلعفر ونواحيها">قضاء تلعفر (العياضية، المحلبية)</option>
-                            <option value="قضاء سنجار ونواحيها">قضاء سنجار (سنوني)</option>
-                            <option value="قضاء مخمور ونواحيها">قضاء مخمور (الكوير)</option>
-                            <option value="قضاء الحضر ونواحيها">قضاء الحضر</option>
-                        </optgroup>
+                        <!-- يتم تعبئة المناطق ديناميكياً من شيت الاكسل بالإضافة للاستيراد -->
                     </select>
+                </div>
+                <div id="new-area-div" class="hidden">
+                    <label class="block text-xs text-amber-400 mb-1">اكتب اسم المنطقة أو الحي الجديد <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-new-area" placeholder="مثال: الجانب الأيسر - حي السلام" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (10 خانات تبدأ بـ 07) <span class="text-amber-500">*</span></label>
-                    <input type="tel" id="reg-phone" required maxlength="10" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <input type="tel" id="reg-phone" maxlength="10" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب</button>
             </form>
@@ -267,7 +227,7 @@
             <h3 class="text-lg font-black text-amber-400 mb-6 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> لوحة تحكم الأدمن</h3>
             
             <div class="mb-6">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">التصنيفات الجديدة قيد المراجعة:</h4>
+                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">التصنيفات والمناطق الجديدة قيد المراجعة:</h4>
                 <div id="pending-categories-list" class="space-y-2"></div>
             </div>
 
@@ -308,6 +268,20 @@
         ];
 
         let categories = ["كهربائي", "مجاري", "تكييف وتبريد", "نجار", "حداد"];
+        let areas = [
+            "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين", 
+            "الجانب الأيسر - النبي يونس", "الجانب الأيسر - القوسيات", "الجانب الأيسر - المصارف", "الجانب الأيسر - حي المهندسين", 
+            "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد", 
+            "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير", 
+            "الجانب الأيسر - حي القادسية", "الجانب الأيسر - حي الحدباء", "الجانب الأيسر - حي العربي", "الجانب الأيسر - الصديق", "الجانب الأيسر - الوريورات",
+            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل", 
+            "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب", 
+            "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي", 
+            "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة", 
+            "الجانب الأيمن - راس الجادة", "الجانب الأيمن - الكورنيش",
+            "قضاء تلكيف ونواحيها", "قضاء الحمدانية ونواحيها", "قضاء شيخان ونواحيها", "قضاء تلعفر ونواحيها", "قضاء سنجار ونواحيها", "قضاء مخمور ونواحيها", "قضاء الحضر ونواحيها"
+        ];
+
         let pendingCategories = [];
         let currentCategory = "الكل";
 
@@ -360,15 +334,17 @@
                 const rows = text.split(/\r?\n/).slice(1);
                 const loaded = [];
                 const updatedCategories = new Set(["كهربائي", "مجاري", "تكييف وتبريد", "نجار", "حداد"]);
+                const updatedAreas = new Set(areas);
 
                 rows.forEach((row, idx) => {
                     if (!row.trim()) return;
                     const cols = parseCSVRow(row);
                     if (cols.length >= 4 && cols[0] !== '') {
                         const cat = cols[1] || "عام";
+                        const areaVal = cols[2] || "الموصل";
                         updatedCategories.add(cat);
+                        updatedAreas.add(areaVal);
                         
-                        // استرجاع التقييمات المحفوظة محلياً (Anti-Fraud & Persistent Sync)
                         let savedId = idx + 100;
                         let savedRatingData = localStorage.getItem('rating_' + savedId);
                         let finalRating = parseFloat(cols[5]) || 5.0;
@@ -384,7 +360,7 @@
                             id: savedId,
                             name: cols[0],
                             category: cat,
-                            area: cols[2] || "الموصل",
+                            area: areaVal,
                             phone: cols[3] || "",
                             vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
                             rating: finalRating,
@@ -395,7 +371,9 @@
                 if (loaded.length > 0) {
                     khalafas = loaded;
                     categories = Array.from(updatedCategories);
+                    areas = Array.from(updatedAreas);
                     renderCategories();
+                    renderAreasSelect();
                     renderKhalafas();
                 }
             } catch (e) {
@@ -405,6 +383,7 @@
 
         window.onload = async function() {
             renderCategories();
+            renderAreasSelect();
             renderKhalafas();
             await loadFromSheet();
         };
@@ -416,6 +395,16 @@
                 html += `<button onclick="filterCategory('${cat}')" class="category-btn ${currentCategory === cat ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 border border-slate-800 text-slate-300'} px-4 py-2 rounded-xl text-xs whitespace-nowrap transition">${cat}</button>`;
             });
             container.innerHTML = html;
+        }
+
+        function renderAreasSelect() {
+            const select = document.getElementById('reg-area');
+            let html = `<option value="">اختر المنطقة أو القضاء...</option>`;
+            areas.forEach(a => {
+                html += `<option value="${a}">${a}</option>`;
+            });
+            html += `<option value="new_area_option" class="text-amber-400 font-bold">+ اقترح منطقة أو حي جديد...</option>`;
+            select.innerHTML = html;
         }
 
         function filterCategory(cat) { currentCategory = cat; renderCategories(); renderKhalafas(); }
@@ -455,7 +444,6 @@
                     </div>
                 </div>`;
 
-                // دمج Native Banner في المنتصف بين الحرفيين
                 if (index === 1) {
                     html += `
                     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4 overflow-hidden">
@@ -482,46 +470,77 @@
             list.innerHTML = html;
         }
 
+        function showFormError(msg) {
+            const errorBox = document.getElementById('form-error-box');
+            const errorText = document.getElementById('form-error-text');
+            errorText.textContent = msg;
+            errorBox.classList.remove('hidden');
+            setTimeout(() => {
+                errorBox.classList.add('hidden');
+            }, 5000);
+        }
+
         function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             let cat = document.getElementById('reg-category').value;
             const newCatInput = document.getElementById('reg-new-category').value.trim();
-            const area = document.getElementById('reg-area').value;
+            let area = document.getElementById('reg-area').value;
+            const newAreaInput = document.getElementById('reg-new-area').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
+
+            if (!name) {
+                showFormError('يرجى إدخال الاسم أو اسم الورشة.');
+                return;
+            }
+            if (!cat) {
+                showFormError('يرجى اختيار التخصص أو المهنة.');
+                return;
+            }
+            if (cat === 'new_option' && !newCatInput) {
+                showFormError('يرجى كتابة اسم التخصص الجديد في الحقل المخصص.');
+                return;
+            }
+            if (!area) {
+                showFormError('يرجى اختيار المنطقة أو القضاء.');
+                return;
+            }
+            if (area === 'new_area_option' && !newAreaInput) {
+                showFormError('يرجى كتابة اسم المنطقة أو الحي الجديد في الحقل المخصص.');
+                return;
+            }
 
             const phoneRegex = /^07\d{8}$/;
             if (!phoneRegex.test(phone)) {
-                alert('خطأ في رقم الهاتف! يجب أن يتكون الرقم من 10 أرقام ويبدأ بـ 07 (مثال: 07701234567)');
+                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 10 أرقام حصراً ويبدأ بـ 07 (مثال: 07701234567).');
                 return;
             }
 
             if (cat === 'new_option') {
-                if (!newCatInput) {
-                    alert('يرجى كتابة التخصص الجديد');
-                    return;
-                }
                 pendingCategories.push(newCatInput);
                 cat = newCatInput;
+            }
+            if (area === 'new_area_option') {
+                pendingCategories.push(newAreaInput); // يتم إرسالها للوحة التحكم للموافقة عليها
+                area = newAreaInput;
             }
 
             khalafas.push({ id: Date.now(), name, category: cat, area, phone, vip: false, rating: 5.0, ratingsCount: 1 });
             closeRegisterModal();
             renderKhalafas();
             document.getElementById('register-form').reset();
+            document.getElementById('form-error-box').classList.add('hidden');
             alert('تم إرسال طلبك بنجاح وسيتم إضافتك للدليل!');
         }
 
         function checkNewCategory(select) {
             const newDiv = document.getElementById('new-category-div');
-            const newCatInput = document.getElementById('reg-new-category');
-            if (select.value === 'new_option') {
-                newDiv.classList.remove('hidden');
-                newCatInput.setAttribute('required', 'true');
-            } else {
-                newDiv.classList.add('hidden');
-                newCatInput.removeAttribute('required');
-            }
+            select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
+        }
+
+        function checkNewArea(select) {
+            const newDiv = document.getElementById('new-area-div');
+            select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
         }
 
         function sendSupportMessage() {
@@ -536,7 +555,6 @@
             document.getElementById('support-msg-text').value = '';
         }
 
-        // نظام التقييم الآمن والمحمي ضد التكرار (Anti-Spam & Persistent Rating)
         function openRatingModal(id) {
             let hasRatedKey = 'rated_' + id;
             if (localStorage.getItem(hasRatedKey)) {
@@ -557,7 +575,6 @@
                     k.rating = Number(((k.rating * k.ratingsCount + rating) / (k.ratingsCount + 1)).toFixed(1));
                     k.ratingsCount++;
                     
-                    // حفظ التقييم في المتصفح لضمان استمراريته وعدم ضياعه
                     localStorage.setItem('rating_' + id, JSON.stringify({ rating: k.rating, count: k.ratingsCount }));
                     localStorage.setItem(hasRatedKey, 'true');
 
@@ -567,7 +584,10 @@
             }
         }
 
-        function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
+        function openRegisterModal() { 
+            document.getElementById('form-error-box').classList.add('hidden');
+            document.getElementById('register-modal').classList.remove('hidden'); 
+        }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
         function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); }
         function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); }
@@ -591,7 +611,7 @@
 
         function renderAdminDashboard() {
             const pList = document.getElementById('pending-categories-list');
-            pList.innerHTML = pendingCategories.length === 0 ? `<p class="text-xs text-slate-500">لا توجد تصنيفات جديدة.</p>` : pendingCategories.map((cat, idx) => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><span>${cat}</span><div class="flex gap-2"><button onclick="categories.push('${cat}'); pendingCategories.splice(${idx},1); renderCategories(); renderAdminDashboard();" class="bg-emerald-600 text-white px-3 py-1 rounded-lg">موافقة</button><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-rose-600 text-white px-3 py-1 rounded-lg">رفض</button></div></div>`).join('');
+            pList.innerHTML = pendingCategories.length === 0 ? `<p class="text-xs text-slate-500">لا توجد طلبات تصنيفات أو مناطق جديدة.</p>` : pendingCategories.map((item, idx) => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><span>${item}</span><div class="flex gap-2"><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-emerald-600 text-white px-3 py-1 rounded-lg">موافقة</button><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-rose-600 text-white px-3 py-1 rounded-lg">رفض</button></div></div>`).join('');
 
             const kList = document.getElementById('admin-khalafas-list');
             kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
