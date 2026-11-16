@@ -99,7 +99,7 @@
         </button>
     </div>
 
-    <!-- نافذة التسجيل (الخانات إجبارية ورقم الهاتف مدقق) -->
+    <!-- نافذة التسجيل -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -367,15 +367,28 @@
                     if (cols.length >= 4 && cols[0] !== '') {
                         const cat = cols[1] || "عام";
                         updatedCategories.add(cat);
+                        
+                        // استرجاع التقييمات المحفوظة محلياً (Anti-Fraud & Persistent Sync)
+                        let savedId = idx + 100;
+                        let savedRatingData = localStorage.getItem('rating_' + savedId);
+                        let finalRating = parseFloat(cols[5]) || 5.0;
+                        let finalCount = parseInt(cols[6]) || 1;
+
+                        if (savedRatingData) {
+                            const parsedData = JSON.parse(savedRatingData);
+                            finalRating = parsedData.rating;
+                            finalCount = parsedData.count;
+                        }
+
                         loaded.push({
-                            id: idx + 100,
+                            id: savedId,
                             name: cols[0],
                             category: cat,
                             area: cols[2] || "الموصل",
                             phone: cols[3] || "",
                             vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
-                            rating: parseFloat(cols[5]) || 5.0,
-                            ratingsCount: parseInt(cols[6]) || 1
+                            rating: finalRating,
+                            ratingsCount: finalCount
                         });
                     }
                 });
@@ -433,7 +446,7 @@
                     </div>
                     <div class="text-xs text-slate-400 space-y-1 mb-4">
                         <p class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-amber-500"></i> ${k.area}</p>
-                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم)</p>
+                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم حقيقي)</p>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-800/60">
                         <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-amber-400 transition shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-phone"></i> اتصال</a>
@@ -477,7 +490,6 @@
             const area = document.getElementById('reg-area').value;
             const phone = document.getElementById('reg-phone').value.trim();
 
-            // التحقق من أن رقم الهاتف يتكون من 10 أرقام ويبدأ بـ 07
             const phoneRegex = /^07\d{8}$/;
             if (!phoneRegex.test(phone)) {
                 alert('خطأ في رقم الهاتف! يجب أن يتكون الرقم من 10 أرقام ويبدأ بـ 07 (مثال: 07701234567)');
@@ -524,14 +536,33 @@
             document.getElementById('support-msg-text').value = '';
         }
 
+        // نظام التقييم الآمن والمحمي ضد التكرار (Anti-Spam & Persistent Rating)
         function openRatingModal(id) {
-            let rating = prompt("قيّم هذا الخلفة من 1 إلى 5 نجوم:");
-            if (rating && !isNaN(rating) && rating >= 1 && rating <= 5) {
+            let hasRatedKey = 'rated_' + id;
+            if (localStorage.getItem(hasRatedKey)) {
+                alert('عذراً، لقد قمت بتقييم هذا الحرفي مسبقاً من هذا الجهاز!');
+                return;
+            }
+
+            let rating = prompt("قيّم هذا الحرفي بمصداقية من 1 إلى 5 نجوم:");
+            if (rating !== null) {
+                rating = Number(rating);
+                if (isNaN(rating) || rating < 1 || rating > 5) {
+                    alert('يرجى إدخال رقم صحيح بين 1 و 5 فقط!');
+                    return;
+                }
+
                 let k = khalafas.find(item => item.id === id);
                 if (k) {
-                    k.rating = ((k.rating * k.ratingsCount + Number(rating)) / (k.ratingsCount + 1)).toFixed(1);
+                    k.rating = Number(((k.rating * k.ratingsCount + rating) / (k.ratingsCount + 1)).toFixed(1));
                     k.ratingsCount++;
+                    
+                    // حفظ التقييم في المتصفح لضمان استمراريته وعدم ضياعه
+                    localStorage.setItem('rating_' + id, JSON.stringify({ rating: k.rating, count: k.ratingsCount }));
+                    localStorage.setItem(hasRatedKey, 'true');
+
                     renderKhalafas();
+                    alert('شكراً لك! تم تسجيل تقييمك بنجاح.');
                 }
             }
         }
