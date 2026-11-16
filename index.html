@@ -105,7 +105,6 @@
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-4">انضم إلى دليل خلفة في الموصل</h3>
             
-            <!-- صندوق التنبيهات الفورية للأخطاء -->
             <div id="form-error-box" class="hidden mb-4 bg-rose-500/10 border border-rose-500/40 text-rose-400 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2">
                 <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
                 <span id="form-error-text"></span>
@@ -141,7 +140,6 @@
                     <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى <span class="text-amber-500">*</span></label>
                     <select id="reg-area" onchange="checkNewArea(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                         <option value="">اختر المنطقة أو القضاء...</option>
-                        <!-- يتم تعبئة المناطق ديناميكياً من شيت الاكسل بالإضافة للاستيراد -->
                     </select>
                 </div>
                 <div id="new-area-div" class="hidden">
@@ -157,7 +155,7 @@
         </div>
     </div>
 
-    <!-- نافذة الدعم والشكاوى -->
+    <!-- نافذة الدعم والشكاوى (مدمجة: واتساب + إيميل رسمي) -->
     <div id="support-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -166,16 +164,21 @@
                     <i class="fa-solid fa-headset"></i>
                 </div>
                 <h3 class="text-lg font-black text-amber-400">الدعم الفني والشكاوى</h3>
-                <p class="text-xs text-slate-400 mt-1">تواجه مشكلة في التطبيق؟ لديك شكوى أو مقترح؟ تواصل معنا مباشرة.</p>
+                <p class="text-xs text-slate-400 mt-1">كيف تفضل أن تتواصل معنا؟ اختر الطريقة المناسبة:</p>
             </div>
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">رسالتك أو شكواك:</label>
-                    <textarea id="support-msg-text" rows="4" placeholder="اكتب تفاصيل مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
+                    <label class="block text-xs text-slate-400 mb-1">نص الرسالة أو الشكوى:</label>
+                    <textarea id="support-msg-text" rows="3" placeholder="اكتب تفاصيل مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
                 </div>
-                <button onclick="sendSupportMessage()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl text-sm hover:scale-102 transition shadow-lg flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-whatsapp text-lg"></i> إرسال عبر واتساب للأدارة
-                </button>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-3 rounded-xl text-xs hover:bg-emerald-600/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i> عبر واتساب
+                    </button>
+                    <button onclick="sendSupportEmail()" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold py-3 rounded-xl text-xs hover:bg-amber-500/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-envelope text-base"></i> عبر الإيميل
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -241,6 +244,7 @@
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
         const ADMIN_PHONE = "9647833837468";
+        const ADMIN_EMAIL = "s.alsalmany1@gmail.com"; // إيميلك الرسمي المرتبط بنظام الدعم
 
         const SPONSORED_ADS = [
             {
@@ -521,7 +525,7 @@
                 cat = newCatInput;
             }
             if (area === 'new_area_option') {
-                pendingCategories.push(newAreaInput); // يتم إرسالها للوحة التحكم للموافقة عليها
+                pendingCategories.push(newAreaInput);
                 area = newAreaInput;
             }
 
@@ -543,7 +547,7 @@
             select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
         }
 
-        function sendSupportMessage() {
+        function sendSupportWhatsApp() {
             const msg = document.getElementById('support-msg-text').value.trim();
             if (!msg) {
                 alert('يرجى كتابة نص الرسالة أو الشكوى أولاً');
@@ -551,6 +555,19 @@
             }
             const fullText = `[شكوى / دعم فني تطبيق خلفة]:\n${msg}`;
             openStandardWhatsApp(fullText);
+            closeSupportModal();
+            document.getElementById('support-msg-text').value = '';
+        }
+
+        function sendSupportEmail() {
+            const msg = document.getElementById('support-msg-text').value.trim();
+            if (!msg) {
+                alert('يرجى كتابة نص الرسالة أو الشكوى أولاً');
+                return;
+            }
+            const subject = encodeURIComponent("شكوى / دعم فني - تطبيق خلفة");
+            const body = encodeURIComponent(msg);
+            window.location.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
             closeSupportModal();
             document.getElementById('support-msg-text').value = '';
         }
