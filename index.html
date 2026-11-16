@@ -72,13 +72,23 @@
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
 
         <!-- البحث والأقسام -->
-        <div class="space-y-3 mb-6">
+        <div class="space-y-3 mb-4">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
                 <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور، تلعفر)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
             </div>
 
+            <!-- التصنيفات الأفقية -->
             <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
+
+            <!-- فلاتر العرض والفرز (الجديدة) -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                <span class="text-slate-400 shrink-0"><i class="fa-solid fa-filter text-amber-400"></i> فرز حسب:</span>
+                <button onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
+                <button onclick="setSortFilter('newest')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="newest">الأحدث</button>
+                <button onclick="setSortFilter('top_rated')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="top_rated">الأعلى تقييماً</button>
+                <button onclick="setSortFilter('open_now')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="open_now"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> المتاح الآن (مفتوح)</button>
+            </div>
         </div>
 
         <!-- قائمة الحرفيين + الإعلانات (تشمل Native Banner) -->
@@ -147,6 +157,10 @@
                     <input type="text" id="reg-new-area" placeholder="مثال: الجانب الأيسر - حي السلام" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div>
+                    <label class="block text-xs text-slate-400 mb-1">ساعات وأيام العمل (إجباري) <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً (عدا الجمعة مغلق)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (10 خانات تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="10" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
@@ -155,7 +169,7 @@
         </div>
     </div>
 
-    <!-- نافذة الدعم والشكاوى (مدمجة: واتساب + إيميل رسمي) -->
+    <!-- نافذة الدعم والشكاوى -->
     <div id="support-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -244,7 +258,7 @@
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
         const ADMIN_PHONE = "9647833837468";
-        const ADMIN_EMAIL = "s.alsalmany1@gmail.com"; // إيميلك الرسمي المرتبط بنظام الدعم
+        const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
 
         const SPONSORED_ADS = [
             {
@@ -267,8 +281,8 @@
         }
 
         let khalafas = [
-            { id: 1, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", vip: true, rating: 4.9, ratingsCount: 38 },
-            { id: 2, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", vip: false, rating: 4.7, ratingsCount: 19 }
+            { id: 101, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", workingHours: "يومياً 8 صباحاً - 9 مساءً", vip: true, rating: 4.9, ratingsCount: 38 },
+            { id: 102, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", workingHours: "من السبت للخميس (9 ص - 6 م)", vip: false, rating: 4.7, ratingsCount: 19 }
         ];
 
         let categories = ["كهربائي", "مجاري", "تكييف وتبريد", "نجار", "حداد"];
@@ -288,6 +302,7 @@
 
         let pendingCategories = [];
         let currentCategory = "الكل";
+        let currentSort = "default"; // افتراضي, الأحدث, الأعلى تقييماً, المتاح الآن
 
         const manifestData = {
             name: "خلفة - دليل الحرفيين",
@@ -349,7 +364,7 @@
                         updatedCategories.add(cat);
                         updatedAreas.add(areaVal);
                         
-                        let savedId = idx + 100;
+                        let savedId = idx + 200;
                         let savedRatingData = localStorage.getItem('rating_' + savedId);
                         let finalRating = parseFloat(cols[5]) || 5.0;
                         let finalCount = parseInt(cols[6]) || 1;
@@ -366,6 +381,7 @@
                             category: cat,
                             area: areaVal,
                             phone: cols[3] || "",
+                            workingHours: cols[7] || "يومياً (غير محدد)",
                             vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
                             rating: finalRating,
                             ratingsCount: finalCount
@@ -413,18 +429,52 @@
 
         function filterCategory(cat) { currentCategory = cat; renderCategories(); renderKhalafas(); }
 
+        function setSortFilter(sortType) {
+            currentSort = sortType;
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                if (btn.getAttribute('data-sort') === sortType) {
+                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition";
+                } else {
+                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition";
+                }
+            });
+            renderKhalafas();
+        }
+
+        function isOpenNow(hoursText) {
+            if (!hoursText) return true; // افتراضي مفتوح إذا لم يحدد
+            let text = hoursText.toLowerCase();
+            if (text.includes('مغلق') && (text.includes('الجمعة') || text.includes('دائماً'))) {
+                // فحص بسيط للجمعة مثلاً
+                const today = new Date().getDay(); // الجمعة = 5
+                if (today === 5 && text.includes('الجمعة')) return false;
+            }
+            return true;
+        }
+
         function renderKhalafas() {
             const list = document.getElementById('khalafas-list');
             const search = document.getElementById('search-input').value.toLowerCase();
-            let sorted = [...khalafas].sort((a, b) => b.vip - a.vip);
-            let filtered = sorted.filter(k => {
+            
+            let filtered = khalafas.filter(k => {
                 let matchesCat = currentCategory === 'الكل' || k.category === currentCategory;
                 let matchesSearch = k.name.toLowerCase().includes(search) || k.area.toLowerCase().includes(search) || k.category.toLowerCase().includes(search);
                 return matchesCat && matchesSearch;
             });
 
+            // تطبيق الفلاتر (Sort)
+            if (currentSort === 'default') {
+                filtered.sort((a, b) => b.vip - a.vip);
+            } else if (currentSort === 'newest') {
+                filtered.sort((a, b) => b.id - a.id);
+            } else if (currentSort === 'top_rated') {
+                filtered.sort((a, b) => b.rating - a.rating);
+            } else if (currentSort === 'open_now') {
+                filtered = filtered.filter(k => isOpenNow(k.workingHours));
+            }
+
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك في الموصل.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك أو الفلتر المختار.</div>`;
                 return;
             }
 
@@ -437,8 +487,9 @@
                         <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded-md font-bold">${k.category}</span>
                         <h3 class="text-base font-bold text-slate-100 mt-1">${k.name}</h3>
                     </div>
-                    <div class="text-xs text-slate-400 space-y-1 mb-4">
+                    <div class="text-xs text-slate-400 space-y-1.5 mb-4">
                         <p class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-amber-500"></i> ${k.area}</p>
+                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-clock text-amber-400"></i> ${k.workingHours || 'ساعات العمل غير محدودة'}</p>
                         <p class="flex items-center gap-1.5"><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم حقيقي)</p>
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-800/60">
@@ -491,6 +542,7 @@
             const newCatInput = document.getElementById('reg-new-category').value.trim();
             let area = document.getElementById('reg-area').value;
             const newAreaInput = document.getElementById('reg-new-area').value.trim();
+            const workingHours = document.getElementById('reg-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
 
             if (!name) {
@@ -513,6 +565,10 @@
                 showFormError('يرجى كتابة اسم المنطقة أو الحي الجديد في الحقل المخصص.');
                 return;
             }
+            if (!workingHours) {
+                showFormError('يرجى إدخال ساعات وأيام العمل (الحقل إجباري ليعرف الزبون أوقات الدوام).');
+                return;
+            }
 
             const phoneRegex = /^07\d{8}$/;
             if (!phoneRegex.test(phone)) {
@@ -529,7 +585,7 @@
                 area = newAreaInput;
             }
 
-            khalafas.push({ id: Date.now(), name, category: cat, area, phone, vip: false, rating: 5.0, ratingsCount: 1 });
+            khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
             closeRegisterModal();
             renderKhalafas();
             document.getElementById('register-form').reset();
