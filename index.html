@@ -44,7 +44,7 @@
 
         <div class="flex items-center gap-2">
             <!-- 3. Smartlink Button -->
-            <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
+            <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold hidden sm:flex items-center gap-1.5 hover:bg-amber-500/20 transition">
                 <i class="fa-solid fa-bolt text-amber-400"></i> عروض مميزة
             </a>
             <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
@@ -86,26 +86,33 @@
 
     </main>
 
-    <!-- زر تسجيل خلفة -->
-    <div class="fixed bottom-6 left-6 z-30">
-        <button onclick="openRegisterModal()" class="bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform">
+    <!-- أزرار عائمة أسفل الشاشة (إضافة خلفة + الدعم والشكاوى) -->
+    <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
+        <!-- زر الدعم والشكاوى -->
+        <button onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition">
+            <i class="fa-solid fa-headset text-amber-400 text-base"></i> الدعم والشكاوى
+        </button>
+
+        <!-- زر تسجيل خلفة -->
+        <button onclick="openRegisterModal()" class="pointer-events-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform">
             <i class="fa-solid fa-plus text-base"></i> سجّل كـ خلفة
         </button>
     </div>
 
-    <!-- نافذة التسجيل (محدثة وشاملة التخصصات والمناطق) -->
+    <!-- نافذة التسجيل (الخانات إجبارية ورقم الهاتف مدقق) -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-4">انضم إلى دليل خلفة في الموصل</h3>
             <form id="register-form" onsubmit="submitKhalfa(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">الاسم أو اسم الورشة</label>
+                    <label class="block text-xs text-slate-400 mb-1">الاسم أو اسم الورشة <span class="text-amber-500">*</span></label>
                     <input type="text" id="reg-name" required placeholder="مثال: أبو عمر لتصليح السبالت" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المهنة / التخصص</label>
-                    <select id="reg-category" onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs text-slate-400 mb-1">المهنة / التخصص <span class="text-amber-500">*</span></label>
+                    <select id="reg-category" required onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <option value="">اختر التخصص...</option>
                         <option value="كهربائي">كهربائي</option>
                         <option value="مجاري">مجاري</option>
                         <option value="تكييف وتبريد">تكييف وتبريد (سبالت)</option>
@@ -120,11 +127,11 @@
                     </select>
                 </div>
                 <div id="new-category-div" class="hidden">
-                    <label class="block text-xs text-amber-400 mb-1">اكتب التخصص الجديد (قيد مراجعة الإدارة)</label>
+                    <label class="block text-xs text-amber-400 mb-1">اكتب التخصص الجديد <span class="text-amber-500">*</span></label>
                     <input type="text" id="reg-new-category" placeholder="مثال: كهربائي سيارات" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى</label>
+                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى <span class="text-amber-500">*</span></label>
                     <select id="reg-area" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                         <option value="">اختر المنطقة أو القضاء...</option>
                         <optgroup label="--- الجانب الأيسر (الموصل) ---">
@@ -163,7 +170,7 @@
                             <option value="الجانب الأيمن - التنك">التنك</option>
                             <option value="الجانب الأيمن - الهرمات">الهرمات</option>
                             <option value="الجانب الأيمن - رجم التشظي">رجم التشظي</option>
-                            <option value="الجانب الأيمن - الشفاء">الشفاء</option>
+                            <option value="الجانب الأيمن - الشفاء">الشُفاء</option>
                             <option value="الجانب الأيمن - باب سنجار">باب سنجار</option>
                             <option value="الجانب الأيمن - باب لكش">باب لكش</option>
                             <option value="الجانب الأيمن - المشاهدة">المشاهدة</option>
@@ -182,11 +189,34 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف</label>
-                    <input type="tel" id="reg-phone" required placeholder="07700000000" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (10 خانات تبدأ بـ 07) <span class="text-amber-500">*</span></label>
+                    <input type="tel" id="reg-phone" required maxlength="10" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب</button>
             </form>
+        </div>
+    </div>
+
+    <!-- نافذة الدعم والشكاوى -->
+    <div id="support-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <div class="text-center mb-5">
+                <div class="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-2xl mx-auto flex items-center justify-center text-amber-400 text-2xl mb-3 shadow">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3 class="text-lg font-black text-amber-400">الدعم الفني والشكاوى</h3>
+                <p class="text-xs text-slate-400 mt-1">تواجه مشكلة في التطبيق؟ لديك شكوى أو مقترح؟ تواصل معنا مباشرة.</p>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-400 mb-1">رسالتك أو شكواك:</label>
+                    <textarea id="support-msg-text" rows="4" placeholder="اكتب تفاصيل مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <button onclick="sendSupportMessage()" class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black py-3 rounded-xl text-sm hover:scale-102 transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> إرسال عبر واتساب للأدارة
+                </button>
+            </div>
         </div>
     </div>
 
@@ -441,26 +471,57 @@
 
         function submitKhalfa(e) {
             e.preventDefault();
-            const name = document.getElementById('reg-name').value;
+            const name = document.getElementById('reg-name').value.trim();
             let cat = document.getElementById('reg-category').value;
-            const newCatInput = document.getElementById('reg-new-category').value;
+            const newCatInput = document.getElementById('reg-new-category').value.trim();
             const area = document.getElementById('reg-area').value;
-            const phone = document.getElementById('reg-phone').value;
+            const phone = document.getElementById('reg-phone').value.trim();
 
-            if (cat === 'new_option' && newCatInput.trim() !== '') {
-                pendingCategories.push(newCatInput.trim());
-                cat = newCatInput.trim();
+            // التحقق من أن رقم الهاتف يتكون من 10 أرقام ويبدأ بـ 07
+            const phoneRegex = /^07\d{8}$/;
+            if (!phoneRegex.test(phone)) {
+                alert('خطأ في رقم الهاتف! يجب أن يتكون الرقم من 10 أرقام ويبدأ بـ 07 (مثال: 07701234567)');
+                return;
+            }
+
+            if (cat === 'new_option') {
+                if (!newCatInput) {
+                    alert('يرجى كتابة التخصص الجديد');
+                    return;
+                }
+                pendingCategories.push(newCatInput);
+                cat = newCatInput;
             }
 
             khalafas.push({ id: Date.now(), name, category: cat, area, phone, vip: false, rating: 5.0, ratingsCount: 1 });
             closeRegisterModal();
             renderKhalafas();
             document.getElementById('register-form').reset();
+            alert('تم إرسال طلبك بنجاح وسيتم إضافتك للدليل!');
         }
 
         function checkNewCategory(select) {
             const newDiv = document.getElementById('new-category-div');
-            select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
+            const newCatInput = document.getElementById('reg-new-category');
+            if (select.value === 'new_option') {
+                newDiv.classList.remove('hidden');
+                newCatInput.setAttribute('required', 'true');
+            } else {
+                newDiv.classList.add('hidden');
+                newCatInput.removeAttribute('required');
+            }
+        }
+
+        function sendSupportMessage() {
+            const msg = document.getElementById('support-msg-text').value.trim();
+            if (!msg) {
+                alert('يرجى كتابة نص الرسالة أو الشكوى أولاً');
+                return;
+            }
+            const fullText = `[شكوى / دعم فني تطبيق خلفة]:\n${msg}`;
+            openStandardWhatsApp(fullText);
+            closeSupportModal();
+            document.getElementById('support-msg-text').value = '';
         }
 
         function openRatingModal(id) {
@@ -477,6 +538,8 @@
 
         function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
+        function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); }
+        function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); }
         function openVipModal() { document.getElementById('vip-modal').classList.remove('hidden'); }
         function closeVipModal() { document.getElementById('vip-modal').classList.add('hidden'); }
         function openAdvertiseModal() { document.getElementById('advertise-modal').classList.remove('hidden'); }
