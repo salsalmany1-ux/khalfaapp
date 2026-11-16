@@ -81,7 +81,7 @@
             <!-- التصنيفات الأفقية -->
             <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
 
-            <!-- فلاتر العرض والفرز (الجديدة) -->
+            <!-- فلاتر العرض والفرز -->
             <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
                 <span class="text-slate-400 shrink-0"><i class="fa-solid fa-filter text-amber-400"></i> فرز حسب:</span>
                 <button onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
@@ -161,8 +161,8 @@
                     <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً (عدا الجمعة مغلق)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (10 خانات تبدأ بـ 07) <span class="text-amber-500">*</span></label>
-                    <input type="tel" id="reg-phone" maxlength="10" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
+                    <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب</button>
             </form>
@@ -302,7 +302,7 @@
 
         let pendingCategories = [];
         let currentCategory = "الكل";
-        let currentSort = "default"; // افتراضي, الأحدث, الأعلى تقييماً, المتاح الآن
+        let currentSort = "default";
 
         const manifestData = {
             name: "خلفة - دليل الحرفيين",
@@ -442,11 +442,10 @@
         }
 
         function isOpenNow(hoursText) {
-            if (!hoursText) return true; // افتراضي مفتوح إذا لم يحدد
+            if (!hoursText) return true;
             let text = hoursText.toLowerCase();
             if (text.includes('مغلق') && (text.includes('الجمعة') || text.includes('دائماً'))) {
-                // فحص بسيط للجمعة مثلاً
-                const today = new Date().getDay(); // الجمعة = 5
+                const today = new Date().getDay();
                 if (today === 5 && text.includes('الجمعة')) return false;
             }
             return true;
@@ -462,7 +461,6 @@
                 return matchesCat && matchesSearch;
             });
 
-            // تطبيق الفلاتر (Sort)
             if (currentSort === 'default') {
                 filtered.sort((a, b) => b.vip - a.vip);
             } else if (currentSort === 'newest') {
@@ -570,9 +568,10 @@
                 return;
             }
 
-            const phoneRegex = /^07\d{8}$/;
+            // التحقق من أن رقم الهاتف 11 خانة ويبدأ بـ 07
+            const phoneRegex = /^07\d{9}$/;
             if (!phoneRegex.test(phone)) {
-                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 10 أرقام حصراً ويبدأ بـ 07 (مثال: 07701234567).');
+                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 11 رقمًا حصراً ويبدأ بـ 07 (مثال: 07701234567).');
                 return;
             }
 
