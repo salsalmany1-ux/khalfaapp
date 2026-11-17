@@ -257,7 +257,7 @@
     </div>
 
     <script>
-        // رابط SheetDB المباشر الخاص بك
+        // رابط SheetDB المباشر والمحدث الخاص بك
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
         
         const ADMIN_PHONE = "9647833837468";
@@ -527,7 +527,7 @@
             }, 5000);
         }
 
-        // إرسال البيانات مباشرة إلى جدول الاكسل عبر SheetDB
+        // إرسال البيانات مباشرة إلى جدول الاكسل عبر SheetDB (باستخدام مصفوفة البيانات الصحيحة)
         async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
@@ -689,7 +689,7 @@
             pList.innerHTML = pendingCategories.length === 0 ? `<p class="text-xs text-slate-500">لا توجد طلبات تصنيفات أو مناطق جديدة.</p>` : pendingCategories.map((item, idx) => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><span>${item}</span><div class="flex gap-2"><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-emerald-600 text-white px-3 py-1 rounded-lg">موافقة</button><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-rose-600 text-white px-3 py-1 rounded-lg">رفض</button></div></div>`).join('');
 
             const kList = document.getElementById('admin-khalafas-list');
-            kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
+            kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-850"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
         }
 
         let deferredPrompt;
