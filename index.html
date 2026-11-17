@@ -164,6 +164,7 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
+                <!-- تم تصحيح اسم الزر ليكون "إرسال" فقط -->
                 <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
@@ -408,12 +409,12 @@
             renderAreasSelect();
             renderKhalafas();
             await loadFromSheet();
-            // تفعيل إعلانات Native Banner تلقائياً بعد تحميل الصفحة
+            // تفعيل وحدات الإعلانات البرمجية (Native Banner) بعد التحميل
             setTimeout(() => {
                 if (window.AdProvider) {
                     window.AdProvider.push({});
                 }
-            }, 1000);
+            }, 800);
         };
 
         function renderCategories() {
@@ -585,7 +586,7 @@
             };
 
             try {
-                await fetch(SHEETDB_API_URL, {
+                const response = await fetch(SHEETDB_API_URL, {
                     method: 'POST',
                     headers: {
                         'Accept': 'application/json',
@@ -594,14 +595,18 @@
                     body: JSON.stringify(rowData)
                 });
 
-                khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
-                closeRegisterModal();
-                renderKhalafas();
-                document.getElementById('register-form').reset();
-                document.getElementById('form-error-box').classList.add('hidden');
-                alert('تم إرسال ورشتك وحفظها في الجدول بنجاح!');
+                if (response.ok) {
+                    khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
+                    closeRegisterModal();
+                    renderKhalafas();
+                    document.getElementById('register-form').reset();
+                    document.getElementById('form-error-box').classList.add('hidden');
+                    alert('تم إرسال البيانات وحفظها في جدول الاكسل بنجاح!');
+                } else {
+                    showFormError('تعذر الحفظ في الجدول، تأكد من مطابقة أسماء الأعمدة.');
+                }
             } catch (err) {
-                showFormError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
+                showFormError('حدث خطأ في الاتصال بقاعدة البيانات.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'إرسال';
