@@ -164,7 +164,7 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <!-- تم تصحيح اسم الزر ليكون "إرسال" فقط -->
+                <!-- زر الإرسال بالاسم المطلوب حصراً -->
                 <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
@@ -258,7 +258,9 @@
 
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
-        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
+        
+        // رابط الـ Apps Script الجديد الخاص بك
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyVCjyJRf0uV3Bbd7_7fFndGJSxAXpMEFbVP7lN9cMVkMNXtSTZCgFFuUQ54lSP1NQF/exec";
         
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
@@ -409,7 +411,6 @@
             renderAreasSelect();
             renderKhalafas();
             await loadFromSheet();
-            // تفعيل وحدات الإعلانات البرمجية (Native Banner) بعد التحميل
             setTimeout(() => {
                 if (window.AdProvider) {
                     window.AdProvider.push({});
@@ -572,41 +573,37 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'جاري الإرسال للجدول...';
 
-            const rowData = {
-                data: {
-                    "الاسم": name,
-                    "التخصص": cat,
-                    "المنطقة": area,
-                    "الهاتف": phone,
-                    "ساعات العمل": workingHours,
-                    "VIP": "لا",
-                    "التقييم": 5.0,
-                    "عدد التقييمات": 1
-                }
+            const payload = {
+                "الاسم": name,
+                "التخصص": cat,
+                "المنطقة": area,
+                "الهاتف": phone,
+                "ساعات العمل": workingHours,
+                "VIP": "لا",
+                "التقييم": 5.0,
+                "عدد التقييمات": 1
             };
 
             try {
-                const response = await fetch(SHEETDB_API_URL, {
+                // إرسال البيانات مباشرة عبر رابط Apps Script الخاص بك
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
+                    mode: 'no-cors',
                     headers: {
-                        'Accept': 'application/json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(rowData)
+                    body: JSON.stringify(payload)
                 });
 
-                if (response.ok) {
-                    khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
-                    closeRegisterModal();
-                    renderKhalafas();
-                    document.getElementById('register-form').reset();
-                    document.getElementById('form-error-box').classList.add('hidden');
-                    alert('تم إرسال البيانات وحفظها في جدول الاكسل بنجاح!');
-                } else {
-                    showFormError('تعذر الحفظ في الجدول، تأكد من مطابقة أسماء الأعمدة.');
-                }
+                khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
+                closeRegisterModal();
+                renderKhalafas();
+                document.getElementById('register-form').reset();
+                document.getElementById('form-error-box').classList.add('hidden');
+                alert('تم حفظ البيانات في جدول الاكسل بنجاح!');
             } catch (err) {
-                showFormError('حدث خطأ في الاتصال بقاعدة البيانات.');
+                console.error("Error:", err);
+                showFormError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'إرسال';
