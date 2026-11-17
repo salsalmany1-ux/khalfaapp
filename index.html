@@ -78,9 +78,9 @@
         </div>
 
         <div id="khalafas-list" class="space-y-4">
-            <div class="text-center py-12 text-slate-400 text-xs">
-                <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg mb-2"></i>
-                <p>جاري تحديث البيانات من جدول الاكسل...</p>
+            <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
+                <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
+                <p>جاري الاتصال بجدول البيانات وسحب السجلات...</p>
             </div>
         </div>
     </main>
@@ -207,14 +207,24 @@
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
         }
 
-        // جلب البيانات حصرياً من SheetDB مع نظام احتياطي يضمن عدم بقاء الصفحة فارغة
+        // دالة سحب البيانات الحقيقية من SheetDB
         async function loadFromSheet() {
             try {
-                const res = await fetch(SHEETDB_API_URL + "?t=" + Date.now(), { cache: "no-store" });
-                const data = await res.json();
+                const response = await fetch(SHEETDB_API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
                 
-                if (Array.isArray(data) && data.length > 0) {
-                    const loaded = [];
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    khalafas = [];
                     const catSet = new Set(["الكل"]);
 
                     data.forEach((row, idx) => {
@@ -227,7 +237,7 @@
                         let vipVal = row['VIP'] || row['vip'];
                         let isVip = (vipVal === 'نعم' || vipVal === 'yes' || vipVal === true || vipVal === '1');
 
-                        loaded.push({
+                        khalafas.push({
                             id: idx + 1,
                             name: name,
                             category: cat,
@@ -240,20 +250,15 @@
                         });
                     });
 
-                    if (loaded.length > 0) {
-                        khalafas = loaded;
-                        categories = Array.from(catSet);
-                        renderCategories();
-                        renderKhalafas();
-                        return;
-                    }
+                    categories = Array.from(catSet);
+                    renderCategories();
+                    renderKhalafas();
+                } else {
+                    document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">جدول البيانات لا يحتوي على سجلات حالياً.</div>`;
                 }
-                
-                // إذا كان الجدول فارغاً
-                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">جدول البيانات فارغ حالياً. قم بإضافة أول حرفي عبر زر "سجّل كـ خلفة".</div>`;
             } catch (e) {
                 console.error("SheetDB Error:", e);
-                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر الاتصال بجدول الاكسل. تحقق من الإنترنت.</div>`;
+                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر جلب البيانات من جدول الاكسل. تأكد من اتصال الإنترنت أو صحة الرابط.</div>`;
             }
         }
 
@@ -306,7 +311,7 @@
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك أو أن الجدول فارغ.</div>`;
                 return;
             }
 
@@ -334,7 +339,7 @@
             list.innerHTML = html;
         }
 
-        // إرسال البيانات إلى SheetDB وجدول الاكسل مباشرة
+        // إرسال البيانات المباشر إلى SheetDB وجدول الاكسل
         async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
@@ -396,7 +401,7 @@
                 }
             } catch (err) {
                 errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
-                errorBox.classList.add('hidden');
+                errorBox.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'إرسال';
