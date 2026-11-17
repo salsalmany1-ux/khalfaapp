@@ -164,7 +164,7 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال وحفظ بالجدول</button>
+                <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
     </div>
@@ -408,6 +408,12 @@
             renderAreasSelect();
             renderKhalafas();
             await loadFromSheet();
+            // تفعيل إعلانات Native Banner تلقائياً بعد تحميل الصفحة
+            setTimeout(() => {
+                if (window.AdProvider) {
+                    window.AdProvider.push({});
+                }
+            }, 1000);
         };
 
         function renderCategories() {
@@ -563,7 +569,7 @@
 
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري الحفظ في جدول البيانات...';
+            submitBtn.textContent = 'جاري الإرسال للجدول...';
 
             const rowData = {
                 data: {
@@ -593,12 +599,12 @@
                 renderKhalafas();
                 document.getElementById('register-form').reset();
                 document.getElementById('form-error-box').classList.add('hidden');
-                alert('تم تسجيل ورشتك بنجاح وحفظها في قاعدة البيانات (Google Sheets) فوراً!');
+                alert('تم إرسال ورشتك وحفظها في الجدول بنجاح!');
             } catch (err) {
                 showFormError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
             } finally {
                 submitBtn.disabled = false;
-                submitBtn.textContent = 'إرسال وحفظ بالجدول';
+                submitBtn.textContent = 'إرسال';
             }
         }
 
