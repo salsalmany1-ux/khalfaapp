@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
     
+    <!-- PWA manifest placeholder -->
     <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,13 +19,18 @@
         body { font-family: 'Cairo', sans-serif; }
     </style>
 
-    <!-- إعلانات Adsterra الأساسية -->
+    <!-- 1. Adsterra Popunder Script -->
     <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
+    
+    <!-- 2. Adsterra Social Bar Script -->
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
+
+    <!-- 4. Adsterra Native Banner Head Script -->
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- Header -->
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-md">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-400/30">
@@ -37,6 +43,7 @@
         </div>
 
         <div class="flex items-center gap-2">
+            <!-- 3. Smartlink Button -->
             <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold hidden sm:flex items-center gap-1.5 hover:bg-amber-500/20 transition">
                 <i class="fa-solid fa-bolt text-amber-400"></i> عروض مميزة
             </a>
@@ -52,15 +59,18 @@
         </div>
     </header>
 
+    <!-- Top Announcement Bar -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
-            <span id="ad-text">سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!</span>
+            <span>سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!</span>
         </div>
         <button onclick="openAdvertiseModal()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2">أعلن معنا</button>
     </div>
 
+    <!-- Main Content -->
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
+        <!-- Search & Filters -->
         <div class="space-y-3 mb-4">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
@@ -74,13 +84,19 @@
                 <button onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
                 <button onclick="setSortFilter('newest')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="newest">الأحدث</button>
                 <button onclick="setSortFilter('top_rated')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="top_rated">الأعلى تقييماً</button>
-                <button onclick="setSortFilter('open_now')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="open_now"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> المتاح الآن</button>
             </div>
         </div>
 
-        <div id="khalafas-list" class="space-y-4"></div>
+        <!-- Directory List (Connected to SheetDB) -->
+        <div id="khalafas-list" class="space-y-4">
+            <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
+                <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
+                جاري الاتصال بجدول البيانات (SheetDB) وتحميل الحرفيين...
+            </div>
+        </div>
     </main>
 
+    <!-- Floating Action Buttons -->
     <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
         <button onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition">
             <i class="fa-solid fa-headset text-amber-400 text-base"></i> الدعم والشكاوى
@@ -91,7 +107,7 @@
         </button>
     </div>
 
-    <!-- نافذة التسجيل -->
+    <!-- Register Modal -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -109,97 +125,60 @@
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">المهنة / التخصص <span class="text-amber-500">*</span></label>
-                    <select id="reg-category" onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
-                        <option value="">اختر التخصص...</option>
-                        <option value="كهربائي">كهربائي</option>
-                        <option value="مجاري">مجاري</option>
-                        <option value="تكييف وتبريد">تكييف وتبريد (سبالت)</option>
-                        <option value="نجار">نجار</option>
-                        <option value="حداد">حداد</option>
-                        <option value="ألمنيوم وجص">ألمنيوم ومقاولات</option>
-                        <option value="صيانة موبايل">صيانة موبايل وأجهزة</option>
-                        <option value="دش وستلايت">دش وستلايت</option>
-                        <option value="دهان وديكور">دهان وديكور</option>
-                        <option value="بناء وصيانة عامة">بناء وصيانة عامة</option>
-                        <option value="new_option">+ اقترح تخصصاً جديداً...</option>
-                    </select>
-                </div>
-                <div id="new-category-div" class="hidden">
-                    <label class="block text-xs text-amber-400 mb-1">اكتب التخصص الجديد <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-new-category" placeholder="مثال: كهربائي سيارات" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
+                    <input type="text" id="reg-category" placeholder="مثال: كهربائي، تبريد، نجارة..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى <span class="text-amber-500">*</span></label>
-                    <select id="reg-area" onchange="checkNewArea(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
-                        <option value="">اختر المنطقة أو القضاء...</option>
-                    </select>
-                </div>
-                <div id="new-area-div" class="hidden">
-                    <label class="block text-xs text-amber-400 mb-1">اكتب اسم المنطقة أو الحي الجديد <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-new-area" placeholder="مثال: الجانب الأيسر - حي السلام" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
+                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو الحي <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-area" placeholder="مثال: الجانب الأيسر - حي الزهور" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">ساعات وأيام العمل (إجباري) <span class="text-amber-500">*</span></label>
+                    <label class="block text-xs text-slate-400 mb-1">ساعات العمل <span class="text-amber-500">*</span></label>
                     <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <!-- زر الإرسال بالاسم المطلوب حصراً -->
+                <!-- زر الإرسال المباشر للجدول بدون واتساب -->
                 <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة الدعم والشكاوى -->
+    <!-- Modals (Support, VIP, Advertise, Admin) -->
     <div id="support-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div class="text-center mb-5">
-                <div class="w-14 h-14 bg-amber-500/10 border border-amber-500/30 rounded-2xl mx-auto flex items-center justify-center text-amber-400 text-2xl mb-3 shadow">
-                    <i class="fa-solid fa-headset"></i>
-                </div>
-                <h3 class="text-lg font-black text-amber-400">الدعم الفني والشكاوى</h3>
-            </div>
-            <div class="space-y-3">
-                <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك أو مشكلتك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
-                <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> واتساب
-                    </button>
-                    <button onclick="sendSupportEmail()" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-envelope text-base"></i> إيميل
-                    </button>
-                </div>
+            <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
+            <textarea id="support-msg-text" rows="3" placeholder="اكتب مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs">عبر واتساب</button>
+                <button onclick="sendSupportEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs">عبر الإيميل</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة VIP -->
     <div id="vip-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeVipModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-xl font-black text-amber-400 mb-2">مميزات حساب VIP</h3>
             <p class="text-xs text-slate-400 mb-4">ظهور دائم في أعلى القائمة وزيادة هائلة في الطلبات.</p>
-            <button onclick="openStandardWhatsApp('مرحباً، أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm">اشتري عبر واتساب</button>
+            <button onclick="openStandardWhatsApp('أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm">اشتري عبر واتساب</button>
         </div>
     </div>
 
-    <!-- نافذة الإعلانات -->
     <div id="advertise-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeAdvertiseModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">أعلن في تطبيق خلفة</h3>
-            <button onclick="openStandardWhatsApp('مرحباً، أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm">تواصل معنا</button>
+            <button onclick="openStandardWhatsApp('أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm">تواصل معنا</button>
         </div>
     </div>
 
-    <!-- نافذة الأدمن -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
             <button onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-base font-black text-amber-400 mb-4">لوحة تحكم الإدارة</h3>
+            <h3 class="text-base font-black text-amber-400 mb-4">دخول الأدمن</h3>
             <input type="password" id="admin-pass-input" placeholder="رمز المرور (7223)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
             <button onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm">دخول</button>
         </div>
@@ -213,156 +192,116 @@
         </div>
     </div>
 
+    <!-- JavaScript logic (Strict SheetDB connection) -->
     <script>
-        // رابط SheetDB المباشر والصحيح الخاص بك
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
-        
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
 
-        const SPONSORED_ADS = [
-            {
-                title: "مجمع النور للمواد الكهربائية والإنارة - الموصل",
-                desc: "تجهيز كامل للمنازل والورش بأسعار الجملة - الجانب الأيسر / حي المثنى",
-                phone: "9647833837468",
-                badge: "راعي رسمي"
-            }
-        ];
-
-        function openStandardWhatsApp(message) {
-            const encodedMsg = encodeURIComponent(message);
-            window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
-        }
-
-        let khalafas = [
-            { id: 101, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", workingHours: "يومياً 8 صباحاً - 9 مساءً", vip: true, rating: 4.9, ratingsCount: 38 },
-            { id: 102, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", workingHours: "من السبت للخميس", vip: false, rating: 4.7, ratingsCount: 19 }
-        ];
-
-        let categories = ["كهربائي", "مجاري", "تكييف وتبريد", "نجار", "حداد"];
-        let areas = [
-            "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين", 
-            "الجانب الأيسر - النبي يونس", "الجانب الأيسر - القوسيات", "الجانب الأيسر - المصارف", "الجانب الأيسر - حي المهندسين", 
-            "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد", 
-            "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير", 
-            "الجانب الأيسر - حي القادسية", "الجانب الأيسر - حي الحدباء", "الجانب الأيسر - حي العربي", "الجانب الأيسر - الصديق", "الجانب الأيسر - الوريورات",
-            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل", 
-            "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب", 
-            "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي", 
-            "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة", 
-            "الجانب الأيمن - راس الجادة", "الجانب الأيمن - الكورنيش",
-            "قضاء تلكيف ونواحيها", "قضاء الحمدانية ونواحيها", "قضاء شيخان ونواحيها", "قضاء تلعفر ونواحيها", "قضاء سنجار ونواحيها", "قضاء مخمور ونواحيها", "قضاء الحضر ونواحيها"
-        ];
-
+        let khalafas = [];
+        let categories = ["الكل"];
         let currentCategory = "الكل";
         let currentSort = "default";
 
-        // قراءة البيانات من SheetDB (الاكسل)
+        // PWA Manifest setup
+        const manifestData = {
+            name: "خلفة - دليل الحرفيين",
+            short_name: "خلفة",
+            start_url: window.location.href,
+            display: "standalone",
+            background_color: "#020617",
+            theme_color: "#f59e0b",
+            icons: [{
+                src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png",
+                sizes: "512x512",
+                type: "image/png"
+            }]
+        };
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
+
+        // Service Worker registration
+        if ('serviceWorker' in navigator) {
+            const swCode = `self.addEventListener('fetch', function(event) {});`;
+            const swBlob = new Blob([swCode], {type: 'application/javascript'});
+            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+        }
+
+        // جلب البيانات حصرياً من SheetDB بدون أي بيانات وهمية مسبقة
         async function loadFromSheet() {
-            if (!SHEETDB_API_URL) return;
             try {
                 const res = await fetch(SHEETDB_API_URL + "?t=" + Date.now());
                 const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    const loaded = [];
-                    const updatedCategories = new Set(categories);
-                    const updatedAreas = new Set(areas);
+                
+                if (Array.isArray(data)) {
+                    khalafas = [];
+                    const catSet = new Set(["الكل"]);
 
                     data.forEach((row, idx) => {
                         const name = row['الاسم'] || row['name'] || '';
                         if (!name) return;
-                        
+
                         const cat = row['التخصص'] || row['category'] || "عام";
-                        const areaVal = row['المنطقة'] || row['area'] || "الموصل";
-                        updatedCategories.add(cat);
-                        updatedAreas.add(areaVal);
-
-                        let savedId = idx + 200;
-                        let savedRatingData = localStorage.getItem('rating_' + savedId);
-                        let finalRating = parseFloat(row['التقييم'] || row['rating']) || 5.0;
-                        let finalCount = parseInt(row['عدد التقييمات'] || row['ratingsCount']) || 1;
-
-                        if (savedRatingData) {
-                            const parsedData = JSON.parse(savedRatingData);
-                            finalRating = parsedData.rating;
-                            finalCount = parsedData.count;
-                        }
+                        catSet.add(cat);
 
                         let vipVal = row['VIP'] || row['vip'];
-                        let isVip = vipVal === 'نعم' || vipVal === 'yes' || vipVal === 'true' || vipVal === 1;
+                        let isVip = (vipVal === 'نعم' || vipVal === 'yes' || vipVal === true || vipVal === '1');
 
-                        loaded.push({
-                            id: savedId,
+                        khalafas.push({
+                            id: idx + 1,
                             name: name,
                             category: cat,
-                            area: areaVal,
+                            area: row['المنطقة'] || row['area'] || "الموصل",
                             phone: row['الهاتف'] || row['phone'] || "",
-                            workingHours: row['ساعات العمل'] || row['workingHours'] || "يومياً (غير محدد)",
+                            workingHours: row['ساعات العمل'] || row['workingHours'] || "يومياً",
                             vip: isVip,
-                            rating: finalRating,
-                            ratingsCount: finalCount
+                            rating: parseFloat(row['التقييم'] || row['rating']) || 5.0,
+                            ratingsCount: parseInt(row['عدد التقييمات'] || row['ratingsCount']) || 1
                         });
                     });
 
-                    if (loaded.length > 0) {
-                        khalafas = loaded;
-                        categories = Array.from(updatedCategories);
-                        areas = Array.from(updatedAreas);
-                        renderCategories();
-                        renderAreasSelect();
-                        renderKhalafas();
-                    }
+                    categories = Array.from(catSet);
+                    renderCategories();
+                    renderKhalafas();
                 }
             } catch (e) {
-                console.error("Error loading SheetDB:", e);
+                console.error("SheetDB Fetch Error:", e);
+                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر الاتصال بجدول البيانات. تحقق من الإنترنت أو رابط SheetDB.</div>`;
             }
         }
 
         window.onload = async function() {
-            renderCategories();
-            renderAreasSelect();
-            renderKhalafas();
             await loadFromSheet();
             setTimeout(() => {
-                if (window.AdProvider) {
-                    window.AdProvider.push({});
-                }
+                if (window.AdProvider) { window.AdProvider.push({}); }
             }, 800);
         };
 
         function renderCategories() {
             const container = document.getElementById('categories-container');
-            let html = `<button onclick="filterCategory('الكل')" class="category-btn ${currentCategory === 'الكل' ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 border border-slate-800 text-slate-300'} px-4 py-2 rounded-xl text-xs whitespace-nowrap transition">الكل</button>`;
+            let html = '';
             categories.forEach(cat => {
-                html += `<button onclick="filterCategory('${cat}')" class="category-btn ${currentCategory === cat ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 border border-slate-800 text-slate-300'} px-4 py-2 rounded-xl text-xs whitespace-nowrap transition">${cat}</button>`;
+                html += `<button onclick="filterCategory('${cat}')" class="px-4 py-2 rounded-xl text-xs whitespace-nowrap transition ${currentCategory === cat ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 border border-slate-800 text-slate-300'}">${cat}</button>`;
             });
             container.innerHTML = html;
         }
 
-        function renderAreasSelect() {
-            const select = document.getElementById('reg-area');
-            let html = `<option value="">اختر المنطقة أو القضاء...</option>`;
-            areas.forEach(a => {
-                html += `<option value="${a}">${a}</option>`;
-            });
-            html += `<option value="new_area_option" class="text-amber-400 font-bold">+ اقترح منطقة أو حي جديد...</option>`;
-            select.innerHTML = html;
-        }
-
-        function filterCategory(cat) { currentCategory = cat; renderCategories(); renderKhalafas(); }
-
-        function setSortFilter(sortType) {
-            currentSort = sortType;
+        function filterCategory(cat) {
+            currentCategory = cat;
+            renderCategories();
             renderKhalafas();
         }
 
-        function isOpenNow(hoursText) {
-            if (!hoursText) return true;
-            let text = hoursText.toLowerCase();
-            if (text.includes('مغلق') && text.includes('الجمعة')) {
-                if (new Date().getDay() === 5) return false;
-            }
-            return true;
+        function setSortFilter(sortType) {
+            currentSort = sortType;
+            document.querySelectorAll('.sort-btn').forEach(btn => {
+                if (btn.getAttribute('data-sort') === sortType) {
+                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition";
+                } else {
+                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition";
+                }
+            });
+            renderKhalafas();
         }
 
         function renderKhalafas() {
@@ -378,10 +317,9 @@
             if (currentSort === 'default') filtered.sort((a, b) => b.vip - a.vip);
             else if (currentSort === 'newest') filtered.sort((a, b) => b.id - a.id);
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
-            else if (currentSort === 'open_now') filtered = filtered.filter(k => isOpenNow(k.workingHours));
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد بيانات مسجلة في الجدول أو مطابقة لبحثك حالياً.</div>`;
                 return;
             }
 
@@ -390,15 +328,15 @@
                 html += `
                 <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg' : 'border-slate-800'} rounded-2xl p-4 relative">
                     ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black">VIP</span>' : ''}
-                    <h3 class="text-base font-bold text-slate-100">${k.name}</h3>
-                    <p class="text-xs text-slate-400 mt-1">${k.category} - ${k.area}</p>
+                    <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded-md font-bold">${k.category}</span>
+                    <h3 class="text-base font-bold text-slate-100 mt-1">${k.name}</h3>
                     <div class="text-xs text-slate-400 mt-2 space-y-1">
+                        <p><i class="fa-solid fa-location-dot text-amber-500"></i> ${k.area}</p>
                         <p><i class="fa-solid fa-clock text-amber-400"></i> ${k.workingHours}</p>
-                        <p><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم)</p>
                     </div>
                     <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800">
-                        <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
-                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
+                        <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
+                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
                     </div>
                 </div>`;
 
@@ -409,19 +347,33 @@
             list.innerHTML = html;
         }
 
-        // إرسال البيانات إلى جدول الاكسل عبر SheetDB
+        // إرسال البيانات إلى SheetDB وجدول الاكسل مباشرة
         async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
-            let cat = document.getElementById('reg-category').value;
-            let area = document.getElementById('reg-area').value;
+            const cat = document.getElementById('reg-category').value.trim();
+            const area = document.getElementById('reg-area').value.trim();
             const workingHours = document.getElementById('reg-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
+            const errorBox = document.getElementById('form-error-box');
+            const errorText = document.getElementById('form-error-text');
 
             if (!name || !cat || !area || !workingHours || !phone) {
-                alert('يرجى ملء جميع الحقول الإجبارية.');
+                errorText.textContent = 'يرجى ملء جميع الحقول الإجبارية.';
+                errorBox.classList.remove('hidden');
                 return;
             }
+
+            const phoneRegex = /^07\d{9}$/;
+            if (!phoneRegex.test(phone)) {
+                errorText.textContent = 'رقم الهاتف يجب أن يتكون من 11 رقماً ويبدأ بـ 07.';
+                errorBox.classList.remove('hidden');
+                return;
+            }
+
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الإرسال لجدول الاكسل...';
 
             const payload = {
                 "data": [
@@ -446,19 +398,25 @@
                 });
 
                 if (response.ok) {
-                    alert('تم إرسال البيانات وحفظها في جدول الاكسل بنجاح!');
+                    alert('تم إرسال وحفظ البيانات في جدول الاكسل بنجاح!');
                     closeRegisterModal();
-                    loadFromSheet();
                     document.getElementById('register-form').reset();
+                    errorBox.classList.add('hidden');
+                    await loadFromSheet(); // تحديث القائمة فوراً
                 } else {
-                    alert('فشل حفظ البيانات، تأكد من أعمدة الجدول.');
+                    errorText.textContent = 'فشل الحفظ، تأكد من مطابقة أسماء الأعمدة في الجدول.';
+                    errorBox.classList.remove('hidden');
                 }
             } catch (err) {
-                alert('حدث خطأ في الاتصال.');
+                errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
+                errorBox.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال';
             }
         }
 
-        function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
+        function openRegisterModal() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
         function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); }
         function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); }
@@ -475,10 +433,9 @@
             } else { alert('رمز المرور خاطئ'); }
         }
         function closeAdminDashboard() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); }
+        function openStandardWhatsApp(msg) { window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodeURIComponent(msg)}`; }
         function sendSupportWhatsApp() { openStandardWhatsApp(document.getElementById('support-msg-text').value); }
         function sendSupportEmail() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; }
-        function checkNewCategory(el) { document.getElementById('new-category-div').classList.toggle('hidden', el.value !== 'new_option'); }
-        function checkNewArea(el) { document.getElementById('new-area-div').classList.toggle('hidden', el.value !== 'new_area_option'); }
     </script>
 </body>
 </html>
