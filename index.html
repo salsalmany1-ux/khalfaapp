@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
     
-    <!-- إعدادات PWA للتثبيت المباشر كأيقونة تطبيق -->
     <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,18 +18,13 @@
         body { font-family: 'Cairo', sans-serif; }
     </style>
 
-    <!-- 1. Popunder Script -->
+    <!-- إعلانات Adsterra الأساسية -->
     <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
-    
-    <!-- 2. Social Bar Script -->
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
-
-    <!-- 4. Native Banner Head Script -->
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- الشريط العلوي -->
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-md">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-400/30">
@@ -43,7 +37,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- 3. Smartlink Button -->
             <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold hidden sm:flex items-center gap-1.5 hover:bg-amber-500/20 transition">
                 <i class="fa-solid fa-bolt text-amber-400"></i> عروض مميزة
             </a>
@@ -59,7 +52,6 @@
         </div>
     </header>
 
-    <!-- شريط الإعلانات النصي العلوي -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
@@ -68,42 +60,32 @@
         <button onclick="openAdvertiseModal()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2">أعلن معنا</button>
     </div>
 
-    <!-- المحتوى الرئيسي -->
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
-
-        <!-- البحث والأقسام -->
         <div class="space-y-3 mb-4">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
-                <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي (مثل: الأيسر، الزهور، تلعفر)..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
+                <input type="text" id="search-input" oninput="renderKhalafas()" placeholder="ابحث عن حرفي، مهنة، أو حي..." class="w-full bg-slate-900 border border-slate-800 rounded-2xl pr-11 pl-4 py-3 text-sm focus:outline-none focus:border-amber-500 transition shadow-inner">
             </div>
 
-            <!-- التصنيفات الأفقية -->
             <div id="categories-container" class="flex gap-2 overflow-x-auto pb-2 scrollbar-none"></div>
 
-            <!-- فلاتر العرض والفرز -->
             <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
                 <span class="text-slate-400 shrink-0"><i class="fa-solid fa-filter text-amber-400"></i> فرز حسب:</span>
                 <button onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
                 <button onclick="setSortFilter('newest')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="newest">الأحدث</button>
                 <button onclick="setSortFilter('top_rated')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="top_rated">الأعلى تقييماً</button>
-                <button onclick="setSortFilter('open_now')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="open_now"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> المتاح الآن (مفتوح)</button>
+                <button onclick="setSortFilter('open_now')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="open_now"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> المتاح الآن</button>
             </div>
         </div>
 
-        <!-- قائمة الحرفيين + الإعلانات (تشمل Native Banner) -->
         <div id="khalafas-list" class="space-y-4"></div>
-
     </main>
 
-    <!-- أزرار عائمة أسفل الشاشة (إضافة خلفة + الدعم والشكاوى) -->
     <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
-        <!-- زر الدعم والشكاوى -->
         <button onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition">
             <i class="fa-solid fa-headset text-amber-400 text-base"></i> الدعم والشكاوى
         </button>
 
-        <!-- زر تسجيل خلفة -->
         <button onclick="openRegisterModal()" class="pointer-events-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform">
             <i class="fa-solid fa-plus text-base"></i> سجّل كـ خلفة
         </button>
@@ -158,7 +140,7 @@
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">ساعات وأيام العمل (إجباري) <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً (عدا الجمعة مغلق)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
@@ -179,19 +161,15 @@
                     <i class="fa-solid fa-headset"></i>
                 </div>
                 <h3 class="text-lg font-black text-amber-400">الدعم الفني والشكاوى</h3>
-                <p class="text-xs text-slate-400 mt-1">كيف تفضل أن تتواصل معنا؟ اختر الطريقة المناسبة:</p>
             </div>
             <div class="space-y-3">
-                <div>
-                    <label class="block text-xs text-slate-400 mb-1">نص الرسالة أو الشكوى:</label>
-                    <textarea id="support-msg-text" rows="3" placeholder="اكتب تفاصيل مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
-                </div>
+                <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك أو مشكلتك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:outline-none focus:border-amber-500"></textarea>
                 <div class="grid grid-cols-2 gap-2 pt-2">
-                    <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-3 rounded-xl text-xs hover:bg-emerald-600/30 transition flex items-center justify-center gap-2">
-                        <i class="fa-brands fa-whatsapp text-base"></i> عبر واتساب
+                    <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i> واتساب
                     </button>
-                    <button onclick="sendSupportEmail()" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold py-3 rounded-xl text-xs hover:bg-amber-500/30 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-envelope text-base"></i> عبر الإيميل
+                    <button onclick="sendSupportEmail()" class="bg-amber-500/20 border border-amber-500/40 text-amber-300 font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-envelope text-base"></i> إيميل
                     </button>
                 </div>
             </div>
@@ -200,64 +178,43 @@
 
     <!-- نافذة VIP -->
     <div id="vip-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeVipModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <div class="text-center mb-6">
-                <div class="w-14 h-14 bg-amber-500/20 border border-amber-500/50 rounded-2xl mx-auto flex items-center justify-center text-amber-400 text-2xl mb-3 shadow-lg">
-                    <i class="fa-solid fa-crown"></i>
-                </div>
-                <h3 class="text-xl font-black text-amber-400">مميزات حساب VIP</h3>
-                <p class="text-xs text-slate-400 mt-1">اجعل ورشتك تظهر في قمة نتائج البحث دائماً مع شارة موثقة!</p>
-            </div>
-            <div class="space-y-2.5 text-xs text-slate-300 mb-6 bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> ظهور دائم في أعلى القائمة (أول حرفي يراه الزبون)</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> تاج ذهبي مميز وإطار متألق لاسمك</div>
-                <div class="flex items-center gap-2"><i class="fa-solid fa-check text-amber-400"></i> زيادة هائلة في عدد الاتصالات والطلبات اليومية</div>
-            </div>
-            <button onclick="openStandardWhatsApp('مرحباً، أريد الاشتراك في حساب VIP لتطبيق خلفة')" class="block w-full bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-center py-3.5 rounded-xl text-sm shadow-xl hover:scale-102 transition">تواصل معنا للاشتراك (عبر واتساب)</button>
+            <h3 class="text-xl font-black text-amber-400 mb-2">مميزات حساب VIP</h3>
+            <p class="text-xs text-slate-400 mb-4">ظهور دائم في أعلى القائمة وزيادة هائلة في الطلبات.</p>
+            <button onclick="openStandardWhatsApp('مرحباً، أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm">اشتري عبر واتساب</button>
         </div>
     </div>
 
     <!-- نافذة الإعلانات -->
     <div id="advertise-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeAdvertiseModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">أعلن في تطبيق خلفة</h3>
-            <p class="text-xs text-slate-400 mb-4">ضع إعلان محلك أو ورشتك في الموصل ليصل إلى آلاف المستخدمين يومياً.</p>
-            <button onclick="openStandardWhatsApp('مرحباً، أريد حجز مساحة إعلانية في تطبيق خلفة')" class="block w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold text-center py-3.5 rounded-xl text-sm hover:bg-slate-800/80 transition">تواصل معنا لحجز مساحتك الإعلانية</button>
+            <button onclick="openStandardWhatsApp('مرحباً، أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm">تواصل معنا</button>
         </div>
     </div>
 
-    <!-- نافذة دخول الأدمن (رمز المرور: 7223) -->
+    <!-- نافذة الأدمن -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
             <button onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-base font-black text-amber-400 mb-4">لوحة تحكم الإدارة</h3>
-            <input type="password" id="admin-pass-input" placeholder="أدخل رمز المرور (7223)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
-            <button onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm hover:bg-amber-400 transition">دخول</button>
+            <input type="password" id="admin-pass-input" placeholder="رمز المرور (7223)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
+            <button onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm">دخول</button>
         </div>
     </div>
 
-    <!-- لوحة تحكم الأدمن -->
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
         <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8">
             <button onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-6 flex items-center gap-2"><i class="fa-solid fa-shield-halved"></i> لوحة تحكم الأدمن</h3>
-            
-            <div class="mb-6">
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">التصنيفات والمناطق الجديدة قيد المراجعة:</h4>
-                <div id="pending-categories-list" class="space-y-2"></div>
-            </div>
-
-            <div>
-                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">إدارة الحرفيين (ترقية VIP):</h4>
-                <div id="admin-khalafas-list" class="space-y-3 max-h-96 overflow-y-auto"></div>
-            </div>
+            <h3 class="text-lg font-black text-amber-400 mb-6">لوحة تحكم الأدمن</h3>
+            <div id="admin-khalafas-list" class="space-y-3"></div>
         </div>
     </div>
 
     <script>
-        // رابط SheetDB المباشر والمحدث الخاص بك
+        // رابط SheetDB المباشر والصحيح الخاص بك
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
         
         const ADMIN_PHONE = "9647833837468";
@@ -274,18 +231,12 @@
 
         function openStandardWhatsApp(message) {
             const encodedMsg = encodeURIComponent(message);
-            const appUrl = `whatsapp://send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
-            const webUrl = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
-            
-            window.location.href = appUrl;
-            setTimeout(() => {
-                window.open(webUrl, '_blank');
-            }, 1500);
+            window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
         }
 
         let khalafas = [
             { id: 101, name: "عمر الحيالي للكهرباء", category: "كهربائي", area: "الجانب الأيسر - حي البكر", phone: "07701234567", workingHours: "يومياً 8 صباحاً - 9 مساءً", vip: true, rating: 4.9, ratingsCount: 38 },
-            { id: 102, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", workingHours: "من السبت للخميس (9 ص - 6 م)", vip: false, rating: 4.7, ratingsCount: 19 }
+            { id: 102, name: "ورشة الفرات للتأسيسات والمجاري", category: "مجاري", area: "الجانب الأيمن - الدواسة", phone: "07709876543", workingHours: "من السبت للخميس", vip: false, rating: 4.7, ratingsCount: 19 }
         ];
 
         let categories = ["كهربائي", "مجاري", "تكييف وتبريد", "نجار", "حداد"];
@@ -303,33 +254,10 @@
             "قضاء تلكيف ونواحيها", "قضاء الحمدانية ونواحيها", "قضاء شيخان ونواحيها", "قضاء تلعفر ونواحيها", "قضاء سنجار ونواحيها", "قضاء مخمور ونواحيها", "قضاء الحضر ونواحيها"
         ];
 
-        let pendingCategories = [];
         let currentCategory = "الكل";
         let currentSort = "default";
 
-        const manifestData = {
-            name: "خلفة - دليل الحرفيين",
-            short_name: "خلفة",
-            start_url: window.location.href,
-            display: "standalone",
-            background_color: "#020617",
-            theme_color: "#f59e0b",
-            icons: [{
-                src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png",
-                sizes: "512x512",
-                type: "image/png"
-            }]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
-        document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
-
-        if ('serviceWorker' in navigator) {
-            const swCode = `self.addEventListener('fetch', function(event) {});`;
-            const swBlob = new Blob([swCode], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
-        }
-
-        // جلب البيانات من SheetDB (قراءة الاكسل)
+        // قراءة البيانات من SheetDB (الاكسل)
         async function loadFromSheet() {
             if (!SHEETDB_API_URL) return;
             try {
@@ -425,22 +353,14 @@
 
         function setSortFilter(sortType) {
             currentSort = sortType;
-            document.querySelectorAll('.sort-btn').forEach(btn => {
-                if (btn.getAttribute('data-sort') === sortType) {
-                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition";
-                } else {
-                    btn.className = "sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition";
-                }
-            });
             renderKhalafas();
         }
 
         function isOpenNow(hoursText) {
             if (!hoursText) return true;
             let text = hoursText.toLowerCase();
-            if (text.includes('مغلق') && (text.includes('الجمعة') || text.includes('دائماً'))) {
-                const today = new Date().getDay();
-                if (today === 5 && text.includes('الجمعة')) return false;
+            if (text.includes('مغلق') && text.includes('الجمعة')) {
+                if (new Date().getDay() === 5) return false;
             }
             return true;
         }
@@ -455,108 +375,53 @@
                 return matchesCat && matchesSearch;
             });
 
-            if (currentSort === 'default') {
-                filtered.sort((a, b) => b.vip - a.vip);
-            } else if (currentSort === 'newest') {
-                filtered.sort((a, b) => b.id - a.id);
-            } else if (currentSort === 'top_rated') {
-                filtered.sort((a, b) => b.rating - a.rating);
-            } else if (currentSort === 'open_now') {
-                filtered = filtered.filter(k => isOpenNow(k.workingHours));
-            }
+            if (currentSort === 'default') filtered.sort((a, b) => b.vip - a.vip);
+            else if (currentSort === 'newest') filtered.sort((a, b) => b.id - a.id);
+            else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
+            else if (currentSort === 'open_now') filtered = filtered.filter(k => isOpenNow(k.workingHours));
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك أو الفلتر المختار.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
                 return;
             }
 
             let html = '';
             filtered.forEach((k, index) => {
                 html += `
-                <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg shadow-amber-500/5' : 'border-slate-800'} rounded-2xl p-4 relative transition hover:border-slate-700">
-                    ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black flex items-center gap-1 shadow"><i class="fa-solid fa-crown"></i> VIP</span>' : ''}
-                    <div class="mb-2">
-                        <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded-md font-bold">${k.category}</span>
-                        <h3 class="text-base font-bold text-slate-100 mt-1">${k.name}</h3>
+                <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg' : 'border-slate-800'} rounded-2xl p-4 relative">
+                    ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black">VIP</span>' : ''}
+                    <h3 class="text-base font-bold text-slate-100">${k.name}</h3>
+                    <p class="text-xs text-slate-400 mt-1">${k.category} - ${k.area}</p>
+                    <div class="text-xs text-slate-400 mt-2 space-y-1">
+                        <p><i class="fa-solid fa-clock text-amber-400"></i> ${k.workingHours}</p>
+                        <p><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم)</p>
                     </div>
-                    <div class="text-xs text-slate-400 space-y-1.5 mb-4">
-                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-amber-500"></i> ${k.area}</p>
-                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-clock text-amber-400"></i> ${k.workingHours || 'ساعات العمل غير محدودة'}</p>
-                        <p class="flex items-center gap-1.5"><i class="fa-solid fa-star text-amber-400"></i> ${k.rating} (${k.ratingsCount} تقييم حقيقي)</p>
-                    </div>
-                    <div class="flex items-center gap-2 pt-2 border-t border-slate-800/60">
-                        <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-amber-400 transition shadow flex items-center justify-center gap-1.5"><i class="fa-solid fa-phone"></i> اتصال</a>
-                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}&text=مرحباً%20عزيزي%20خلفة،%20رأيت%20رقمك%20في%20تطبيق%20خلفة" class="flex-1 bg-emerald-600/20 border border-emerald-500/40 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center hover:bg-emerald-600/30 transition flex items-center justify-center gap-1.5"><i class="fa-brands fa-whatsapp text-sm"></i> واتساب</a>
-                        <button onclick="openRatingModal(${k.id})" class="px-3 py-2.5 bg-slate-800 text-slate-300 rounded-xl text-xs hover:text-amber-400 transition"><i class="fa-solid fa-star"></i></button>
+                    <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800">
+                        <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
+                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
                     </div>
                 </div>`;
 
                 if (index === 1) {
-                    html += `
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4 overflow-hidden">
-                        <div id="container-193518952cb65746281f7b50a674ba6c"></div>
-                    </div>`;
-                }
-
-                if ((index + 1) % 2 === 0 && SPONSORED_ADS.length > 0) {
-                    const ad = SPONSORED_ADS[0];
-                    html += `
-                    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/30 border border-amber-500/30 rounded-2xl p-4 relative">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <span class="bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded text-[10px] font-bold">${ad.badge}</span>
-                            <button onclick="openAdvertiseModal()" class="text-[10px] text-slate-400 hover:text-amber-400 underline">احجز هذا المكان لإعلانك</button>
-                        </div>
-                        <h4 class="text-sm font-black text-amber-300">${ad.title}</h4>
-                        <p class="text-xs text-slate-300 mt-1 mb-3">${ad.desc}</p>
-                        <a href="whatsapp://send?phone=${ad.phone}&text=مرحباً،%20رأيت%20إعلانكم%20في%20تطبيق%20خلفة" class="inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-500/40 text-amber-300 px-3 py-1.5 rounded-xl text-xs font-bold hover:bg-amber-500/30 transition">
-                            <i class="fa-brands fa-whatsapp"></i> تواصل مع المعلن
-                        </a>
-                    </div>`;
+                    html += `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4"><div id="container-193518952cb65746281f7b50a674ba6c"></div></div>`;
                 }
             });
             list.innerHTML = html;
         }
 
-        function showFormError(msg) {
-            const errorBox = document.getElementById('form-error-box');
-            const errorText = document.getElementById('form-error-text');
-            errorText.textContent = msg;
-            errorBox.classList.remove('hidden');
-            setTimeout(() => {
-                errorBox.classList.add('hidden');
-            }, 5000);
-        }
-
-        // إرسال البيانات مباشرة إلى جدول الاكسل عبر SheetDB (باستخدام مصفوفة البيانات الصحيحة)
+        // إرسال البيانات إلى جدول الاكسل عبر SheetDB
         async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             let cat = document.getElementById('reg-category').value;
-            const newCatInput = document.getElementById('reg-new-category').value.trim();
             let area = document.getElementById('reg-area').value;
-            const newAreaInput = document.getElementById('reg-new-area').value.trim();
             const workingHours = document.getElementById('reg-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
 
-            if (!name) { showFormError('يرجى إدخال الاسم أو اسم الورشة.'); return; }
-            if (!cat) { showFormError('يرجى اختيار التخصص أو المهنة.'); return; }
-            if (cat === 'new_option' && !newCatInput) { showFormError('يرجى كتابة اسم التخصص الجديد.'); return; }
-            if (!area) { showFormError('يرجى اختيار المنطقة أو القضاء.'); return; }
-            if (area === 'new_area_option' && !newAreaInput) { showFormError('يرجى كتابة اسم المنطقة أو الحي الجديد.'); return; }
-            if (!workingHours) { showFormError('يرجى إدخال ساعات وأيام العمل.'); return; }
-
-            const phoneRegex = /^07\d{9}$/;
-            if (!phoneRegex.test(phone)) {
-                showFormError('رقم الهاتف غير صحيح! يجب أن يتكون من 11 رقماً حصراً ويبدأ بـ 07 (مثال: 07701234567).');
+            if (!name || !cat || !area || !workingHours || !phone) {
+                alert('يرجى ملء جميع الحقول الإجبارية.');
                 return;
             }
-
-            if (cat === 'new_option') { cat = newCatInput; }
-            if (area === 'new_area_option') { area = newAreaInput; }
-
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري الإرسال للجدول...';
 
             const payload = {
                 "data": [
@@ -576,93 +441,24 @@
             try {
                 const response = await fetch(SHEETDB_API_URL, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
 
                 if (response.ok) {
-                    khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
+                    alert('تم إرسال البيانات وحفظها في جدول الاكسل بنجاح!');
                     closeRegisterModal();
-                    renderKhalafas();
+                    loadFromSheet();
                     document.getElementById('register-form').reset();
-                    document.getElementById('form-error-box').classList.add('hidden');
-                    alert('تم حفظ البيانات في جدول الاكسل بنجاح!');
                 } else {
-                    showFormError('فشل الإرسال، تأكد من أعمدة الجدول.');
+                    alert('فشل حفظ البيانات، تأكد من أعمدة الجدول.');
                 }
             } catch (err) {
-                console.error("Error:", err);
-                showFormError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'إرسال';
+                alert('حدث خطأ في الاتصال.');
             }
         }
 
-        function checkNewCategory(select) {
-            const newDiv = document.getElementById('new-category-div');
-            select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
-        }
-
-        function checkNewArea(select) {
-            const newDiv = document.getElementById('new-area-div');
-            select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
-        }
-
-        function sendSupportWhatsApp() {
-            const msg = document.getElementById('support-msg-text').value.trim();
-            if (!msg) { alert('يرجى كتابة نص الرسالة أو الشكوى أولاً'); return; }
-            const fullText = `[شكوى / دعم فني تطبيق خلفة]:\n${msg}`;
-            openStandardWhatsApp(fullText);
-            closeSupportModal();
-            document.getElementById('support-msg-text').value = '';
-        }
-
-        function sendSupportEmail() {
-            const msg = document.getElementById('support-msg-text').value.trim();
-            if (!msg) { alert('يرجى كتابة نص الرسالة أو الشكوى أولاً'); return; }
-            const subject = encodeURIComponent("شكوى / دعم فني - تطبيق خلفة");
-            const body = encodeURIComponent(msg);
-            window.location.href = `mailto:${ADMIN_EMAIL}?subject=${subject}&body=${body}`;
-            closeSupportModal();
-            document.getElementById('support-msg-text').value = '';
-        }
-
-        function openRatingModal(id) {
-            let hasRatedKey = 'rated_' + id;
-            if (localStorage.getItem(hasRatedKey)) {
-                alert('عذراً، لقد قمت بتقييم هذا الحرفي مسبقاً من هذا الجهاز!');
-                return;
-            }
-
-            let rating = prompt("قيّم هذا الحرفي بمصداقية من 1 إلى 5 نجوم:");
-            if (rating !== null) {
-                rating = Number(rating);
-                if (isNaN(rating) || rating < 1 || rating > 5) {
-                    alert('يرجى إدخال رقم صحيح بين 1 و 5 فقط!');
-                    return;
-                }
-
-                let k = khalafas.find(item => item.id === id);
-                if (k) {
-                    k.rating = Number(((k.rating * k.ratingsCount + rating) / (k.ratingsCount + 1)).toFixed(1));
-                    k.ratingsCount++;
-                    
-                    localStorage.setItem('rating_' + id, JSON.stringify({ rating: k.rating, count: k.ratingsCount }));
-                    localStorage.setItem(hasRatedKey, 'true');
-
-                    renderKhalafas();
-                    alert('شكراً لك! تم تسجيل تقييمك بنجاح.');
-                }
-            }
-        }
-
-        function openRegisterModal() { 
-            document.getElementById('form-error-box').classList.add('hidden');
-            document.getElementById('register-modal').classList.remove('hidden'); 
-        }
+        function openRegisterModal() { document.getElementById('register-modal').classList.remove('hidden'); }
         function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
         function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); }
         function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); }
@@ -672,41 +468,17 @@
         function closeAdvertiseModal() { document.getElementById('advertise-modal').classList.add('hidden'); }
         function openAdminLogin() { document.getElementById('admin-login-modal').classList.remove('hidden'); }
         function closeAdminLogin() { document.getElementById('admin-login-modal').classList.add('hidden'); }
-        
         function checkAdminPassword() {
             if (document.getElementById('admin-pass-input').value === '7223') {
                 closeAdminLogin();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
-                renderAdminDashboard();
-            } else {
-                alert('رمز المرور غير صحيح!');
-            }
+            } else { alert('رمز المرور خاطئ'); }
         }
         function closeAdminDashboard() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); }
-
-        function renderAdminDashboard() {
-            const pList = document.getElementById('pending-categories-list');
-            pList.innerHTML = pendingCategories.length === 0 ? `<p class="text-xs text-slate-500">لا توجد طلبات تصنيفات أو مناطق جديدة.</p>` : pendingCategories.map((item, idx) => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-800"><span>${item}</span><div class="flex gap-2"><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-emerald-600 text-white px-3 py-1 rounded-lg">موافقة</button><button onclick="pendingCategories.splice(${idx},1); renderAdminDashboard();" class="bg-rose-600 text-white px-3 py-1 rounded-lg">رفض</button></div></div>`).join('');
-
-            const kList = document.getElementById('admin-khalafas-list');
-            kList.innerHTML = khalafas.map(k => `<div class="flex items-center justify-between bg-slate-950 p-3 rounded-xl text-xs border border-slate-850"><div><p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p></div><button onclick="khalafas.find(i=>i.id===${k.id}).vip = !khalafas.find(i=>i.id===${k.id}).vip; renderAdminDashboard(); renderKhalafas();" class="px-3 py-1.5 rounded-xl font-bold ${k.vip ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-slate-800 text-slate-300'}">${k.vip ? 'إلغاء VIP' : 'ترقية VIP'}</button></div>`).join('');
-        }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-btn').classList.remove('hidden');
-        });
-
-        async function triggerDirectInstall() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                await deferredPrompt.userChoice;
-                deferredPrompt = null;
-                document.getElementById('install-btn').classList.add('hidden');
-            }
-        }
+        function sendSupportWhatsApp() { openStandardWhatsApp(document.getElementById('support-msg-text').value); }
+        function sendSupportEmail() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; }
+        function checkNewCategory(el) { document.getElementById('new-category-div').classList.toggle('hidden', el.value !== 'new_option'); }
+        function checkNewArea(el) { document.getElementById('new-area-div').classList.toggle('hidden', el.value !== 'new_area_option'); }
     </script>
 </body>
 </html>
