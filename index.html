@@ -164,7 +164,7 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <button type="submit" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال الطلب عبر الواتساب</button>
+                <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال وحفظ بالجدول</button>
             </form>
         </div>
     </div>
@@ -257,6 +257,8 @@
 
     <script>
         const SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTX8A9txEPUQQzuhB8knMiU4dDReIpPIJrY4XxOK92dyABaTs2QOBzks87Hct570g/pub?gid=190314588&single=true&output=csv"; 
+        const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i"; // <--- تم إضافة الرابط هنا بنجاح
+        
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
 
@@ -366,8 +368,8 @@
                         
                         let savedId = idx + 200;
                         let savedRatingData = localStorage.getItem('rating_' + savedId);
-                        let finalRating = parseFloat(cols[5]) || 5.0;
-                        let finalCount = parseInt(cols[6]) || 1;
+                        let finalRating = parseFloat(cols[6]) || 5.0;
+                        let finalCount = parseInt(cols[7]) || 1;
 
                         if (savedRatingData) {
                             const parsedData = JSON.parse(savedRatingData);
@@ -382,7 +384,7 @@
                             area: areaVal,
                             phone: cols[3] || "",
                             workingHours: cols[4] || "يومياً (غير محدد)",
-                            vip: cols[4] && (cols[4] === 'نعم' || cols[4].toLowerCase() === 'yes' || cols[4] === '1'),
+                            vip: cols[5] && (cols[5] === 'نعم' || cols[5].toLowerCase() === 'yes' || cols[5] === '1'),
                             rating: finalRating,
                             ratingsCount: finalCount
                         });
@@ -533,7 +535,7 @@
             }, 5000);
         }
 
-        function submitKhalfa(e) {
+        async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             let cat = document.getElementById('reg-category').value;
@@ -559,27 +561,45 @@
             if (cat === 'new_option') { cat = newCatInput; }
             if (area === 'new_area_option') { area = newAreaInput; }
 
-            // تجهيز نص الرسالة التي ستصلك حصراً على الواتساب الشخصي
-            const message = `🔔 *طلب انضمام حرفي جديد لتطبيق خلفة:*\n\n` +
-                            `👤 *الاسم / الورشة:* ${name}\n` +
-                            `🛠️ *التخصص:* ${cat}\n` +
-                            `📍 *المنطقة:* ${area}\n` +
-                            `⏰ *ساعات العمل:* ${workingHours}\n` +
-                            `📞 *رقم الهاتف:* ${phone}`;
+            const submitBtn = document.getElementById('submit-btn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'جاري الحفظ في جدول البيانات...';
 
-            const encodedMsg = encodeURIComponent(message);
-            const whatsappUrl = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodedMsg}`;
+            const rowData = {
+                data: {
+                    "الاسم": name,
+                    "التخصص": cat,
+                    "المنطقة": area,
+                    "الهاتف": phone,
+                    "ساعات العمل": workingHours,
+                    "VIP": "لا",
+                    "التقييم": 5.0,
+                    "عدد التقييمات": 1
+                }
+            };
 
-            // فتح الواتساب تلقائياً لإرسال الطلب لبياناتك الشخصية دون أن يظهر رقمك للحرفي كجهة اتصال مباشرة
-            window.open(whatsappUrl, '_blank');
+            try {
+                await fetch(SHEETDB_API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(rowData)
+                });
 
-            // إضافة الحرفي محلياً مؤقتاً بالواجهة
-            khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
-            closeRegisterModal();
-            renderKhalafas();
-            document.getElementById('register-form').reset();
-            document.getElementById('form-error-box').classList.add('hidden');
-            alert('تم تجهيز طلبك! يرجى إرسال الرسالة عبر الواتساب لتأكيد انضمامك للدليل.');
+                khalafas.unshift({ id: Date.now(), name, category: cat, area, phone, workingHours, vip: false, rating: 5.0, ratingsCount: 1 });
+                closeRegisterModal();
+                renderKhalafas();
+                document.getElementById('register-form').reset();
+                document.getElementById('form-error-box').classList.add('hidden');
+                alert('تم تسجيل ورشتك بنجاح وحفظها في قاعدة البيانات (Google Sheets) فوراً!');
+            } catch (err) {
+                showFormError('حدث خطأ في الاتصال، يرجى المحاولة مرة أخرى.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'إرسال وحفظ بالجدول';
+            }
         }
 
         function checkNewCategory(select) {
