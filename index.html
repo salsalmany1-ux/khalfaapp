@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
     
-    <!-- PWA manifest placeholder -->
     <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,18 +18,13 @@
         body { font-family: 'Cairo', sans-serif; }
     </style>
 
-    <!-- 1. Adsterra Popunder Script -->
+    <!-- إعلانات Adsterra الأساسية -->
     <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
-    
-    <!-- 2. Adsterra Social Bar Script -->
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
-
-    <!-- 4. Adsterra Native Banner Head Script -->
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- Header -->
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-md">
         <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20 border border-amber-400/30">
@@ -43,7 +37,6 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <!-- 3. Smartlink Button -->
             <a href="https://arwf.org/4/712778a390e59105bdc80176fbad53e0" target="_blank" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold hidden sm:flex items-center gap-1.5 hover:bg-amber-500/20 transition">
                 <i class="fa-solid fa-bolt text-amber-400"></i> عروض مميزة
             </a>
@@ -59,7 +52,6 @@
         </div>
     </header>
 
-    <!-- Top Announcement Bar -->
     <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
@@ -68,9 +60,7 @@
         <button onclick="openAdvertiseModal()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2">أعلن معنا</button>
     </div>
 
-    <!-- Main Content -->
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
-        <!-- Search & Filters -->
         <div class="space-y-3 mb-4">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
@@ -87,16 +77,14 @@
             </div>
         </div>
 
-        <!-- Directory List (Connected to SheetDB) -->
         <div id="khalafas-list" class="space-y-4">
-            <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
-                <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
-                جاري الاتصال بجدول البيانات (SheetDB) وتحميل الحرفيين...
+            <div class="text-center py-12 text-slate-400 text-xs">
+                <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg mb-2"></i>
+                <p>جاري تحديث البيانات من جدول الاكسل...</p>
             </div>
         </div>
     </main>
 
-    <!-- Floating Action Buttons -->
     <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
         <button onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition">
             <i class="fa-solid fa-headset text-amber-400 text-base"></i> الدعم والشكاوى
@@ -139,18 +127,17 @@
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
-                <!-- زر الإرسال المباشر للجدول بدون واتساب -->
                 <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
     </div>
 
-    <!-- Modals (Support, VIP, Advertise, Admin) -->
+    <!-- Modals -->
     <div id="support-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
-            <textarea id="support-msg-text" rows="3" placeholder="اكتب مشكلتك أو شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
             <div class="grid grid-cols-2 gap-2">
                 <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs">عبر واتساب</button>
                 <button onclick="sendSupportEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs">عبر الإيميل</button>
@@ -162,8 +149,7 @@
         <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeVipModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-xl font-black text-amber-400 mb-2">مميزات حساب VIP</h3>
-            <p class="text-xs text-slate-400 mb-4">ظهور دائم في أعلى القائمة وزيادة هائلة في الطلبات.</p>
-            <button onclick="openStandardWhatsApp('أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm">اشتري عبر واتساب</button>
+            <button onclick="openStandardWhatsApp('أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm mt-4">تواصل عبر واتساب</button>
         </div>
     </div>
 
@@ -171,7 +157,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
             <button onclick="closeAdvertiseModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">أعلن في تطبيق خلفة</h3>
-            <button onclick="openStandardWhatsApp('أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm">تواصل معنا</button>
+            <button onclick="openStandardWhatsApp('أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm mt-4">تواصل معنا</button>
         </div>
     </div>
 
@@ -192,7 +178,6 @@
         </div>
     </div>
 
-    <!-- JavaScript logic (Strict SheetDB connection) -->
     <script>
         const SHEETDB_API_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
         const ADMIN_PHONE = "9647833837468";
@@ -211,30 +196,25 @@
             display: "standalone",
             background_color: "#020617",
             theme_color: "#f59e0b",
-            icons: [{
-                src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png",
-                sizes: "512x512",
-                type: "image/png"
-            }]
+            icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png", sizes: "512x512", type: "image/png" }]
         };
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-        // Service Worker registration
         if ('serviceWorker' in navigator) {
             const swCode = `self.addEventListener('fetch', function(event) {});`;
             const swBlob = new Blob([swCode], {type: 'application/javascript'});
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
         }
 
-        // جلب البيانات حصرياً من SheetDB بدون أي بيانات وهمية مسبقة
+        // جلب البيانات حصرياً من SheetDB مع نظام احتياطي يضمن عدم بقاء الصفحة فارغة
         async function loadFromSheet() {
             try {
-                const res = await fetch(SHEETDB_API_URL + "?t=" + Date.now());
+                const res = await fetch(SHEETDB_API_URL + "?t=" + Date.now(), { cache: "no-store" });
                 const data = await res.json();
                 
-                if (Array.isArray(data)) {
-                    khalafas = [];
+                if (Array.isArray(data) && data.length > 0) {
+                    const loaded = [];
                     const catSet = new Set(["الكل"]);
 
                     data.forEach((row, idx) => {
@@ -247,7 +227,7 @@
                         let vipVal = row['VIP'] || row['vip'];
                         let isVip = (vipVal === 'نعم' || vipVal === 'yes' || vipVal === true || vipVal === '1');
 
-                        khalafas.push({
+                        loaded.push({
                             id: idx + 1,
                             name: name,
                             category: cat,
@@ -260,13 +240,20 @@
                         });
                     });
 
-                    categories = Array.from(catSet);
-                    renderCategories();
-                    renderKhalafas();
+                    if (loaded.length > 0) {
+                        khalafas = loaded;
+                        categories = Array.from(catSet);
+                        renderCategories();
+                        renderKhalafas();
+                        return;
+                    }
                 }
+                
+                // إذا كان الجدول فارغاً
+                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">جدول البيانات فارغ حالياً. قم بإضافة أول حرفي عبر زر "سجّل كـ خلفة".</div>`;
             } catch (e) {
-                console.error("SheetDB Fetch Error:", e);
-                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر الاتصال بجدول البيانات. تحقق من الإنترنت أو رابط SheetDB.</div>`;
+                console.error("SheetDB Error:", e);
+                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر الاتصال بجدول الاكسل. تحقق من الإنترنت.</div>`;
             }
         }
 
@@ -319,7 +306,7 @@
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد بيانات مسجلة في الجدول أو مطابقة لبحثك حالياً.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
                 return;
             }
 
@@ -402,14 +389,14 @@
                     closeRegisterModal();
                     document.getElementById('register-form').reset();
                     errorBox.classList.add('hidden');
-                    await loadFromSheet(); // تحديث القائمة فوراً
+                    await loadFromSheet();
                 } else {
                     errorText.textContent = 'فشل الحفظ، تأكد من مطابقة أسماء الأعمدة في الجدول.';
                     errorBox.classList.remove('hidden');
                 }
             } catch (err) {
                 errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
-                errorBox.classList.remove('hidden');
+                errorBox.classList.add('hidden');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'إرسال';
