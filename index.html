@@ -216,17 +216,17 @@
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
         <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8">
             <button onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-4">إعدادات SheetDB ولوحة الأدمن</h3>
+            <h3 class="text-lg font-black text-amber-400 mb-4">ربط الأكسل ولوحة الأدمن</h3>
 
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-5 space-y-3">
-                <label class="block text-xs text-slate-400">رابط SheetDB</label>
+                <label class="block text-xs text-slate-400">رابط SheetDB (أو رابط Apps Script Web App)</label>
                 <input type="text" id="admin-sheetdb-url" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-amber-300 focus:outline-none focus:border-amber-500" dir="ltr">
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span id="sheet-status-badge" class="text-[11px] text-slate-400">حالة الاتصال: بانتظار الفحص</span>
                     <div class="flex gap-2">
-                        <button onclick="loadFromSheet(null, true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-2.5 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">تحديث من الأكسل</button>
+                        <button onclick="loadFromSheet(null, true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-2.5 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">فحص وتحديث</button>
                         <button onclick="resetDefaultSheetUrl()" class="bg-slate-800 text-slate-300 font-bold px-2.5 py-1.5 rounded-xl text-xs hover:bg-slate-700 transition">الافتراضي</button>
-                        <button onclick="testAndSaveSheetUrl()" class="bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-amber-400 transition">حفظ وربط</button>
+                        <button onclick="testAndSaveSheetUrl()" class="bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-amber-400 transition">حفظ الرابط</button>
                     </div>
                 </div>
             </div>
@@ -246,6 +246,10 @@
 
         function setSheetUrl(newUrl) {
             localStorage.setItem("khalfa_sheetdb_url", newUrl.trim());
+        }
+
+        function isAppsScriptUrl(url) {
+            return /script\.google\.com\/macros\/s\//i.test(url);
         }
 
         function resetDefaultSheetUrl() {
@@ -342,7 +346,7 @@
 
             if (statusBadge) {
                 statusBadge.className = "text-[11px] text-amber-300";
-                statusBadge.textContent = "جاري سحب البيانات من الأكسل...";
+                statusBadge.textContent = "جاري الفحص والتحميل...";
             }
 
             try {
@@ -412,7 +416,7 @@
                         statusBadge.textContent = `متصل بنجاح (${loaded.length} سجل)`;
                     }
                     if (notifyUser) {
-                        alert(`تم التحديث من الأكسل (${loaded.length} سجل).`);
+                        alert(`تم الاتصال وتحديث البيانات (${loaded.length} سجل).`);
                     }
                     return { ok: true, count: loaded.length };
                 } else {
@@ -425,13 +429,13 @@
                 }
             } catch (e) {
                 console.error("SheetDB Sync Error:", e);
-                listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من رابط الربط أو اتصال الإنترنت.</div>`;
+                listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من رابط الربط أو صلاحيات الجدول.</div>`;
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-rose-400";
                     statusBadge.textContent = `فشل الاتصال: ${e.message}`;
                 }
                 if (notifyUser) {
-                    alert(`فشل التحديث من الأكسل: ${e.message}`);
+                    alert(`فشل الاتصال بالجدول: ${e.message}`);
                 }
                 return { ok: false, error: e.message };
             }
@@ -585,30 +589,37 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'جاري الإرسال...';
 
-            const payload = {
-                "data": [
-                    {
-                        "الاسم": name,
-                        "التخصص": cat,
-                        "المنطقة": area,
-                        "الهاتف": phone,
-                        "ساعات العمل": workingHours,
-                        "VIP": "لا",
-                        "التقييم": 5.0,
-                        "عدد التقييمات": 1
-                    }
-                ]
+            const rowObj = {
+                "الاسم": name,
+                "التخصص": cat,
+                "المنطقة": area,
+                "الهاتف": phone,
+                "ساعات العمل": workingHours,
+                "VIP": "لا",
+                "التقييم": 5.0,
+                "عدد التقييمات": 1
             };
 
+            const targetUrl = getSheetUrl();
+
             try {
-                const response = await fetch(getSheetUrl(), {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(payload)
-                });
+                let response;
+                if (isAppsScriptUrl(targetUrl)) {
+                    response = await fetch(targetUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'add', row: rowObj })
+                    });
+                } else {
+                    response = await fetch(targetUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ "data": [rowObj] })
+                    });
+                }
 
                 if (response.ok) {
                     alert('تمت الإضافة بنجاح');
@@ -621,12 +632,12 @@
                     await loadFromSheet();
                 } else {
                     const errBody = await response.text().catch(() => "");
-                    console.error("SheetDB POST failed:", response.status, errBody);
-                    errorText.textContent = `تعذر إتمام الإضافة (${response.status}). تحقق من رابط SheetDB وأسماء الأعمدة.`;
+                    console.error("Sync POST failed:", response.status, errBody);
+                    errorText.textContent = `تعذر إتمام الإضافة (${response.status}). تحقق من رابط الربط أو صلاحيات الجدول.`;
                     errorBox.classList.remove('hidden');
                 }
             } catch (err) {
-                console.error("SheetDB Network Error:", err);
+                console.error("Sync Network Error:", err);
                 errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
                 errorBox.classList.remove('hidden');
             } finally {
