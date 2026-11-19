@@ -291,12 +291,32 @@
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-        if ('serviceWorker' in navigator) {
-            const CACHE_NAME = 'khalfa-cache-v3';
-            const swCode = `self.addEventListener('fetch', function(event) {});`;
-            const swBlob = new Blob([swCode], {type: 'application/javascript'});
-            navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
-        }
+       if ('serviceWorker' in navigator) {
+    const CACHE_NAME = 'khalfa-cache-v3';
+    const swCode = `
+        const CACHE_NAME = '${CACHE_NAME}';
+        self.addEventListener('install', function(event) {
+            self.skipWaiting();
+        });
+        self.addEventListener('activate', function(event) {
+            event.waitUntil(
+                caches.keys().then(function(names) {
+                    return Promise.all(
+                        names.filter(function(name) { return name !== CACHE_NAME; })
+                             .map(function(name) { return caches.delete(name); })
+                    );
+                }).then(function() {
+                    return self.clients.claim();
+                })
+            );
+        });
+        self.addEventListener('fetch', function(event) {
+            event.respondWith(fetch(event.request));
+        });
+    `;
+    const swBlob = new Blob([swCode], {type: 'application/javascript'});
+    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
+}
 
         function cleanField(row, keys, fallback = "") {
             for (const key of keys) {
