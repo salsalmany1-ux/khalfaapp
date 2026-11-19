@@ -95,7 +95,7 @@
         </button>
     </div>
 
-    <!-- Register Modal -->
+    <!-- Register Modal مع القوائم المنسدلة للتخصص والمنطقة -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -111,22 +111,52 @@
                     <label class="block text-xs text-slate-400 mb-1">الاسم أو اسم الورشة <span class="text-amber-500">*</span></label>
                     <input type="text" id="reg-name" placeholder="مثال: أبو عمر لتصليح السبالت" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
+
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">المهنة / التخصص <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-category" placeholder="مثال: كهربائي، تبريد، نجارة..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <select id="reg-category" onchange="checkNewCategory(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <option value="">اختر التخصص...</option>
+                        <option value="كهربائي">كهربائي</option>
+                        <option value="مجاري">مجاري</option>
+                        <option value="تكييف وتبريد">تكييف وتبريد (سبالت)</option>
+                        <option value="نجار">نجار</option>
+                        <option value="حداد">حداد</option>
+                        <option value="ألمنيوم وجص">ألمنيوم ومقاولات</option>
+                        <option value="صيانة موبايل">صيانة موبايل وأجهزة</option>
+                        <option value="دش وستلايت">دش وستلايت</option>
+                        <option value="دهان وديكور">دهان وديكور</option>
+                        <option value="بناء وصيانة عامة">بناء وصيانة عامة</option>
+                        <option value="new_option" class="text-amber-400 font-bold">+ اقترح تخصصاً جديداً...</option>
+                    </select>
                 </div>
+
+                <div id="new-category-div" class="hidden">
+                    <label class="block text-xs text-amber-400 mb-1">اكتب التخصص الجديد <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-new-category" placeholder="مثال: كهربائي سيارات" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
+                </div>
+
                 <div>
-                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو الحي <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-area" placeholder="مثال: الجانب الأيسر - حي الزهور" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <label class="block text-xs text-slate-400 mb-1">المنطقة أو القضاء في نينوى <span class="text-amber-500">*</span></label>
+                    <select id="reg-area" onchange="checkNewArea(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <option value="">اختر المنطقة أو القضاء...</option>
+                    </select>
                 </div>
+
+                <div id="new-area-div" class="hidden">
+                    <label class="block text-xs text-amber-400 mb-1">اكتب اسم المنطقة أو الحي الجديد <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-new-area" placeholder="مثال: الجانب الأيسر - حي السلام" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
+                </div>
+
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">ساعات العمل <span class="text-amber-500">*</span></label>
                     <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
+
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">رقم الهاتف (11 خانة تبدأ بـ 07) <span class="text-amber-500">*</span></label>
                     <input type="tel" id="reg-phone" maxlength="11" placeholder="07701234567" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
                 </div>
+
                 <button type="submit" id="submit-btn" class="w-full bg-amber-500 text-slate-950 font-bold py-3 rounded-xl text-sm hover:bg-amber-400 transition shadow-lg">إرسال</button>
             </form>
         </div>
@@ -185,10 +215,23 @@
 
         let khalafas = [];
         let categories = ["الكل"];
+        let areas = [
+            "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين", 
+            "الجانب الأيسر - النبي يونس", "الجانب الأيسر - القوسيات", "الجانب الأيسر - المصارف", "الجانب الأيسر - حي المهندسين", 
+            "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد", 
+            "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير", 
+            "الجانب الأيسر - حي القادسية", "الجانب الأيسر - حي الحدباء", "الجانب الأيسر - حي العربي", "الجانب الأيسر - الصديق", "الجانب الأيسر - الوريورات",
+            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل", 
+            "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب", 
+            "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي", 
+            "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة", 
+            "الجانب الأيمن - راس الجادة", "الجانب الأيمن - الكورنيش",
+            "قضاء تلكيف ونواحيها", "قضاء الحمدانية ونواحيها", "قضاء شيخان ونواحيها", "قضاء تلعفر ونواحيها", "قضاء سنجار ونواحيها", "قضاء مخمور ونواحيها", "قضاء الحضر ونواحيها"
+        ];
+
         let currentCategory = "الكل";
         let currentSort = "default";
 
-        // PWA Manifest setup
         const manifestData = {
             name: "خلفة - دليل الحرفيين",
             short_name: "خلفة",
@@ -207,32 +250,51 @@
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
         }
 
-        // دالة سحب البيانات الحقيقية من SheetDB
+        function renderAreasSelect() {
+            const select = document.getElementById('reg-area');
+            if (!select) return;
+            let html = `<option value="">اختر المنطقة أو القضاء...</option>`;
+            areas.forEach(a => {
+                html += `<option value="${a}">${a}</option>`;
+            });
+            html += `<option value="new_area_option" class="text-amber-400 font-bold">+ اقترح منطقة أو حي جديد...</option>`;
+            select.innerHTML = html;
+        }
+
+        function checkNewCategory(select) {
+            const newDiv = document.getElementById('new-category-div');
+            if (!newDiv) return;
+            select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
+        }
+
+        function checkNewArea(select) {
+            const newDiv = document.getElementById('new-area-div');
+            if (!newDiv) return;
+            select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
+        }
+
         async function loadFromSheet() {
             try {
                 const response = await fetch(SHEETDB_API_URL, {
                     method: 'GET',
-                    headers: {
-                        'Accept': 'application/json'
-                    }
+                    headers: { 'Accept': 'application/json' }
                 });
-                
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
+                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 
                 if (Array.isArray(data)) {
                     khalafas = [];
                     const catSet = new Set(["الكل"]);
+                    const areaSet = new Set(areas);
 
                     data.forEach((row, idx) => {
                         const name = row['الاسم'] || row['name'] || '';
                         if (!name) return;
 
                         const cat = row['التخصص'] || row['category'] || "عام";
+                        const areaVal = row['المنطقة'] || row['area'] || "الموصل";
                         catSet.add(cat);
+                        areaSet.add(areaVal);
 
                         let vipVal = row['VIP'] || row['vip'];
                         let isVip = (vipVal === 'نعم' || vipVal === 'yes' || vipVal === true || vipVal === '1');
@@ -241,7 +303,7 @@
                             id: idx + 1,
                             name: name,
                             category: cat,
-                            area: row['المنطقة'] || row['area'] || "الموصل",
+                            area: areaVal,
                             phone: row['الهاتف'] || row['phone'] || "",
                             workingHours: row['ساعات العمل'] || row['workingHours'] || "يومياً",
                             vip: isVip,
@@ -251,7 +313,9 @@
                     });
 
                     categories = Array.from(catSet);
+                    areas = Array.from(areaSet);
                     renderCategories();
+                    renderAreasSelect();
                     renderKhalafas();
                 } else {
                     document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">جدول البيانات لا يحتوي على سجلات حالياً.</div>`;
@@ -263,6 +327,7 @@
         }
 
         window.onload = async function() {
+            renderAreasSelect();
             await loadFromSheet();
             setTimeout(() => {
                 if (window.AdProvider) { window.AdProvider.push({}); }
@@ -339,22 +404,24 @@
             list.innerHTML = html;
         }
 
-        // إرسال البيانات المباشر إلى SheetDB وجدول الاكسل
         async function submitKhalfa(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
-            const cat = document.getElementById('reg-category').value.trim();
-            const area = document.getElementById('reg-area').value.trim();
+            let cat = document.getElementById('reg-category').value;
+            const newCatInput = document.getElementById('reg-new-category').value.trim();
+            let area = document.getElementById('reg-area').value;
+            const newAreaInput = document.getElementById('reg-new-area').value.trim();
             const workingHours = document.getElementById('reg-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const errorBox = document.getElementById('form-error-box');
             const errorText = document.getElementById('form-error-text');
 
-            if (!name || !cat || !area || !workingHours || !phone) {
-                errorText.textContent = 'يرجى ملء جميع الحقول الإجبارية.';
-                errorBox.classList.remove('hidden');
-                return;
-            }
+            if (!name) { errorText.textContent = 'يرجى إدخال الاسم أو اسم الورشة.'; errorBox.classList.remove('hidden'); return; }
+            if (!cat) { errorText.textContent = 'يرجى اختيار التخصص أو المهنة.'; errorBox.classList.remove('hidden'); return; }
+            if (cat === 'new_option' && !newCatInput) { errorText.textContent = 'يرجى كتابة اسم التخصص الجديد.'; errorBox.classList.remove('hidden'); return; }
+            if (!area) { errorText.textContent = 'يرجى اختيار المنطقة أو القضاء.'; errorBox.classList.remove('hidden'); return; }
+            if (area === 'new_area_option' && !newAreaInput) { errorText.textContent = 'يرجى كتابة اسم المنطقة أو الحي الجديد.'; errorBox.classList.remove('hidden'); return; }
+            if (!workingHours) { errorText.textContent = 'يرجى إدخال ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
 
             const phoneRegex = /^07\d{9}$/;
             if (!phoneRegex.test(phone)) {
@@ -362,6 +429,9 @@
                 errorBox.classList.remove('hidden');
                 return;
             }
+
+            if (cat === 'new_option') cat = newCatInput;
+            if (area === 'new_area_option') area = newAreaInput;
 
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
@@ -393,6 +463,8 @@
                     alert('تم إرسال وحفظ البيانات في جدول الاكسل بنجاح!');
                     closeRegisterModal();
                     document.getElementById('register-form').reset();
+                    document.getElementById('new-category-div').classList.add('hidden');
+                    document.getElementById('new-area-div').classList.add('hidden');
                     errorBox.classList.add('hidden');
                     await loadFromSheet();
                 } else {
