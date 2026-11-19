@@ -383,12 +383,11 @@
                 statusBadge.textContent = "جاري الفحص والتحميل...";
             }
 
-           try {
-                const isGas = isAppsScriptUrl(targetUrl);
+          try {
                 const response = await fetch(buildSheetEndpoint(targetUrl), {
                     method: 'GET',
                     cache: 'no-store',
-                    headers: isGas ? {} : {
+                    headers: {
                         'Accept': 'application/json',
                         'Cache-Control': 'no-cache, no-store, must-revalidate',
                         'Pragma': 'no-cache'
