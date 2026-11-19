@@ -208,7 +208,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
             <button onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-base font-black text-amber-400 mb-4">دخول الأدمن</h3>
-            <input type="password" id="admin-pass-input" placeholder="رمز المرور (1234)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
+            <input type="password" id="admin-pass-input" placeholder="أدخل رمز المرور" autocomplete="off" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
             <button onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm">دخول</button>
         </div>
     </div>
@@ -239,6 +239,8 @@
         const DEFAULT_SHEETDB_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
+
+        let selectedRatings = {};
 
         function getSheetUrl() {
             return (localStorage.getItem("khalfa_sheetdb_url") || DEFAULT_SHEETDB_URL).trim();
@@ -302,6 +304,14 @@
                 }
             }
             return fallback;
+        }
+
+        function parseReviews(rawText) {
+            if (!rawText || !String(rawText).trim()) return [];
+            return String(rawText)
+                .split(" || ")
+                .map(item => item.trim())
+                .filter(Boolean);
         }
 
         function buildSheetEndpoint(baseUrl) {
@@ -384,22 +394,32 @@
                         const vipRaw = cleanField(row, ['VIP', 'vip'], "لا").toLowerCase();
                         const ratingRaw = parseFloat(cleanField(row, ['التقييم', 'rating'], "5.0"));
                         const countRaw = parseInt(cleanField(row, ['عدد التقييمات', 'ratingsCount'], "1"), 10);
+                        const reviewsRaw = cleanField(row, ['التقييمات النصية', 'reviewsText', 'reviews'], "");
 
                         catSet.add(cat);
                         areaSet.add(areaVal);
 
                         const isVip = (vipRaw === 'نعم' || vipRaw === 'yes' || vipRaw === 'true' || vipRaw === '1');
+                        const safeRating = Number.isFinite(ratingRaw) ? ratingRaw : 5.0;
+                        const safeCount = Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1;
+
+                        const itemId = idx + 1;
+                        if (selectedRatings[itemId] === undefined) {
+                            selectedRatings[itemId] = 5;
+                        }
 
                         loaded.push({
-                            id: idx + 1,
+                            id: itemId,
                             name: name,
                             category: cat,
                             area: areaVal,
                             phone: phoneVal,
                             workingHours: hoursVal,
                             vip: isVip,
-                            rating: Number.isFinite(ratingRaw) ? ratingRaw : 5.0,
-                            ratingsCount: Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1
+                            rating: safeRating,
+                            ratingsCount: safeCount,
+                            reviewsText: reviewsRaw,
+                            reviewsList: parseReviews(reviewsRaw)
                         });
                     });
 
@@ -492,6 +512,26 @@
             renderKhalafas();
         }
 
+        function selectStar(kId, starVal) {
+            selectedRatings[kId] = starVal;
+            const box = document.getElementById(`star-picker-${kId}`);
+            if (!box) return;
+            box.querySelectorAll('button').forEach((btn, idx) => {
+                const val = idx + 1;
+                btn.className = val <= starVal
+                    ? "text-amber-400 text-sm transition transform hover:scale-110"
+                    : "text-slate-600 text-sm transition transform hover:scale-110";
+            });
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
         function renderKhalafas() {
             const list = document.getElementById('khalafas-list');
             const search = document.getElementById('search-input').value.toLowerCase();
@@ -513,18 +553,55 @@
 
             let html = '';
             filtered.forEach((k, index) => {
+                const activeStar = selectedRatings[k.id] || 5;
+                const starsButtons = [1, 2, 3, 4, 5].map(n => `
+                    <button type="button" onclick="selectStar(${k.id}, ${n})" class="${n <= activeStar ? 'text-amber-400' : 'text-slate-600'} text-sm transition transform hover:scale-110" aria-label="${n} نجوم">
+                        <i class="fa-solid fa-star"></i>
+                    </button>
+                `).join('');
+
+                const reviewsHtml = k.reviewsList.length > 0
+                    ? `<div class="mt-2 space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                        ${k.reviewsList.slice().reverse().map(rev => `
+                            <div class="bg-slate-950/80 border border-slate-800/80 rounded-lg px-2.5 py-1.5 text-[11px] text-slate-300">
+                                ${escapeHtml(rev)}
+                            </div>
+                        `).join('')}
+                       </div>`
+                    : `<p class="text-[11px] text-slate-500 mt-1.5">لا توجد مراجعات نصية بعد، كن أول من يكتب رأيه.</p>`;
+
                 html += `
                 <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg' : 'border-slate-800'} rounded-2xl p-4 relative">
                     ${k.vip ? '<span class="absolute top-3 left-3 bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black">VIP</span>' : ''}
-                    <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded-md font-bold">${k.category}</span>
-                    <h3 class="text-base font-bold text-slate-100 mt-1">${k.name}</h3>
+                    <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded-md font-bold">${escapeHtml(k.category)}</span>
+                    <div class="flex items-center justify-between gap-2 mt-1">
+                        <h3 class="text-base font-bold text-slate-100">${escapeHtml(k.name)}</h3>
+                        <span class="text-xs font-bold text-amber-400 shrink-0">
+                            <i class="fa-solid fa-star"></i> ${k.rating.toFixed(1)} <span class="text-slate-400 font-normal">(${k.ratingsCount})</span>
+                        </span>
+                    </div>
                     <div class="text-xs text-slate-400 mt-2 space-y-1">
-                        <p><i class="fa-solid fa-location-dot text-amber-500"></i> ${k.area}</p>
-                        <p><i class="fa-solid fa-clock text-amber-400"></i> ${k.workingHours}</p>
+                        <p><i class="fa-solid fa-location-dot text-amber-500"></i> ${escapeHtml(k.area)}</p>
+                        <p><i class="fa-solid fa-clock text-amber-400"></i> ${escapeHtml(k.workingHours)}</p>
                     </div>
                     <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800">
-                        <a href="tel:${k.phone}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
-                        <a href="whatsapp://send?phone=${k.phone.replace(/^0/, '964')}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
+                        <a href="tel:${escapeHtml(k.phone)}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
+                        <a href="whatsapp://send?phone=${escapeHtml(k.phone.replace(/^0/, '964'))}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
+                    </div>
+
+                    <!-- خانة تقييم النجوم والريفيو -->
+                    <div class="mt-3 pt-3 border-t border-slate-800/90 space-y-2">
+                        <div class="flex items-center justify-between gap-2">
+                            <span class="text-[11px] text-slate-300 font-bold">تقييمك وريفيو:</span>
+                            <div id="star-picker-${k.id}" class="flex items-center gap-1">${starsButtons}</div>
+                        </div>
+                        <div class="flex gap-2">
+                            <input type="text" id="review-input-${k.id}" placeholder="اكتب ريفيو أو ملاحظتك عن الخلفة..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            <button type="button" id="rate-btn-${k.id}" onclick="submitRatingAndReview(${k.id})" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
+                                إرسال التقييم
+                            </button>
+                        </div>
+                        ${reviewsHtml}
                     </div>
                 </div>`;
 
@@ -535,6 +612,89 @@
             list.innerHTML = html;
         }
 
+        async function submitRatingAndReview(kId) {
+            const item = khalafas.find(k => k.id === kId);
+            if (!item) return;
+
+            const starsVal = selectedRatings[kId] || 5;
+            const reviewInput = document.getElementById(`review-input-${kId}`);
+            const reviewTextRaw = reviewInput ? reviewInput.value.trim() : "";
+
+            if (!reviewTextRaw) {
+                alert("يرجى كتابة ريفيو قصير مع اختيار عدد النجوم.");
+                return;
+            }
+
+            const btn = document.getElementById(`rate-btn-${kId}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = "جاري الحفظ...";
+            }
+
+            const newCount = item.ratingsCount + 1;
+            const newAvg = Number((((item.rating * item.ratingsCount) + starsVal) / newCount).toFixed(1));
+            const starIcons = "★".repeat(starsVal) + "☆".repeat(5 - starsVal);
+            const cleanReview = reviewTextRaw.replace(/\|\|/g, "/");
+            const formattedEntry = `[${starIcons} ${starsVal}/5] ${cleanReview}`;
+            const updatedReviewsText = item.reviewsText
+                ? `${item.reviewsText} || ${formattedEntry}`
+                : formattedEntry;
+
+            const targetUrl = getSheetUrl();
+
+            try {
+                let response;
+                if (isAppsScriptUrl(targetUrl)) {
+                    response = await fetch(targetUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({
+                            action: 'update_rating',
+                            name: item.name,
+                            phone: item.phone,
+                            rating: newAvg,
+                            ratingsCount: newCount,
+                            reviewsText: updatedReviewsText
+                        })
+                    });
+                } else {
+                    const patchUrl = `${targetUrl}/${encodeURIComponent("الهاتف")}/${encodeURIComponent(item.phone)}`;
+                    response = await fetch(patchUrl, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            "data": {
+                                "التقييم": newAvg,
+                                "عدد التقييمات": newCount,
+                                "التقييمات النصية": updatedReviewsText
+                            }
+                        })
+                    });
+                }
+
+                if (response.ok) {
+                    if (reviewInput) reviewInput.value = "";
+                    alert("تم حفظ التقييم والريفيو بنجاح");
+                    await loadFromSheet();
+                } else {
+                    const errBody = await response.text().catch(() => "");
+                    console.error("Rating update failed:", response.status, errBody);
+                    alert("تعذر حفظ التقييم في الأكسل، تأكد من وجود عمود (التقييمات النصية) ومن صلاحيات الربط.");
+                }
+            } catch (err) {
+                console.error("Rating network error:", err);
+                alert("حدث خطأ بالشبكة أثناء إرسال التقييم.");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.textContent = "إرسال التقييم";
+                }
+            }
+        }
+
         function renderAdminList() {
             const adminList = document.getElementById('admin-khalafas-list');
             if (!adminList) return;
@@ -542,15 +702,26 @@
                 adminList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">لا توجد سجلات معروضة حالياً.</p>`;
                 return;
             }
-            adminList.innerHTML = khalafas.map(k => `
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between text-xs">
-                    <div>
-                        <p class="font-bold text-slate-200">${k.name} <span class="text-amber-400">(${k.category})</span></p>
-                        <p class="text-slate-400 mt-0.5">${k.area} - ${k.phone}</p>
+            adminList.innerHTML = khalafas.map(k => {
+                const reviewsPreview = k.reviewsList.length > 0
+                    ? `<div class="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
+                        ${k.reviewsList.slice().reverse().map(r => `<p class="text-[11px] text-amber-200/90 bg-slate-900/90 rounded px-2 py-1">${escapeHtml(r)}</p>`).join('')}
+                       </div>`
+                    : `<p class="text-[11px] text-slate-500 mt-1">لا يوجد ريفيو نصي</p>`;
+
+                return `
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-slate-200">${escapeHtml(k.name)} <span class="text-amber-400">(${escapeHtml(k.category)})</span></p>
+                            <p class="text-slate-400 mt-0.5">${escapeHtml(k.area)} - ${escapeHtml(k.phone)} | تقييم: ${k.rating.toFixed(1)} (${k.ratingsCount})</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded ${k.vip ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}">${k.vip ? 'VIP' : 'عادي'}</span>
                     </div>
-                    <span class="px-2 py-0.5 rounded ${k.vip ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}">${k.vip ? 'VIP' : 'عادي'}</span>
+                    ${reviewsPreview}
                 </div>
-            `).join('');
+            `;
+            }).join('');
         }
 
         async function submitKhalfa(e) {
@@ -597,7 +768,8 @@
                 "ساعات العمل": workingHours,
                 "VIP": "لا",
                 "التقييم": 5.0,
-                "عدد التقييمات": 1
+                "عدد التقييمات": 1,
+                "التقييمات النصية": ""
             };
 
             const targetUrl = getSheetUrl();
