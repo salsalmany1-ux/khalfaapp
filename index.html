@@ -263,6 +263,15 @@
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
         }
 
+        function cleanField(row, keys, fallback = "") {
+            for (const key of keys) {
+                if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== "") {
+                    return String(row[key]).trim();
+                }
+            }
+            return fallback;
+        }
+
         function renderAreasSelect() {
             const select = document.getElementById('reg-area');
             if (!select) return;
@@ -293,55 +302,69 @@
         }
 
         async function loadFromSheet() {
+            const listEl = document.getElementById('khalafas-list');
             try {
-                const response = await fetch(SHEETDB_API_URL, {
+                const urlWithCacheBust = `${SHEETDB_API_URL}?t=${Date.now()}`;
+                const response = await fetch(urlWithCacheBust, {
                     method: 'GET',
+                    cache: 'no-store',
                     headers: { 'Accept': 'application/json' }
                 });
-                if (!response.ok) throw new Error('Network response was not ok');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+
                 const data = await response.json();
-                
-                if (Array.isArray(data)) {
-                    khalafas = [];
+                const rows = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : null);
+
+                if (rows) {
+                    const loaded = [];
                     const catSet = new Set(["الكل"]);
                     const areaSet = new Set(areas);
 
-                    data.forEach((row, idx) => {
-                        const name = row['الاسم'] || row['name'] || '';
+                    rows.forEach((row, idx) => {
+                        const name = cleanField(row, ['الاسم', 'name']);
                         if (!name) return;
 
-                        const cat = row['التخصص'] || row['category'] || "عام";
-                        const areaVal = row['المنطقة'] || row['area'] || "الموصل";
+                        const cat = cleanField(row, ['التخصص', 'category'], "عام");
+                        const areaVal = cleanField(row, ['المنطقة', 'area'], "الموصل");
+                        const phoneVal = cleanField(row, ['الهاتف', 'phone'], "");
+                        const hoursVal = cleanField(row, ['ساعات العمل', 'workingHours'], "يومياً");
+                        const vipRaw = cleanField(row, ['VIP', 'vip'], "لا").toLowerCase();
+                        const ratingRaw = parseFloat(cleanField(row, ['التقييم', 'rating'], "5.0"));
+                        const countRaw = parseInt(cleanField(row, ['عدد التقييمات', 'ratingsCount'], "1"), 10);
+
                         catSet.add(cat);
                         areaSet.add(areaVal);
 
-                        let vipVal = row['VIP'] || row['vip'];
-                        let isVip = (vipVal === 'نعم' || vipVal === 'yes' || vipVal === true || vipVal === '1');
+                        const isVip = (vipRaw === 'نعم' || vipRaw === 'yes' || vipRaw === 'true' || vipRaw === '1');
 
-                        khalafas.push({
+                        loaded.push({
                             id: idx + 1,
                             name: name,
                             category: cat,
                             area: areaVal,
-                            phone: row['الهاتف'] || row['phone'] || "",
-                            workingHours: row['ساعات العمل'] || row['workingHours'] || "يومياً",
+                            phone: phoneVal,
+                            workingHours: hoursVal,
                             vip: isVip,
-                            rating: parseFloat(row['التقييم'] || row['rating']) || 5.0,
-                            ratingsCount: parseInt(row['عدد التقييمات'] || row['ratingsCount']) || 1
+                            rating: Number.isFinite(ratingRaw) ? ratingRaw : 5.0,
+                            ratingsCount: Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1
                         });
                     });
 
+                    khalafas = loaded;
                     categories = Array.from(catSet);
                     areas = Array.from(areaSet);
                     renderCategories();
                     renderAreasSelect();
                     renderKhalafas();
                 } else {
-                    document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد سجلات حالياً.</div>`;
+                    listEl.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد سجلات حالياً.</div>`;
                 }
             } catch (e) {
-                console.error("SheetDB Error:", e);
-                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من اتصال الإنترنت.</div>`;
+                console.error("SheetDB Sync Error:", e);
+                listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من اتصال الإنترنت.</div>`;
             }
         }
 
@@ -477,7 +500,10 @@
             try {
                 const response = await fetch(SHEETDB_API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify(payload)
                 });
 
@@ -491,10 +517,13 @@
                     errorBox.classList.add('hidden');
                     await loadFromSheet();
                 } else {
+                    const errBody = await response.text().catch(() => "");
+                    console.error("SheetDB POST failed:", response.status, errBody);
                     errorText.textContent = 'تعذر إتمام الإضافة، حاول مرة أخرى.';
                     errorBox.classList.remove('hidden');
                 }
             } catch (err) {
+                console.error("SheetDB Network Error:", err);
                 errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
                 errorBox.classList.remove('hidden');
             } finally {
