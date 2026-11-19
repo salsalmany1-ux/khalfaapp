@@ -292,6 +292,7 @@
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
         if ('serviceWorker' in navigator) {
+            const CACHE_NAME = 'khalfa-cache-v3';
             const swCode = `self.addEventListener('fetch', function(event) {});`;
             const swBlob = new Blob([swCode], {type: 'application/javascript'});
             navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
