@@ -80,7 +80,7 @@
         <div id="khalafas-list" class="space-y-4">
             <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
                 <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
-                <p>جاري الاتصال بجدول البيانات وسحب السجلات...</p>
+                <p>جاري تحميل السجلات...</p>
             </div>
         </div>
     </main>
@@ -95,7 +95,7 @@
         </button>
     </div>
 
-    <!-- Register Modal مع القوائم المنسدلة للتخصص والمنطقة -->
+    <!-- Register Modal -->
     <div id="register-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -149,7 +149,20 @@
 
                 <div>
                     <label class="block text-xs text-slate-400 mb-1">ساعات العمل <span class="text-amber-500">*</span></label>
-                    <input type="text" id="reg-hours" placeholder="مثال: يومياً 8 صباحاً - 8 مساءً" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                    <select id="reg-hours" onchange="checkNewHours(this)" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500">
+                        <option value="">اختر ساعات العمل...</option>
+                        <option value="24 ساعة">24 ساعة</option>
+                        <option value="8 صباحاً - 8 مساءً">8 صباحاً - 8 مساءً</option>
+                        <option value="8 صباحاً - 5 مساءً">8 صباحاً - 5 مساءً</option>
+                        <option value="9 صباحاً - 9 مساءً">9 صباحاً - 9 مساءً</option>
+                        <option value="4 عصراً - 11 مساءً">4 عصراً - 11 مساءً</option>
+                        <option value="new_hours_option" class="text-amber-400 font-bold">+ تحديد ساعات عمل مخصصة...</option>
+                    </select>
+                </div>
+
+                <div id="new-hours-div" class="hidden">
+                    <label class="block text-xs text-amber-400 mb-1">اكتب ساعات العمل <span class="text-amber-500">*</span></label>
+                    <input type="text" id="reg-new-hours" placeholder="مثال: من 7 صباحاً حتى 10 مساءً" class="w-full bg-slate-950 border border-amber-500/50 rounded-xl px-4 py-2.5 text-sm focus:outline-none">
                 </div>
 
                 <div>
@@ -273,6 +286,12 @@
             select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
         }
 
+        function checkNewHours(select) {
+            const newDiv = document.getElementById('new-hours-div');
+            if (!newDiv) return;
+            select.value === 'new_hours_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
+        }
+
         async function loadFromSheet() {
             try {
                 const response = await fetch(SHEETDB_API_URL, {
@@ -318,11 +337,11 @@
                     renderAreasSelect();
                     renderKhalafas();
                 } else {
-                    document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">جدول البيانات لا يحتوي على سجلات حالياً.</div>`;
+                    document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد سجلات حالياً.</div>`;
                 }
             } catch (e) {
                 console.error("SheetDB Error:", e);
-                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر جلب البيانات من جدول الاكسل. تأكد من اتصال الإنترنت أو صحة الرابط.</div>`;
+                document.getElementById('khalafas-list').innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من اتصال الإنترنت.</div>`;
             }
         }
 
@@ -376,7 +395,7 @@
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك أو أن الجدول فارغ.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
                 return;
             }
 
@@ -411,7 +430,8 @@
             const newCatInput = document.getElementById('reg-new-category').value.trim();
             let area = document.getElementById('reg-area').value;
             const newAreaInput = document.getElementById('reg-new-area').value.trim();
-            const workingHours = document.getElementById('reg-hours').value.trim();
+            let workingHours = document.getElementById('reg-hours').value;
+            const newHoursInput = document.getElementById('reg-new-hours').value.trim();
             const phone = document.getElementById('reg-phone').value.trim();
             const errorBox = document.getElementById('form-error-box');
             const errorText = document.getElementById('form-error-text');
@@ -421,7 +441,8 @@
             if (cat === 'new_option' && !newCatInput) { errorText.textContent = 'يرجى كتابة اسم التخصص الجديد.'; errorBox.classList.remove('hidden'); return; }
             if (!area) { errorText.textContent = 'يرجى اختيار المنطقة أو القضاء.'; errorBox.classList.remove('hidden'); return; }
             if (area === 'new_area_option' && !newAreaInput) { errorText.textContent = 'يرجى كتابة اسم المنطقة أو الحي الجديد.'; errorBox.classList.remove('hidden'); return; }
-            if (!workingHours) { errorText.textContent = 'يرجى إدخال ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
+            if (!workingHours) { errorText.textContent = 'يرجى اختيار ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
+            if (workingHours === 'new_hours_option' && !newHoursInput) { errorText.textContent = 'يرجى كتابة ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
 
             const phoneRegex = /^07\d{9}$/;
             if (!phoneRegex.test(phone)) {
@@ -432,10 +453,11 @@
 
             if (cat === 'new_option') cat = newCatInput;
             if (area === 'new_area_option') area = newAreaInput;
+            if (workingHours === 'new_hours_option') workingHours = newHoursInput;
 
             const submitBtn = document.getElementById('submit-btn');
             submitBtn.disabled = true;
-            submitBtn.textContent = 'جاري الإرسال لجدول الاكسل...';
+            submitBtn.textContent = 'جاري الإرسال...';
 
             const payload = {
                 "data": [
@@ -460,15 +482,16 @@
                 });
 
                 if (response.ok) {
-                    alert('تم إرسال وحفظ البيانات في جدول الاكسل بنجاح!');
+                    alert('تمت الإضافة بنجاح');
                     closeRegisterModal();
                     document.getElementById('register-form').reset();
                     document.getElementById('new-category-div').classList.add('hidden');
                     document.getElementById('new-area-div').classList.add('hidden');
+                    document.getElementById('new-hours-div').classList.add('hidden');
                     errorBox.classList.add('hidden');
                     await loadFromSheet();
                 } else {
-                    errorText.textContent = 'فشل الحفظ، تأكد من مطابقة أسماء الأعمدة في الجدول.';
+                    errorText.textContent = 'تعذر إتمام الإضافة، حاول مرة أخرى.';
                     errorBox.classList.remove('hidden');
                 }
             } catch (err) {
