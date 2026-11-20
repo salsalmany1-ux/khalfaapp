@@ -24,7 +24,29 @@
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 <link rel="icon" type="image/png" href="./logo.png">
     <link rel="apple-touch-icon" href="./logo.png">
-</head>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyBWnHBOgoqQ3QpnfgrFwdWrS2Eds2B_3Sg",
+    authDomain: "khalfaapp.firebaseapp.com",
+    projectId: "khalfaapp",
+    storageBucket: "khalfaapp.firebasestorage.app",
+    messagingSenderId: "947093724211",
+    appId: "1:947093724211:web:d8ac6fb025ed2cb21b5746",
+    measurementId: "G-YLLG6D016Z"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
