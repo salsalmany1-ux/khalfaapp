@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
-    
+
+    <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" href="./logo.png">
     <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,39 +24,23 @@
     <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
-<link rel="icon" type="image/png" href="./logo.png">
-    <link rel="apple-touch-icon" href="./logo.png">
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyBWnHBOgoqQ3QpnfgrFwdWrS2Eds2B_3Sg",
-    authDomain: "khalfaapp.firebaseapp.com",
-    projectId: "khalfaapp",
-    storageBucket: "khalfaapp.firebasestorage.app",
-    messagingSenderId: "947093724211",
-    appId: "1:947093724211:web:d8ac6fb025ed2cb21b5746",
-    measurementId: "G-YLLG6D016Z"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
+    <!-- شاشة التحميل -->
+    <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
+        <img src="./logo.png" alt="خلفة" class="w-28 h-28 rounded-3xl object-cover shadow-2xl border-2 border-amber-500/50 animate-pulse">
+        <div class="text-center">
+            <p class="text-lg font-black text-amber-400">خلفة</p>
+            <p class="text-xs text-slate-400 mt-1">جاري تجهيز دليل الحرفيين...</p>
+        </div>
+    </div>
+
     <header class="bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-3 flex items-center justify-between shadow-md">
         <div class="flex items-center gap-3">
-           <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-amber-500/20 border border-amber-400/30 bg-slate-950 flex items-center justify-center">
-    <img src="./logo.png" alt="خلفة" class="w-full h-full object-cover">
-</div>
+            <div class="w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-amber-500/20 border border-amber-400/30 bg-slate-950 flex items-center justify-center">
+                <img src="./logo.png" alt="خلفة" class="w-full h-full object-cover">
+            </div>
             <div>
                 <h1 class="text-lg font-black tracking-wide text-amber-400 leading-none">خلفة</h1>
                 <p class="text-[10px] text-slate-400 tracking-wider">دليل الحرفيين بالموصل</p>
@@ -125,7 +111,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button onclick="closeRegisterModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-4">انضم إلى دليل خلفة في الموصل</h3>
-            
+
             <div id="form-error-box" class="hidden mb-4 bg-rose-500/10 border border-rose-500/40 text-rose-400 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2">
                 <i class="fa-solid fa-circle-exclamation text-sm shrink-0"></i>
                 <span id="form-error-text"></span>
@@ -264,6 +250,13 @@
         const DEFAULT_SHEETDB_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
+        const LOGO_URL = new URL('./logo.png', window.location.href).href;
+
+        const DEFAULT_CATEGORIES = [
+            "الكل", "كهربائي", "مجاري", "تكييف وتبريد", "نجار",
+            "حداد", "ألمنيوم وجص", "صيانة موبايل", "دش وستلايت",
+            "دهان وديكور", "بناء وصيانة عامة"
+        ];
 
         let selectedRatings = {};
 
@@ -286,17 +279,17 @@
         }
 
         let khalafas = [];
-        let categories = ["الكل"];
+        let categories = [...DEFAULT_CATEGORIES];
         let areas = [
-            "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين", 
-            "الجانب الأيسر - النبي يونس", "الجانب الأيسر - القوسيات", "الجانب الأيسر - المصارف", "الجانب الأيسر - حي المهندسين", 
-            "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد", 
-            "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير", 
+            "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين",
+            "الجانب الأيسر - النبي يونس", "الجانب الأيسر - القوسيات", "الجانب الأيسر - المصارف", "الجانب الأيسر - حي المهندسين",
+            "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد",
+            "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير",
             "الجانب الأيسر - حي القادسية", "الجانب الأيسر - حي الحدباء", "الجانب الأيسر - حي العربي", "الجانب الأيسر - الصديق", "الجانب الأيسر - الوريورات",
-            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل", 
-            "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب", 
-            "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي", 
-            "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة", 
+            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل",
+            "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب",
+            "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي",
+            "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة",
             "الجانب الأيمن - راس الجادة", "الجانب الأيمن - الكورنيش",
             "قضاء تلكيف ونواحيها", "قضاء الحمدانية ونواحيها", "قضاء شيخان ونواحيها", "قضاء تلعفر ونواحيها", "قضاء سنجار ونواحيها", "قضاء مخمور ونواحيها", "قضاء الحضر ونواحيها"
         ];
@@ -311,37 +304,28 @@
             display: "standalone",
             background_color: "#020617",
             theme_color: "#f59e0b",
-            icons: [{ src: "https://cdn-icons-png.flaticon.com/512/2954/2954848.png", sizes: "512x512", type: "image/png" }]
+            icons: [
+                { src: LOGO_URL, sizes: "192x192", type: "image/png" },
+                { src: LOGO_URL, sizes: "512x512", type: "image/png" }
+            ]
         };
         const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
-       if ('serviceWorker' in navigator) {
-    const CACHE_NAME = 'khalfa-cache-v3';
-    const swCode = `
-        const CACHE_NAME = '${CACHE_NAME}';
-        self.addEventListener('install', function(event) {
-            self.skipWaiting();
-        });
-        self.addEventListener('activate', function(event) {
-            event.waitUntil(
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+            if ('caches' in window) {
                 caches.keys().then(function(names) {
-                    return Promise.all(
-                        names.filter(function(name) { return name !== CACHE_NAME; })
-                             .map(function(name) { return caches.delete(name); })
-                    );
-                }).then(function() {
-                    return self.clients.claim();
-                })
-            );
-        });
-        self.addEventListener('fetch', function(event) {
-            event.respondWith(fetch(event.request));
-        });
-    `;
-    const swBlob = new Blob([swCode], {type: 'application/javascript'});
-    navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(()=>{});
-}
+                    for (let name of names) {
+                        caches.delete(name);
+                    }
+                });
+            }
+        }
 
         function cleanField(row, keys, fallback = "") {
             for (const key of keys) {
@@ -405,7 +389,7 @@
                 statusBadge.textContent = "جاري الفحص والتحميل...";
             }
 
-          try {
+            try {
                 const response = await fetch(buildSheetEndpoint(targetUrl), {
                     method: 'GET',
                     cache: 'no-store',
@@ -426,7 +410,7 @@
 
                 if (rows) {
                     const loaded = [];
-                    const catSet = new Set(["الكل"]);
+                    const catSet = new Set(DEFAULT_CATEGORIES);
                     const areaSet = new Set(areas);
 
                     rows.forEach((row, idx) => {
@@ -486,6 +470,8 @@
                     }
                     return { ok: true, count: loaded.length };
                 } else {
+                    categories = [...DEFAULT_CATEGORIES];
+                    renderCategories();
                     listEl.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد سجلات حالياً.</div>`;
                     if (statusBadge) {
                         statusBadge.className = "text-[11px] text-amber-400";
@@ -495,6 +481,8 @@
                 }
             } catch (e) {
                 console.error("SheetDB Sync Error:", e);
+                categories = [...DEFAULT_CATEGORIES];
+                renderCategories();
                 listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من رابط الربط أو صلاحيات الجدول.</div>`;
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-rose-400";
@@ -525,7 +513,13 @@
 
         window.onload = async function() {
             renderAreasSelect();
-            await loadFromSheet();
+            renderCategories();
+            await loadFromSheet(null, false);
+            const splash = document.getElementById('splash-screen');
+            if (splash) {
+                splash.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => splash.remove(), 500);
+            }
             setTimeout(() => {
                 if (window.AdProvider) { window.AdProvider.push({}); }
             }, 800);
@@ -581,7 +575,7 @@
         function renderKhalafas() {
             const list = document.getElementById('khalafas-list');
             const search = document.getElementById('search-input').value.toLowerCase();
-            
+
             let filtered = khalafas.filter(k => {
                 let matchesCat = currentCategory === 'الكل' || k.category === currentCategory;
                 let matchesSearch = k.name.toLowerCase().includes(search) || k.area.toLowerCase().includes(search) || k.category.toLowerCase().includes(search);
@@ -635,7 +629,6 @@
                         <a href="whatsapp://send?phone=${escapeHtml(k.phone.replace(/^0/, '964'))}" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
                     </div>
 
-                    <!-- خانة تقييم النجوم والريفيو للزبون -->
                     <div class="mt-3 pt-3 border-t border-slate-800/90 space-y-2">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-[11px] text-slate-300 font-bold">قيّم الخلفة واكتب ريفيو:</span>
