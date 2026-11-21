@@ -1,4 +1,6 @@
-<!DOCTYPE html>
+import os
+
+html_code = r"""<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
@@ -227,7 +229,7 @@
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
         <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8">
             <button onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-4">حالة Cloud Firestore ولوحة الأدمن</h3>
+            <h3 class="text-lg font-black text-amber-400 mb-4">لوحة الأدمن وإدارة السجلات</h3>
 
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-5 space-y-3">
                 <div class="text-xs text-slate-400">
@@ -251,7 +253,8 @@
             getDocs,
             addDoc,
             doc,
-            updateDoc
+            updateDoc,
+            deleteDoc
         } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -267,6 +270,8 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const KHALAFAS_COLLECTION = "khalafas";
+        const RATED_STORAGE_KEY = "khalfa_rated_docs_v1";
+        const VOTER_ID_STORAGE_KEY = "khalfa_voter_id_v1";
 
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
@@ -297,6 +302,45 @@
 
         let currentCategory = "الكل";
         let currentSort = "default";
+
+        function getOrCreateVoterId() {
+            try {
+                let id = localStorage.getItem(VOTER_ID_STORAGE_KEY);
+                if (!id) {
+                    id = "v_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 10);
+                    localStorage.setItem(VOTER_ID_STORAGE_KEY, id);
+                }
+                return id;
+            } catch (e) {
+                return "v_fallback_session";
+            }
+        }
+
+        function getLocalRatedMap() {
+            try {
+                const raw = localStorage.getItem(RATED_STORAGE_KEY);
+                const parsed = raw ? JSON.parse(raw) : {};
+                return parsed && typeof parsed === "object" ? parsed : {};
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function markLocalRated(docId) {
+            try {
+                const map = getLocalRatedMap();
+                map[docId] = true;
+                localStorage.setItem(RATED_STORAGE_KEY, JSON.stringify(map));
+            } catch (e) {}
+        }
+
+        function hasUserAlreadyRated(item) {
+            const voterId = getOrCreateVoterId();
+            const localMap = getLocalRatedMap();
+            const inLocal = Boolean(localMap[item.id]);
+            const inDoc = Array.isArray(item.ratedBy) && item.ratedBy.includes(voterId);
+            return inLocal || inDoc;
+        }
 
         const manifestData = {
             name: "خلفة - دليل الحرفيين",
@@ -422,6 +466,7 @@
                     const ratingRaw = parseFloat(cleanField(row, ['التقييم', 'rating'], "5.0"));
                     const countRaw = parseInt(cleanField(row, ['عدد التقييمات', 'ratingsCount'], "1"), 10);
                     const reviewsRaw = cleanField(row, ['التقييمات النصية', 'reviewsText', 'reviews'], "");
+                    const ratedByList = Array.isArray(row.ratedBy) ? row.ratedBy.map(String) : [];
                     const createdAtNum = Number(row.createdAt || idx + 1);
 
                     catSet.add(cat);
@@ -448,7 +493,8 @@
                         rating: safeRating,
                         ratingsCount: safeCount,
                         reviewsText: reviewsRaw,
-                        reviewsList: parseReviews(reviewsRaw)
+                        reviewsList: parseReviews(reviewsRaw),
+                        ratedBy: ratedByList
                     });
                 });
 
@@ -521,12 +567,14 @@
         };
 
         window.addEventListener('DOMContentLoaded', () => {
+            getOrCreateVoterId();
             renderAreasSelect();
             renderCategories();
             setTimeout(hideSplashScreen, 3500);
         });
 
         window.onload = async function() {
+            getOrCreateVoterId();
             renderAreasSelect();
             renderCategories();
             const splashGuard = setTimeout(hideSplashScreen, 3500);
@@ -568,8 +616,11 @@
         };
 
         window.selectStar = function(kId, starVal) {
+            const item = khalafas.find(k => k.id === kId);
+            if (item && hasUserAlreadyRated(item)) return;
             selectedRatings[kId] = starVal;
-            const box = document.getElementById(`star-picker-${kId}`);
+            const safeIdDom = encodeURIComponent(kId);
+            const box = document.getElementById(`star-picker-${safeIdDom}`);
             if (!box) return;
             box.querySelectorAll('button').forEach((btn, idx) => {
                 const val = idx + 1;
@@ -602,12 +653,32 @@
             filtered.forEach((k, index) => {
                 const safeIdJs = escapeJsSingle(k.id);
                 const safeIdDom = encodeURIComponent(k.id);
+                const alreadyRated = hasUserAlreadyRated(k);
                 const activeStar = selectedRatings[k.id] || 5;
-                const starsButtons = [1, 2, 3, 4, 5].map(n => `
-                    <button type="button" onclick="selectStar('${safeIdJs}', ${n})" class="${n <= activeStar ? 'text-amber-400' : 'text-slate-600'} text-sm transition transform hover:scale-110" aria-label="${n} نجوم">
-                        <i class="fa-solid fa-star"></i>
-                    </button>
-                `).join('');
+
+                const starsButtons = alreadyRated
+                    ? [1, 2, 3, 4, 5].map(n => `<span class="text-amber-400/50 text-sm"><i class="fa-solid fa-star"></i></span>`).join('')
+                    : [1, 2, 3, 4, 5].map(n => `
+                        <button type="button" onclick="selectStar('${safeIdJs}', ${n})" class="${n <= activeStar ? 'text-amber-400' : 'text-slate-600'} text-sm transition transform hover:scale-110" aria-label="${n} نجوم">
+                            <i class="fa-solid fa-star"></i>
+                        </button>
+                    `).join('');
+
+                const ratingFormHtml = alreadyRated
+                    ? `<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-3 py-2 text-[11px] text-emerald-300 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>لقد قمت بتقييم هذا الخلفة مسبقاً (مسموح بتقييم واحد فقط لكل مستخدم).</span>
+                       </div>`
+                    : `<div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] text-slate-300 font-bold">قيّم الخلفة واكتب ريفيو (مرة واحدة):</span>
+                        <div id="star-picker-${safeIdDom}" class="flex items-center gap-1">${starsButtons}</div>
+                       </div>
+                       <div class="flex gap-2">
+                        <input type="text" id="review-input-${safeIdDom}" placeholder="اكتب ريفيو أو ملاحظتك عن الخلفة..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        <button type="button" id="rate-btn-${safeIdDom}" onclick="submitRatingAndReview('${safeIdJs}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
+                            إرسال التقييم
+                        </button>
+                       </div>`;
 
                 const reviewsHtml = k.reviewsList.length > 0
                     ? `<div class="mt-2 space-y-1.5 max-h-32 overflow-y-auto pr-1">
@@ -639,16 +710,7 @@
                     </div>
 
                     <div class="mt-3 pt-3 border-t border-slate-800/90 space-y-2">
-                        <div class="flex items-center justify-between gap-2">
-                            <span class="text-[11px] text-slate-300 font-bold">قيّم الخلفة واكتب ريفيو:</span>
-                            <div id="star-picker-${safeIdDom}" class="flex items-center gap-1">${starsButtons}</div>
-                        </div>
-                        <div class="flex gap-2">
-                            <input type="text" id="review-input-${safeIdDom}" placeholder="اكتب ريفيو أو ملاحظتك عن الخلفة..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
-                            <button type="button" id="rate-btn-${safeIdDom}" onclick="submitRatingAndReview('${safeIdJs}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
-                                إرسال التقييم
-                            </button>
-                        </div>
+                        ${ratingFormHtml}
                         ${reviewsHtml}
                     </div>
                 </div>`;
@@ -663,6 +725,12 @@
         window.submitRatingAndReview = async function(kId) {
             const item = khalafas.find(k => k.id === kId);
             if (!item) return;
+
+            if (hasUserAlreadyRated(item)) {
+                alert("عذراً، لقد قمت بتقييم هذا الخلفة مسبقاً. يسمح بتقييم واحد فقط لكل مستخدم.");
+                renderKhalafas();
+                return;
+            }
 
             const safeIdDom = encodeURIComponent(kId);
             const starsVal = selectedRatings[kId] || 5;
@@ -680,6 +748,8 @@
                 btn.textContent = "جاري الحفظ...";
             }
 
+            const voterId = getOrCreateVoterId();
+            const updatedRatedBy = Array.from(new Set([...(item.ratedBy || []), voterId]));
             const newCount = item.ratingsCount + 1;
             const newAvg = Number((((item.rating * item.ratingsCount) + starsVal) / newCount).toFixed(1));
             const starIcons = "★".repeat(starsVal) + "☆".repeat(5 - starsVal);
@@ -694,9 +764,11 @@
                 await updateDoc(docRef, {
                     "التقييم": newAvg,
                     "عدد التقييمات": newCount,
-                    "التقييمات النصية": updatedReviewsText
+                    "التقييمات النصية": updatedReviewsText,
+                    ratedBy: updatedRatedBy
                 });
 
+                markLocalRated(item.id);
                 if (reviewInput) reviewInput.value = "";
                 alert("تم حفظ التقييم والريفيو بنجاح");
                 await window.loadFromFirestore(false);
@@ -711,6 +783,38 @@
             }
         };
 
+        window.toggleAdminVip = async function(kId) {
+            const item = khalafas.find(k => k.id === kId);
+            if (!item) return;
+            const nextVipBool = !item.vip;
+            const nextVipLabel = nextVipBool ? "نعم" : "لا";
+            try {
+                await updateDoc(doc(db, KHALAFAS_COLLECTION, item.id), {
+                    "VIP": nextVipLabel
+                });
+                alert(nextVipBool ? "تم تفعيل VIP بنجاح" : "تم إلغاء VIP بنجاح");
+                await window.loadFromFirestore(false);
+            } catch (err) {
+                console.error("Admin VIP Toggle Error:", err);
+                alert(`تعذر تحديث حالة VIP: ${err.message}`);
+            }
+        };
+
+        window.deleteAdminKhalfa = async function(kId) {
+            const item = khalafas.find(k => k.id === kId);
+            if (!item) return;
+            const confirmed = confirm(`هل أنت متأكد من حذف السجل "${item.name}" نهائياً من قاعدة البيانات؟`);
+            if (!confirmed) return;
+            try {
+                await deleteDoc(doc(db, KHALAFAS_COLLECTION, item.id));
+                alert("تم حذف السجل بنجاح");
+                await window.loadFromFirestore(false);
+            } catch (err) {
+                console.error("Admin Delete Error:", err);
+                alert(`تعذر حذف السجل: ${err.message}`);
+            }
+        };
+
         function renderAdminList() {
             const adminList = document.getElementById('admin-khalafas-list');
             if (!adminList) return;
@@ -719,6 +823,7 @@
                 return;
             }
             adminList.innerHTML = khalafas.map(k => {
+                const safeIdJs = escapeJsSingle(k.id);
                 const reviewsPreview = k.reviewsList.length > 0
                     ? `<div class="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
                         ${k.reviewsList.slice().reverse().map(r => `<p class="text-[11px] text-amber-200/90 bg-slate-900/90 rounded px-2 py-1">${escapeHtml(r)}</p>`).join('')}
@@ -726,13 +831,22 @@
                     : `<p class="text-[11px] text-slate-500 mt-1">لا يوجد ريفيو نصي</p>`;
 
                 return `
-                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs">
-                    <div class="flex items-center justify-between">
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-2.5">
+                    <div class="flex items-start justify-between gap-2">
                         <div>
                             <p class="font-bold text-slate-200">${escapeHtml(k.name)} <span class="text-amber-400">(${escapeHtml(k.category)})</span></p>
                             <p class="text-slate-400 mt-0.5">${escapeHtml(k.area)} - ${escapeHtml(k.phone)} | تقييم: ${k.rating.toFixed(1)} (${k.ratingsCount})</p>
                         </div>
-                        <span class="px-2 py-0.5 rounded ${k.vip ? 'bg-amber-500/20 text-amber-400' : 'bg-slate-800 text-slate-400'}">${k.vip ? 'VIP' : 'عادي'}</span>
+                        <span class="px-2 py-0.5 rounded shrink-0 ${k.vip ? 'bg-amber-500/20 text-amber-400 font-bold' : 'bg-slate-800 text-slate-400'}">${k.vip ? 'VIP' : 'عادي'}</span>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-1">
+                        <button type="button" onclick="toggleAdminVip('${safeIdJs}')" class="flex-1 px-3 py-1.5 rounded-lg font-bold transition ${k.vip ? 'bg-slate-800 text-amber-300 border border-amber-500/30 hover:bg-slate-700' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'}">
+                            ${k.vip ? 'إلغاء VIP' : 'تفعيل VIP'}
+                        </button>
+                        <button type="button" onclick="deleteAdminKhalfa('${safeIdJs}')" class="px-3 py-1.5 rounded-lg font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 transition">
+                            <i class="fa-solid fa-trash"></i> حذف
+                        </button>
                     </div>
                     ${reviewsPreview}
                 </div>
@@ -786,6 +900,7 @@
                 "التقييم": 5.0,
                 "عدد التقييمات": 1,
                 "التقييمات النصية": "",
+                ratedBy: [],
                 "createdAt": Date.now()
             };
 
@@ -832,4 +947,9 @@
         window.sendSupportEmail = function() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; };
     </script>
 </body>
-</html>
+</html>"""
+
+with open("index.html", "w", encoding="utf-8") as f:
+    f.write(html_code)
+
+print("Wrote index.html:", os.path.exists("index.html"), os.path.getsize("index.html"))
