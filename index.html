@@ -13,7 +13,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="خلفة">
 
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
@@ -24,6 +24,74 @@
     <script data-cfasync="false" src="https://afders.org/1/ffa10e2063ff5ad6f7716cdf0029385b"></script>
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
+
+    <!-- تهيئة مبكرة للدوال لمنع أي تأخير قبل تحميل Firebase Module -->
+    <script>
+        window.__pendingMessageQueue = [];
+        window.__currentVipAdsMode = 'vip';
+
+        window.setVipAdsMode = function(mode) {
+            window.__currentVipAdsMode = mode === 'ads' ? 'ads' : 'vip';
+            const vipBtn = document.getElementById('tab-vip-btn');
+            const adsBtn = document.getElementById('tab-ads-btn');
+            const titleEl = document.getElementById('vip-ads-title');
+            const textareaEl = document.getElementById('vip-ads-msg-text');
+
+            if (window.__currentVipAdsMode === 'vip') {
+                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
+                if (titleEl) titleEl.textContent = "اشتراك VIP المميز";
+                if (textareaEl && !textareaEl.value.trim()) {
+                    textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب الاشتراك في حساب VIP...";
+                }
+            } else {
+                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
+                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
+                if (titleEl) titleEl.textContent = "حجز إعلان";
+                if (textareaEl && !textareaEl.value.trim()) {
+                    textareaEl.placeholder = "اكتب تفاصيل المساحة الإعلانية أو العرض المطلوب في الموصل...";
+                }
+            }
+        };
+
+        window.openVipAdsModal = function(mode) {
+            window.setVipAdsMode(mode || 'vip');
+            const statusEl = document.getElementById('vip-ads-status');
+            if (statusEl) { statusEl.className = 'hidden text-xs rounded-xl px-3 py-2 mb-3'; statusEl.textContent = ''; }
+            const modal = document.getElementById('vip-ads-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeVipAdsModal = function() {
+            const modal = document.getElementById('vip-ads-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.openSupportModal = function() {
+            const statusEl = document.getElementById('support-status');
+            if (statusEl) { statusEl.className = 'hidden text-xs rounded-xl px-3 py-2 mb-3'; statusEl.textContent = ''; }
+            const modal = document.getElementById('support-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeSupportModal = function() {
+            const modal = document.getElementById('support-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.saveMessageToFirestore = function(kind) {
+            if (typeof window.__realSaveMessageToFirestore === 'function') {
+                return window.__realSaveMessageToFirestore(kind);
+            }
+            window.__pendingMessageQueue.push(kind);
+            const isSupport = kind === 'support';
+            const statusEl = document.getElementById(isSupport ? 'support-status' : 'vip-ads-status');
+            if (statusEl) {
+                statusEl.className = 'block text-xs rounded-xl px-3 py-2 mb-3 bg-amber-500/15 border border-amber-500/40 text-amber-300';
+                statusEl.textContent = 'جاري تجهيز الاتصال بقاعدة البيانات وإرسال الرسالة...';
+            }
+        };
+    </script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
@@ -54,10 +122,10 @@
             <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
                 <i class="fa-solid fa-download"></i> تثبيت
             </button>
-            <button type="button" onclick="openVipAdsModal('vip')" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
+            <button type="button" onclick="openVipAdsModal('vip')" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition cursor-pointer">
                 <i class="fa-solid fa-crown text-amber-400"></i> VIP
             </button>
-            <button type="button" onclick="openAdminLogin()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-amber-400 hover:border-amber-500/50 transition">
+            <button type="button" onclick="openAdminLogin()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-amber-400 hover:border-amber-500/50 transition cursor-pointer">
                 <i class="fa-solid fa-lock text-sm"></i>
             </button>
         </div>
@@ -97,11 +165,11 @@
     </main>
 
     <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
-        <button type="button" onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition">
+        <button type="button" onclick="openSupportModal()" class="pointer-events-auto bg-slate-900 border border-slate-700 text-slate-200 hover:text-amber-400 font-bold px-4 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 hover:border-amber-500/50 transition cursor-pointer">
             <i class="fa-solid fa-headset text-amber-400 text-base"></i> الدعم والشكاوى
         </button>
 
-        <button type="button" onclick="openRegisterModal()" class="pointer-events-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform">
+        <button type="button" onclick="openRegisterModal()" class="pointer-events-auto bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black px-5 py-3.5 rounded-2xl shadow-xl shadow-amber-500/20 flex items-center gap-2 hover:scale-105 transition transform cursor-pointer">
             <i class="fa-solid fa-plus text-base"></i> سجّل كـ خلفة
         </button>
     </div>
@@ -192,6 +260,7 @@
             <button type="button" onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
             <p class="text-xs text-slate-400 mb-2">اكتب شكواك أو ملاحظتك هنا وسيتم إرسالها مباشرة إلى لوحة الإدارة.</p>
+            <div id="support-status" class="hidden text-xs rounded-xl px-3 py-2 mb-3"></div>
             <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
             <button type="button" id="save-support-btn" onclick="saveMessageToFirestore('support')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
                 إرسال
@@ -215,8 +284,9 @@
                 </button>
             </div>
 
+            <div id="vip-ads-status" class="hidden text-xs rounded-xl px-3 py-2 mb-3"></div>
             <textarea id="vip-ads-msg-text" rows="3" placeholder="اكتب اسم الورشة أو المحل وتفاصيل طلبك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
-            <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
+            <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(window.__currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
                 إرسال
             </button>
         </div>
@@ -315,7 +385,24 @@
 
         let currentCategory = "الكل";
         let currentSort = "default";
-        let currentVipAdsMode = "vip";
+
+        function setModalStatus(elId, type, text) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            if (!text) {
+                el.className = "hidden text-xs rounded-xl px-3 py-2 mb-3";
+                el.textContent = "";
+                return;
+            }
+            if (type === "success") {
+                el.className = "block text-xs rounded-xl px-3 py-2 mb-3 bg-emerald-500/15 border border-emerald-500/40 text-emerald-300";
+            } else if (type === "error") {
+                el.className = "block text-xs rounded-xl px-3 py-2 mb-3 bg-rose-500/15 border border-rose-500/40 text-rose-400";
+            } else {
+                el.className = "block text-xs rounded-xl px-3 py-2 mb-3 bg-amber-500/15 border border-amber-500/40 text-amber-300";
+            }
+            el.textContent = text;
+        }
 
         function getOrCreateVoterId() {
             try {
@@ -832,26 +919,28 @@
             }
         };
 
-        window.saveMessageToFirestore = async function(kind) {
+        window.__realSaveMessageToFirestore = async function(kind) {
             const isSupport = kind === 'support';
             const textareaEl = document.getElementById(isSupport ? 'support-msg-text' : 'vip-ads-msg-text');
             const btnEl = document.getElementById(isSupport ? 'save-support-btn' : 'save-vip-ads-btn');
+            const statusId = isSupport ? 'support-status' : 'vip-ads-status';
             const textVal = (textareaEl?.value || '').trim();
 
             if (!textVal) {
-                alert("يرجى كتابة نص الرسالة أولاً.");
+                setModalStatus(statusId, 'error', 'يرجى كتابة نص الرسالة أولاً.');
                 return;
             }
 
             let typeLabel = "شكوى ودعم";
             if (!isSupport) {
-                typeLabel = currentVipAdsMode === 'ads' ? "حجز إعلان" : "اشتراك VIP";
+                typeLabel = window.__currentVipAdsMode === 'ads' ? "حجز إعلان" : "اشتراك VIP";
             }
 
             if (btnEl) {
                 btnEl.disabled = true;
                 btnEl.textContent = "جاري الإرسال...";
             }
+            setModalStatus(statusId, 'info', 'جاري حفظ الرسالة في قاعدة البيانات...');
 
             try {
                 await addDoc(collection(db, MESSAGES_COLLECTION), {
@@ -860,15 +949,18 @@
                     createdAt: Date.now()
                 });
                 if (textareaEl) textareaEl.value = "";
-                alert("تم الإرسال بنجاح");
-                if (isSupport) window.closeSupportModal();
-                else window.closeVipAdsModal();
+                setModalStatus(statusId, 'success', 'تم الإرسال بنجاح وحفظ الرسالة في لوحة الإدارة.');
                 try {
                     await loadMessagesFromFirestore();
                 } catch (e) {}
+                setTimeout(() => {
+                    setModalStatus(statusId, '', '');
+                    if (isSupport) window.closeSupportModal();
+                    else window.closeVipAdsModal();
+                }, 900);
             } catch (err) {
                 console.error("Firestore Message Save Error:", err);
-                alert(`تعذر الإرسال: ${err.message}`);
+                setModalStatus(statusId, 'error', `تعذر الإرسال: ${err.message}`);
             } finally {
                 if (btnEl) {
                     btnEl.disabled = false;
@@ -876,6 +968,12 @@
                 }
             }
         };
+
+        if (Array.isArray(window.__pendingMessageQueue) && window.__pendingMessageQueue.length > 0) {
+            const queued = [...window.__pendingMessageQueue];
+            window.__pendingMessageQueue = [];
+            queued.forEach(k => window.__realSaveMessageToFirestore(k));
+        }
 
         window.deleteAdminMessage = async function(msgId) {
             if (!msgId) return;
@@ -1057,42 +1155,8 @@
             }
         };
 
-        window.setVipAdsMode = function(mode) {
-            currentVipAdsMode = mode === 'ads' ? 'ads' : 'vip';
-            const vipBtn = document.getElementById('tab-vip-btn');
-            const adsBtn = document.getElementById('tab-ads-btn');
-            const titleEl = document.getElementById('vip-ads-title');
-            const textareaEl = document.getElementById('vip-ads-msg-text');
-
-            if (currentVipAdsMode === 'vip') {
-                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
-                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
-                if (titleEl) titleEl.textContent = "اشتراك VIP المميز";
-                if (textareaEl && !textareaEl.value.trim()) {
-                    textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب الاشتراك في حساب VIP...";
-                }
-            } else {
-                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
-                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
-                if (titleEl) titleEl.textContent = "حجز إعلان";
-                if (textareaEl && !textareaEl.value.trim()) {
-                    textareaEl.placeholder = "اكتب تفاصيل المساحة الإعلانية أو العرض المطلوب في الموصل...";
-                }
-            }
-        };
-
-        window.openVipAdsModal = function(mode = 'vip') {
-            window.setVipAdsMode(mode);
-            document.getElementById('vip-ads-modal').classList.remove('hidden');
-        };
-        window.closeVipAdsModal = function() {
-            document.getElementById('vip-ads-modal').classList.add('hidden');
-        };
-
         window.openRegisterModal = function() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); };
         window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); };
-        window.openSupportModal = function() { document.getElementById('support-modal').classList.remove('hidden'); };
-        window.closeSupportModal = function() { document.getElementById('support-modal').classList.add('hidden'); };
         window.openAdminLogin = function() { document.getElementById('admin-login-modal').classList.remove('hidden'); };
         window.closeAdminLogin = function() { document.getElementById('admin-login-modal').classList.add('hidden'); };
         window.checkAdminPassword = function() {
