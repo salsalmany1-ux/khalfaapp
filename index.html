@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>خلفة - دليل الحرفيين والصيانة في الموصل</title>
 
-    <link rel="icon" type="image/png" href="./logo.png?v=2?v=2">
-    <link rel="apple-touch-icon" href="./logo.png?v=2?v=2">
+    <link rel="icon" type="image/png" href="./logo.png?v=2">
+    <link rel="apple-touch-icon" href="./logo.png?v=2">
     <link rel="manifest" id="manifest-placeholder">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -91,7 +91,7 @@
         <div id="khalafas-list" class="space-y-4">
             <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
                 <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
-                <p>جاري تحميل السجلات...</p>
+                <p>جاري تحميل السجلات من Cloud Firestore...</p>
             </div>
         </div>
     </main>
@@ -227,18 +227,15 @@
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
         <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8">
             <button onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-4">ربط الأكسل ولوحة الأدمن</h3>
+            <h3 class="text-lg font-black text-amber-400 mb-4">حالة Cloud Firestore ولوحة الأدمن</h3>
 
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-5 space-y-3">
-                <label class="block text-xs text-slate-400">رابط SheetDB (أو رابط Apps Script Web App)</label>
-                <input type="text" id="admin-sheetdb-url" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-amber-300 focus:outline-none focus:border-amber-500" dir="ltr">
+                <div class="text-xs text-slate-400">
+                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعة: <span class="text-emerald-300 font-bold" dir="ltr">khalafas</span>
+                </div>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span id="sheet-status-badge" class="text-[11px] text-slate-400">حالة الاتصال: بانتظار الفحص</span>
-                    <div class="flex gap-2">
-                        <button onclick="loadFromSheet(null, true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-2.5 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">فحص وتحديث</button>
-                        <button onclick="resetDefaultSheetUrl()" class="bg-slate-800 text-slate-300 font-bold px-2.5 py-1.5 rounded-xl text-xs hover:bg-slate-700 transition">الافتراضي</button>
-                        <button onclick="testAndSaveSheetUrl()" class="bg-amber-500 text-slate-950 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-amber-400 transition">حفظ الرابط</button>
-                    </div>
+                    <button type="button" onclick="loadFromFirestore(true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">فحص وتحديث الآن</button>
                 </div>
             </div>
 
@@ -246,8 +243,31 @@
         </div>
     </div>
 
-    <script>
-        const DEFAULT_SHEETDB_URL = "https://sheetdb.io/api/v1/67b18eci9714i";
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            addDoc,
+            doc,
+            updateDoc
+        } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDG_iWPziOs1UMnmH5iLpoTm9b6oLB6SHE",
+            authDomain: "khalfaapp-9e928.firebaseapp.com",
+            projectId: "khalfaapp-9e928",
+            storageBucket: "khalfaapp-9e928.firebasestorage.app",
+            messagingSenderId: "1056760044898",
+            appId: "1:1056760044898:web:1a02b05ca2ec0835d0e03b",
+            measurementId: "G-HMK4D866T0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const KHALAFAS_COLLECTION = "khalafas";
+
         const ADMIN_PHONE = "9647833837468";
         const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
         const LOGO_URL = new URL('./logo.png?v=2', window.location.href).href;
@@ -259,25 +279,6 @@
         ];
 
         let selectedRatings = {};
-
-        function getSheetUrl() {
-            return (localStorage.getItem("khalfa_sheetdb_url") || DEFAULT_SHEETDB_URL).trim();
-        }
-
-        function setSheetUrl(newUrl) {
-            localStorage.setItem("khalfa_sheetdb_url", newUrl.trim());
-        }
-
-        function isAppsScriptUrl(url) {
-            return /script\.google\.com\/macros\/s\//i.test(url);
-        }
-
-        function resetDefaultSheetUrl() {
-            localStorage.removeItem("khalfa_sheetdb_url");
-            document.getElementById("admin-sheetdb-url").value = DEFAULT_SHEETDB_URL;
-            testAndSaveSheetUrl();
-        }
-
         let khalafas = [];
         let categories = [...DEFAULT_CATEGORIES];
         let areas = [
@@ -286,7 +287,7 @@
             "الجانب الأيسر - حي الجامعة", "الجانب الأيسر - حي الشرطة", "الجانب الأيسر - حي السكر", "الجانب الأيسر - حي البريد",
             "الجانب الأيسر - حي المالية", "الجانب الأيسر - حي النور", "الجانب الأيسر - حي الاعتماد", "الجانب الأيسر - حي التحرير",
             "الجانب الأيسر - حي القادسية", "الجانب الأيسر - حي الحدباء", "الجانب الأيسر - حي العربي", "الجانب الأيسر - الصديق", "الجانب الأيسر - الوريورات",
-            "الجانب الأيمن - الدواسة", "الجانب الأيمن - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل",
+            "الجانب الأيمن - الدواسة", "الجانب الأيسر - الدندان", "الجانب الأيمن - الفاروق", "الجانب الأيمن - حي العامل",
             "الجانب الأيمن - الطيران", "الجانب الأيمن - الميدان", "الجانب الأيمن - وادي حجر", "الجانب الأيمن - وادي عكاب",
             "الجانب الأيمن - المأمون", "الجانب الأيمن - التنك", "الجانب الأيمن - الهرمات", "الجانب الأيمن - رجم التشظي",
             "الجانب الأيمن - الشفاء", "الجانب الأيمن - باب سنجار", "الجانب الأيمن - باب لكش", "الجانب الأيمن - المشاهدة",
@@ -309,7 +310,7 @@
                 { src: LOGO_URL, sizes: "512x512", type: "image/png" }
             ]
         };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], {type: 'application/json'});
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
         document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
         if ('serviceWorker' in navigator) {
@@ -325,6 +326,18 @@
                     }
                 });
             }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        function escapeJsSingle(str) {
+            return String(str).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
         }
 
         function normalizeIraqPhone(phoneStr) {
@@ -352,12 +365,6 @@
                 .filter(Boolean);
         }
 
-        function buildSheetEndpoint(baseUrl) {
-            const clean = baseUrl.trim();
-            const sep = clean.includes("?") ? "&" : "?";
-            return `${clean}${sep}_nocache=${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-        }
-
         function renderAreasSelect() {
             const select = document.getElementById('reg-area');
             if (!select) return;
@@ -369,150 +376,115 @@
             select.innerHTML = html;
         }
 
-        function checkNewCategory(select) {
+        window.checkNewCategory = function(select) {
             const newDiv = document.getElementById('new-category-div');
             if (!newDiv) return;
             select.value === 'new_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
-        }
+        };
 
-        function checkNewArea(select) {
+        window.checkNewArea = function(select) {
             const newDiv = document.getElementById('new-area-div');
             if (!newDiv) return;
             select.value === 'new_area_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
-        }
+        };
 
-        function checkNewHours(select) {
+        window.checkNewHours = function(select) {
             const newDiv = document.getElementById('new-hours-div');
             if (!newDiv) return;
             select.value === 'new_hours_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
-        }
+        };
 
-        async function loadFromSheet(overrideUrl = null, notifyUser = false) {
+        window.loadFromFirestore = async function(notifyUser = false) {
             const listEl = document.getElementById('khalafas-list');
             const statusBadge = document.getElementById('sheet-status-badge');
-            const targetUrl = (overrideUrl || getSheetUrl()).trim();
 
             if (statusBadge) {
                 statusBadge.className = "text-[11px] text-amber-300";
-                statusBadge.textContent = "جاري الفحص والتحميل...";
+                statusBadge.textContent = "جاري الفحص والتحميل من Firestore...";
             }
 
             try {
-                const response = await fetch(buildSheetEndpoint(targetUrl), {
-                    method: 'GET',
-                    cache: 'no-store'
+                const snapshot = await getDocs(collection(db, KHALAFAS_COLLECTION));
+                const loaded = [];
+                const catSet = new Set(DEFAULT_CATEGORIES);
+                const areaSet = new Set(areas);
+
+                snapshot.forEach((docSnap, idx) => {
+                    const row = docSnap.data() || {};
+                    const name = cleanField(row, ['الاسم', 'name']);
+                    if (!name) return;
+
+                    const cat = cleanField(row, ['التخصص', 'category'], "عام");
+                    const areaVal = cleanField(row, ['المنطقة', 'area'], "الموصل");
+                    const phoneVal = cleanField(row, ['الهاتف', 'phone'], "");
+                    const hoursVal = cleanField(row, ['ساعات العمل', 'workingHours'], "يومياً");
+                    const vipRaw = String(cleanField(row, ['VIP', 'vip'], "لا")).toLowerCase();
+                    const ratingRaw = parseFloat(cleanField(row, ['التقييم', 'rating'], "5.0"));
+                    const countRaw = parseInt(cleanField(row, ['عدد التقييمات', 'ratingsCount'], "1"), 10);
+                    const reviewsRaw = cleanField(row, ['التقييمات النصية', 'reviewsText', 'reviews'], "");
+                    const createdAtNum = Number(row.createdAt || idx + 1);
+
+                    catSet.add(cat);
+                    areaSet.add(areaVal);
+
+                    const isVip = (vipRaw === 'نعم' || vipRaw === 'yes' || vipRaw === 'true' || vipRaw === '1');
+                    const safeRating = Number.isFinite(ratingRaw) ? ratingRaw : 5.0;
+                    const safeCount = Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1;
+
+                    const docId = docSnap.id;
+                    if (selectedRatings[docId] === undefined) {
+                        selectedRatings[docId] = 5;
+                    }
+
+                    loaded.push({
+                        id: docId,
+                        sortOrder: createdAtNum,
+                        name: name,
+                        category: cat,
+                        area: areaVal,
+                        phone: phoneVal,
+                        workingHours: hoursVal,
+                        vip: isVip,
+                        rating: safeRating,
+                        ratingsCount: safeCount,
+                        reviewsText: reviewsRaw,
+                        reviewsList: parseReviews(reviewsRaw)
+                    });
                 });
 
-                if (!response.ok) {
-                    const errText = await response.text().catch(() => "");
-                    throw new Error(`HTTP ${response.status}: ${errText.slice(0, 120)}`);
+                khalafas = loaded;
+                categories = Array.from(catSet);
+                areas = Array.from(areaSet);
+                renderCategories();
+                renderAreasSelect();
+                renderKhalafas();
+                renderAdminList();
+
+                if (statusBadge) {
+                    statusBadge.className = "text-[11px] text-emerald-400";
+                    statusBadge.textContent = `متصل بنجاح بـ Firestore (${loaded.length} سجل)`;
                 }
-
-                const data = await response.json();
-                const rows = Array.isArray(data) ? data : (Array.isArray(data.data) ? data.data : null);
-
-                if (rows) {
-                    const loaded = [];
-                    const catSet = new Set(DEFAULT_CATEGORIES);
-                    const areaSet = new Set(areas);
-
-                    rows.forEach((row, idx) => {
-                        const name = cleanField(row, ['الاسم', 'name']);
-                        if (!name) return;
-
-                        const cat = cleanField(row, ['التخصص', 'category'], "عام");
-                        const areaVal = cleanField(row, ['المنطقة', 'area'], "الموصل");
-                        const phoneVal = cleanField(row, ['الهاتف', 'phone'], "");
-                        const hoursVal = cleanField(row, ['ساعات العمل', 'workingHours'], "يومياً");
-                        const vipRaw = cleanField(row, ['VIP', 'vip'], "لا").toLowerCase();
-                        const ratingRaw = parseFloat(cleanField(row, ['التقييم', 'rating'], "5.0"));
-                        const countRaw = parseInt(cleanField(row, ['عدد التقييمات', 'ratingsCount'], "1"), 10);
-                        const reviewsRaw = cleanField(row, ['التقييمات النصية', 'reviewsText', 'reviews'], "");
-
-                        catSet.add(cat);
-                        areaSet.add(areaVal);
-
-                        const isVip = (vipRaw === 'نعم' || vipRaw === 'yes' || vipRaw === 'true' || vipRaw === '1');
-                        const safeRating = Number.isFinite(ratingRaw) ? ratingRaw : 5.0;
-                        const safeCount = Number.isFinite(countRaw) && countRaw > 0 ? countRaw : 1;
-
-                        const itemId = idx + 1;
-                        if (selectedRatings[itemId] === undefined) {
-                            selectedRatings[itemId] = 5;
-                        }
-
-                        loaded.push({
-                            id: itemId,
-                            name: name,
-                            category: cat,
-                            area: areaVal,
-                            phone: phoneVal,
-                            workingHours: hoursVal,
-                            vip: isVip,
-                            rating: safeRating,
-                            ratingsCount: safeCount,
-                            reviewsText: reviewsRaw,
-                            reviewsList: parseReviews(reviewsRaw)
-                        });
-                    });
-
-                    khalafas = loaded;
-                    categories = Array.from(catSet);
-                    areas = Array.from(areaSet);
-                    renderCategories();
-                    renderAreasSelect();
-                    renderKhalafas();
-                    renderAdminList();
-
-                    if (statusBadge) {
-                        statusBadge.className = "text-[11px] text-emerald-400";
-                        statusBadge.textContent = `متصل بنجاح (${loaded.length} سجل)`;
-                    }
-                    if (notifyUser) {
-                        alert(`تم الاتصال وتحديث البيانات (${loaded.length} سجل).`);
-                    }
-                    return { ok: true, count: loaded.length };
-                } else {
-                    categories = [...DEFAULT_CATEGORIES];
-                    renderCategories();
-                    listEl.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد سجلات حالياً.</div>`;
-                    if (statusBadge) {
-                        statusBadge.className = "text-[11px] text-amber-400";
-                        statusBadge.textContent = "تم الاتصال ولكن لم تُعثر على صفوف";
-                    }
-                    return { ok: true, count: 0 };
+                if (notifyUser) {
+                    alert(`تم الاتصال بـ Firestore وتحديث البيانات (${loaded.length} سجل).`);
                 }
+                return { ok: true, count: loaded.length };
             } catch (e) {
-                console.error("SheetDB Sync Error:", e);
+                console.error("Firestore Load Error:", e);
                 categories = [...DEFAULT_CATEGORIES];
                 renderCategories();
-                listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات، تأكد من رابط الربط أو صلاحيات الجدول.</div>`;
+                if (listEl) {
+                    listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات من Firestore، تأكد من قواعد القراءة أو إعدادات المشروع.</div>`;
+                }
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-rose-400";
                     statusBadge.textContent = `فشل الاتصال: ${e.message}`;
                 }
                 if (notifyUser) {
-                    alert(`فشل الاتصال بالجدول: ${e.message}`);
+                    alert(`فشل الاتصال بـ Firestore: ${e.message}`);
                 }
                 return { ok: false, error: e.message };
             }
-        }
-
-        async function testAndSaveSheetUrl() {
-            const inputEl = document.getElementById('admin-sheetdb-url');
-            const newUrl = inputEl.value.trim();
-            if (!newUrl.startsWith("https://")) {
-                alert("يرجى إدخال رابط يبدأ بـ https://");
-                return;
-            }
-            setSheetUrl(newUrl);
-            const result = await loadFromSheet(newUrl, false);
-            if (result.ok) {
-                alert(`تم حفظ الرابط وتحديث البيانات (${result.count} سجل).`);
-            } else {
-                alert(`تم حفظ الرابط، لكن فشل الفحص: ${result.error}`);
-            }
-        }
+        };
 
         let deferredInstallPrompt = null;
         let splashDismissed = false;
@@ -536,7 +508,7 @@
             if (installBtn) installBtn.classList.remove('hidden');
         });
 
-        async function triggerDirectInstall() {
+        window.triggerDirectInstall = async function() {
             if (deferredInstallPrompt) {
                 deferredInstallPrompt.prompt();
                 await deferredInstallPrompt.userChoice.catch(() => {});
@@ -546,7 +518,7 @@
             } else {
                 alert('يمكنك تثبيت التطبيق من قائمة المتصفح عبر خيار (إضافة إلى الشاشة الرئيسية).');
             }
-        }
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             renderAreasSelect();
@@ -558,7 +530,7 @@
             renderAreasSelect();
             renderCategories();
             const splashGuard = setTimeout(hideSplashScreen, 3500);
-            await loadFromSheet(null, false);
+            await window.loadFromFirestore(false);
             clearTimeout(splashGuard);
             hideSplashScreen();
             setTimeout(() => {
@@ -571,19 +543,19 @@
             if (!container) return;
             let html = '';
             categories.forEach(cat => {
-                const safeAttrCat = String(cat).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+                const safeAttrCat = escapeJsSingle(cat);
                 html += `<button type="button" onclick="filterCategory('${safeAttrCat}')" class="px-4 py-2 rounded-xl text-xs whitespace-nowrap transition ${currentCategory === cat ? 'bg-amber-500 text-slate-950 font-bold' : 'bg-slate-900 border border-slate-800 text-slate-300'}">${escapeHtml(cat)}</button>`;
             });
             container.innerHTML = html;
         }
 
-        function filterCategory(cat) {
+        window.filterCategory = function(cat) {
             currentCategory = cat;
             renderCategories();
             renderKhalafas();
-        }
+        };
 
-        function setSortFilter(sortType) {
+        window.setSortFilter = function(sortType) {
             currentSort = sortType;
             document.querySelectorAll('.sort-btn').forEach(btn => {
                 if (btn.getAttribute('data-sort') === sortType) {
@@ -593,9 +565,9 @@
                 }
             });
             renderKhalafas();
-        }
+        };
 
-        function selectStar(kId, starVal) {
+        window.selectStar = function(kId, starVal) {
             selectedRatings[kId] = starVal;
             const box = document.getElementById(`star-picker-${kId}`);
             if (!box) return;
@@ -605,19 +577,11 @@
                     ? "text-amber-400 text-sm transition transform hover:scale-110"
                     : "text-slate-600 text-sm transition transform hover:scale-110";
             });
-        }
-
-        function escapeHtml(str) {
-            return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
+        };
 
         function renderKhalafas() {
             const list = document.getElementById('khalafas-list');
-            const search = document.getElementById('search-input').value.toLowerCase();
+            const search = (document.getElementById('search-input')?.value || '').toLowerCase();
 
             let filtered = khalafas.filter(k => {
                 let matchesCat = currentCategory === 'الكل' || k.category === currentCategory;
@@ -625,8 +589,8 @@
                 return matchesCat && matchesSearch;
             });
 
-            if (currentSort === 'default') filtered.sort((a, b) => b.vip - a.vip);
-            else if (currentSort === 'newest') filtered.sort((a, b) => b.id - a.id);
+            if (currentSort === 'default') filtered.sort((a, b) => Number(b.vip) - Number(a.vip));
+            else if (currentSort === 'newest') filtered.sort((a, b) => b.sortOrder - a.sortOrder);
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
             if (filtered.length === 0) {
@@ -636,9 +600,11 @@
 
             let html = '';
             filtered.forEach((k, index) => {
+                const safeIdJs = escapeJsSingle(k.id);
+                const safeIdDom = encodeURIComponent(k.id);
                 const activeStar = selectedRatings[k.id] || 5;
                 const starsButtons = [1, 2, 3, 4, 5].map(n => `
-                    <button type="button" onclick="selectStar(${k.id}, ${n})" class="${n <= activeStar ? 'text-amber-400' : 'text-slate-600'} text-sm transition transform hover:scale-110" aria-label="${n} نجوم">
+                    <button type="button" onclick="selectStar('${safeIdJs}', ${n})" class="${n <= activeStar ? 'text-amber-400' : 'text-slate-600'} text-sm transition transform hover:scale-110" aria-label="${n} نجوم">
                         <i class="fa-solid fa-star"></i>
                     </button>
                 `).join('');
@@ -675,11 +641,11 @@
                     <div class="mt-3 pt-3 border-t border-slate-800/90 space-y-2">
                         <div class="flex items-center justify-between gap-2">
                             <span class="text-[11px] text-slate-300 font-bold">قيّم الخلفة واكتب ريفيو:</span>
-                            <div id="star-picker-${k.id}" class="flex items-center gap-1">${starsButtons}</div>
+                            <div id="star-picker-${safeIdDom}" class="flex items-center gap-1">${starsButtons}</div>
                         </div>
                         <div class="flex gap-2">
-                            <input type="text" id="review-input-${k.id}" placeholder="اكتب ريفيو أو ملاحظتك عن الخلفة..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
-                            <button type="button" id="rate-btn-${k.id}" onclick="submitRatingAndReview(${k.id})" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
+                            <input type="text" id="review-input-${safeIdDom}" placeholder="اكتب ريفيو أو ملاحظتك عن الخلفة..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                            <button type="button" id="rate-btn-${safeIdDom}" onclick="submitRatingAndReview('${safeIdJs}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
                                 إرسال التقييم
                             </button>
                         </div>
@@ -694,12 +660,13 @@
             list.innerHTML = html;
         }
 
-        async function submitRatingAndReview(kId) {
+        window.submitRatingAndReview = async function(kId) {
             const item = khalafas.find(k => k.id === kId);
             if (!item) return;
 
+            const safeIdDom = encodeURIComponent(kId);
             const starsVal = selectedRatings[kId] || 5;
-            const reviewInput = document.getElementById(`review-input-${kId}`);
+            const reviewInput = document.getElementById(`review-input-${safeIdDom}`);
             const reviewTextRaw = reviewInput ? reviewInput.value.trim() : "";
 
             if (!reviewTextRaw) {
@@ -707,7 +674,7 @@
                 return;
             }
 
-            const btn = document.getElementById(`rate-btn-${kId}`);
+            const btn = document.getElementById(`rate-btn-${safeIdDom}`);
             if (btn) {
                 btn.disabled = true;
                 btn.textContent = "جاري الحفظ...";
@@ -722,72 +689,27 @@
                 ? `${item.reviewsText} || ${formattedEntry}`
                 : formattedEntry;
 
-            const targetUrl = getSheetUrl();
-
             try {
-                let response;
-                if (isAppsScriptUrl(targetUrl)) {
-                    response = await fetch(targetUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({
-                            action: 'update_rating',
-                            name: item.name,
-                            phone: item.phone,
-                            rating: newAvg,
-                            ratingsCount: newCount,
-                            reviewsText: updatedReviewsText
-                        })
-                    });
-                } else {
-                    const rawPhone = String(item.phone || "").trim();
-                    const altPhone = rawPhone.startsWith("0") ? rawPhone.slice(1) : `0${rawPhone}`;
-                    let patchUrl = `${targetUrl}/${encodeURIComponent("الهاتف")}/${encodeURIComponent(rawPhone)}`;
-                    const patchPayload = JSON.stringify({
-                        "data": {
-                            "التقييم": newAvg,
-                            "عدد التقييمات": newCount,
-                            "التقييمات النصية": updatedReviewsText
-                        }
-                    });
-                    const patchHeaders = {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    };
-                    response = await fetch(patchUrl, {
-                        method: 'PATCH',
-                        headers: patchHeaders,
-                        body: patchPayload
-                    });
-                    if (!response.ok && altPhone && altPhone !== rawPhone) {
-                        patchUrl = `${targetUrl}/${encodeURIComponent("الهاتف")}/${encodeURIComponent(altPhone)}`;
-                        response = await fetch(patchUrl, {
-                            method: 'PATCH',
-                            headers: patchHeaders,
-                            body: patchPayload
-                        });
-                    }
-                }
+                const docRef = doc(db, KHALAFAS_COLLECTION, item.id);
+                await updateDoc(docRef, {
+                    "التقييم": newAvg,
+                    "عدد التقييمات": newCount,
+                    "التقييمات النصية": updatedReviewsText
+                });
 
-                if (response.ok) {
-                    if (reviewInput) reviewInput.value = "";
-                    alert("تم حفظ التقييم والريفيو بنجاح");
-                    await loadFromSheet();
-                } else {
-                    const errBody = await response.text().catch(() => "");
-                    console.error("Rating update failed:", response.status, errBody);
-                    alert("تعذر حفظ التقييم في الأكسل، تأكد من وجود عمود (التقييمات النصية) ومن صلاحيات الربط.");
-                }
+                if (reviewInput) reviewInput.value = "";
+                alert("تم حفظ التقييم والريفيو بنجاح");
+                await window.loadFromFirestore(false);
             } catch (err) {
-                console.error("Rating network error:", err);
-                alert("حدث خطأ بالشبكة أثناء إرسال التقييم.");
+                console.error("Firestore Rating Error:", err);
+                alert(`تعذر حفظ التقييم: ${err.message}`);
             } finally {
                 if (btn) {
                     btn.disabled = false;
                     btn.textContent = "إرسال التقييم";
                 }
             }
-        }
+        };
 
         function renderAdminList() {
             const adminList = document.getElementById('admin-khalafas-list');
@@ -818,7 +740,7 @@
             }).join('');
         }
 
-        async function submitKhalfa(e) {
+        window.submitKhalfa = async function(e) {
             e.preventDefault();
             const name = document.getElementById('reg-name').value.trim();
             let cat = document.getElementById('reg-category').value;
@@ -863,77 +785,51 @@
                 "VIP": "لا",
                 "التقييم": 5.0,
                 "عدد التقييمات": 1,
-                "التقييمات النصية": ""
+                "التقييمات النصية": "",
+                "createdAt": Date.now()
             };
 
-            const targetUrl = getSheetUrl();
-
             try {
-                let response;
-                if (isAppsScriptUrl(targetUrl)) {
-                    response = await fetch(targetUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'add', row: rowObj })
-                    });
-                } else {
-                    response = await fetch(targetUrl, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ "data": [rowObj] })
-                    });
-                }
-
-                if (response.ok) {
-                    alert('تمت الإضافة بنجاح');
-                    closeRegisterModal();
-                    document.getElementById('register-form').reset();
-                    document.getElementById('new-category-div').classList.add('hidden');
-                    document.getElementById('new-area-div').classList.add('hidden');
-                    document.getElementById('new-hours-div').classList.add('hidden');
-                    errorBox.classList.add('hidden');
-                    await loadFromSheet();
-                } else {
-                    const errBody = await response.text().catch(() => "");
-                    console.error("Sync POST failed:", response.status, errBody);
-                    errorText.textContent = `تعذر إتمام الإضافة (${response.status}). تحقق من رابط الربط أو صلاحيات الجدول.`;
-                    errorBox.classList.remove('hidden');
-                }
+                await addDoc(collection(db, KHALAFAS_COLLECTION), rowObj);
+                alert('تمت الإضافة بنجاح');
+                window.closeRegisterModal();
+                document.getElementById('register-form').reset();
+                document.getElementById('new-category-div').classList.add('hidden');
+                document.getElementById('new-area-div').classList.add('hidden');
+                document.getElementById('new-hours-div').classList.add('hidden');
+                errorBox.classList.add('hidden');
+                await window.loadFromFirestore(false);
             } catch (err) {
-                console.error("Sync Network Error:", err);
-                errorText.textContent = 'حدث خطأ في الاتصال بالشبكة.';
+                console.error("Firestore Add Error:", err);
+                errorText.textContent = `تعذر إتمام الإضافة: ${err.message}`;
                 errorBox.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'إرسال';
             }
-        }
+        };
 
-        function openRegisterModal() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); }
-        function closeRegisterModal() { document.getElementById('register-modal').classList.add('hidden'); }
-        function openSupportModal() { document.getElementById('support-modal').classList.remove('hidden'); }
-        function closeSupportModal() { document.getElementById('support-modal').classList.add('hidden'); }
-        function openVipModal() { document.getElementById('vip-modal').classList.remove('hidden'); }
-        function closeVipModal() { document.getElementById('vip-modal').classList.add('hidden'); }
-        function openAdvertiseModal() { document.getElementById('advertise-modal').classList.remove('hidden'); }
-        function closeAdvertiseModal() { document.getElementById('advertise-modal').classList.add('hidden'); }
-        function openAdminLogin() { document.getElementById('admin-login-modal').classList.remove('hidden'); }
-        function closeAdminLogin() { document.getElementById('admin-login-modal').classList.add('hidden'); }
-        function checkAdminPassword() {
+        window.openRegisterModal = function() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); };
+        window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); };
+        window.openSupportModal = function() { document.getElementById('support-modal').classList.remove('hidden'); };
+        window.closeSupportModal = function() { document.getElementById('support-modal').classList.add('hidden'); };
+        window.openVipModal = function() { document.getElementById('vip-modal').classList.remove('hidden'); };
+        window.closeVipModal = function() { document.getElementById('vip-modal').classList.add('hidden'); };
+        window.openAdvertiseModal = function() { document.getElementById('advertise-modal').classList.remove('hidden'); };
+        window.closeAdvertiseModal = function() { document.getElementById('advertise-modal').classList.add('hidden'); };
+        window.openAdminLogin = function() { document.getElementById('admin-login-modal').classList.remove('hidden'); };
+        window.closeAdminLogin = function() { document.getElementById('admin-login-modal').classList.add('hidden'); };
+        window.checkAdminPassword = function() {
             if (document.getElementById('admin-pass-input').value === '7223') {
-                closeAdminLogin();
-                document.getElementById('admin-sheetdb-url').value = getSheetUrl();
+                window.closeAdminLogin();
                 renderAdminList();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
             } else { alert('رمز المرور خاطئ'); }
-        }
-        function closeAdminDashboard() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); }
-        function openStandardWhatsApp(msg) { window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodeURIComponent(msg)}`; }
-        function sendSupportWhatsApp() { openStandardWhatsApp(document.getElementById('support-msg-text').value); }
-        function sendSupportEmail() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; }
+        };
+        window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
+        window.openStandardWhatsApp = function(msg) { window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodeURIComponent(msg)}`; };
+        window.sendSupportWhatsApp = function() { window.openStandardWhatsApp(document.getElementById('support-msg-text').value); };
+        window.sendSupportEmail = function() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; };
     </script>
 </body>
 </html>
