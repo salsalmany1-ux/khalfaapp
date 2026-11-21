@@ -191,24 +191,20 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
-            <p class="text-xs text-slate-400 mb-2">يمكنك حفظ الرسالة في التطبيق مباشرة ليراها الأدمن أو إرسالها عبر واتساب / الإيميل.</p>
-            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك أو ملاحظتك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
-            <button type="button" id="save-support-btn" onclick="saveMessageToFirestore('support')" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs mb-2 hover:bg-amber-400 transition">
-                <i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق
+            <p class="text-xs text-slate-400 mb-2">اكتب شكواك أو ملاحظتك هنا وسيتم إرسالها مباشرة إلى لوحة الإدارة.</p>
+            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <button type="button" id="save-support-btn" onclick="saveMessageToFirestore('support')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition">
+                إرسال
             </button>
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs">عبر واتساب</button>
-                <button onclick="sendSupportEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs">عبر الإيميل</button>
-            </div>
         </div>
     </div>
 
-    <!-- نافذة محادثة VIP والإعلانات -->
+    <!-- نافذة VIP والإعلانات -->
     <div id="vip-ads-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeVipAdsModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 id="vip-ads-title" class="text-lg font-black text-amber-400 mb-1">محادثة VIP والإعلانات</h3>
-            <p class="text-xs text-slate-400 mb-3">اكتب تفاصيل طلبك هنا وسيتم حفظه في التطبيق ليراجعه الأدمن، أو أرسله عبر واتساب / الإيميل.</p>
+            <h3 id="vip-ads-title" class="text-lg font-black text-amber-400 mb-1">اشتراك VIP وحجز الإعلانات</h3>
+            <p class="text-xs text-slate-400 mb-3">اختر نوع الطلب واكتب التفاصيل ليتم إرسالها مباشرة إلى لوحة الإدارة.</p>
 
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <button type="button" id="tab-vip-btn" onclick="setVipAdsMode('vip')" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition">
@@ -220,13 +216,9 @@
             </div>
 
             <textarea id="vip-ads-msg-text" rows="3" placeholder="اكتب اسم الورشة أو المحل وتفاصيل طلبك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
-            <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs mb-2 hover:bg-amber-400 transition">
-                <i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق
+            <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition">
+                إرسال
             </button>
-            <div class="grid grid-cols-2 gap-2">
-                <button type="button" onclick="sendVipAdsWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs hover:bg-emerald-600/30 transition">عبر واتساب</button>
-                <button type="button" onclick="sendVipAdsEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs hover:bg-amber-500/30 transition">عبر الإيميل</button>
-            </div>
         </div>
     </div>
 
@@ -295,8 +287,6 @@
         const RATED_STORAGE_KEY = "khalfa_rated_docs_v1";
         const VOTER_ID_STORAGE_KEY = "khalfa_voter_id_v1";
 
-        const ADMIN_PHONE = "9647833837468";
-        const ADMIN_EMAIL = "s.alsalmany1@gmail.com";
         const LOGO_URL = new URL('./logo.png?v=2', window.location.href).href;
 
         const DEFAULT_CATEGORIES = [
@@ -860,7 +850,7 @@
 
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.textContent = "جاري الحفظ...";
+                btnEl.textContent = "جاري الإرسال...";
             }
 
             try {
@@ -870,7 +860,7 @@
                     createdAt: Date.now()
                 });
                 if (textareaEl) textareaEl.value = "";
-                alert("تم إرسال رسالتك وحفظها في التطبيق بنجاح.");
+                alert("تم الإرسال بنجاح");
                 if (isSupport) window.closeSupportModal();
                 else window.closeVipAdsModal();
                 try {
@@ -878,11 +868,11 @@
                 } catch (e) {}
             } catch (err) {
                 console.error("Firestore Message Save Error:", err);
-                alert(`تعذر حفظ الرسالة: ${err.message}`);
+                alert(`تعذر الإرسال: ${err.message}`);
             } finally {
                 if (btnEl) {
                     btnEl.disabled = false;
-                    btnEl.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق`;
+                    btnEl.textContent = "إرسال";
                 }
             }
         };
@@ -1077,14 +1067,14 @@
             if (currentVipAdsMode === 'vip') {
                 if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition";
                 if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition";
-                if (titleEl) titleEl.textContent = "محادثة حساب VIP المميز";
+                if (titleEl) titleEl.textContent = "اشتراك VIP المميز";
                 if (textareaEl && !textareaEl.value.trim()) {
                     textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب الاشتراك في حساب VIP...";
                 }
             } else {
                 if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition";
                 if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition";
-                if (titleEl) titleEl.textContent = "محادثة حجز الإعلانات";
+                if (titleEl) titleEl.textContent = "حجز إعلان";
                 if (textareaEl && !textareaEl.value.trim()) {
                     textareaEl.placeholder = "اكتب تفاصيل المساحة الإعلانية أو العرض المطلوب في الموصل...";
                 }
@@ -1097,21 +1087,6 @@
         };
         window.closeVipAdsModal = function() {
             document.getElementById('vip-ads-modal').classList.add('hidden');
-        };
-
-        function buildVipAdsMessage() {
-            const rawText = (document.getElementById('vip-ads-msg-text')?.value || '').trim();
-            const prefix = currentVipAdsMode === 'ads' ? "طلب حجز مساحة إعلانية في خلفة: " : "طلب اشتراك في حساب VIP في خلفة: ";
-            return rawText ? `${prefix}${rawText}` : prefix.trim();
-        }
-
-        window.sendVipAdsWhatsApp = function() {
-            window.openStandardWhatsApp(buildVipAdsMessage());
-        };
-
-        window.sendVipAdsEmail = function() {
-            const subject = currentVipAdsMode === 'ads' ? "طلب إعلان - تطبيق خلفة" : "طلب اشتراك VIP - تطبيق خلفة";
-            window.location.href = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildVipAdsMessage())}`;
         };
 
         window.openRegisterModal = function() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); };
@@ -1130,9 +1105,6 @@
             } else { alert('رمز المرور خاطئ'); }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
-        window.openStandardWhatsApp = function(msg) { window.location.href = `https://api.whatsapp.com/send?phone=${ADMIN_PHONE}&text=${encodeURIComponent(msg)}`; };
-        window.sendSupportWhatsApp = function() { window.openStandardWhatsApp(document.getElementById('support-msg-text').value); };
-        window.sendSupportEmail = function() { window.location.href = `mailto:${ADMIN_EMAIL}?subject=شكوى&body=${encodeURIComponent(document.getElementById('support-msg-text').value)}`; };
     </script>
 </body>
 </html>
