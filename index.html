@@ -54,7 +54,7 @@
             <button id="install-btn" onclick="triggerDirectInstall()" class="hidden bg-amber-500 text-slate-950 px-3 py-1.5 rounded-xl text-xs font-black flex items-center gap-1.5 hover:bg-amber-400 transition shadow">
                 <i class="fa-solid fa-download"></i> تثبيت
             </button>
-            <button onclick="openVipModal()" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
+            <button onclick="openVipAdsModal('vip')" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 hover:bg-amber-500/20 transition">
                 <i class="fa-solid fa-crown text-amber-400"></i> VIP
             </button>
             <button onclick="openAdminLogin()" class="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 hover:text-amber-400 hover:border-amber-500/50 transition">
@@ -68,7 +68,7 @@
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
             <span>سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!</span>
         </div>
-        <button onclick="openAdvertiseModal()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2">أعلن معنا</button>
+        <button type="button" onclick="openVipAdsModal('ads')" class="text-amber-400 font-bold hover:underline shrink-0 mr-2 cursor-pointer">أعلن معنا</button>
     </div>
 
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
@@ -191,7 +191,11 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
-            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <p class="text-xs text-slate-400 mb-2">يمكنك حفظ الرسالة في التطبيق مباشرة ليراها الأدمن أو إرسالها عبر واتساب / الإيميل.</p>
+            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك أو ملاحظتك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <button type="button" id="save-support-btn" onclick="saveMessageToFirestore('support')" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs mb-2 hover:bg-amber-400 transition">
+                <i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق
+            </button>
             <div class="grid grid-cols-2 gap-2">
                 <button onclick="sendSupportWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs">عبر واتساب</button>
                 <button onclick="sendSupportEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs">عبر الإيميل</button>
@@ -199,19 +203,30 @@
         </div>
     </div>
 
-    <div id="vip-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
-            <button onclick="closeVipModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-xl font-black text-amber-400 mb-2">مميزات حساب VIP</h3>
-            <button onclick="openStandardWhatsApp('أريد الاشتراك في حساب VIP')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-sm mt-4">تواصل عبر واتساب</button>
-        </div>
-    </div>
+    <!-- نافذة محادثة VIP والإعلانات -->
+    <div id="vip-ads-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="closeVipAdsModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <h3 id="vip-ads-title" class="text-lg font-black text-amber-400 mb-1">محادثة VIP والإعلانات</h3>
+            <p class="text-xs text-slate-400 mb-3">اكتب تفاصيل طلبك هنا وسيتم حفظه في التطبيق ليراجعه الأدمن، أو أرسله عبر واتساب / الإيميل.</p>
 
-    <div id="advertise-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative text-center">
-            <button onclick="closeAdvertiseModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-2">أعلن في تطبيق خلفة</h3>
-            <button onclick="openStandardWhatsApp('أريد حجز مساحة إعلانية')" class="w-full bg-slate-800 border border-amber-500/50 text-amber-400 font-bold py-3 rounded-xl text-sm mt-4">تواصل معنا</button>
+            <div class="grid grid-cols-2 gap-2 mb-3">
+                <button type="button" id="tab-vip-btn" onclick="setVipAdsMode('vip')" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition">
+                    <i class="fa-solid fa-crown"></i> اشتراك VIP
+                </button>
+                <button type="button" id="tab-ads-btn" onclick="setVipAdsMode('ads')" class="py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition">
+                    <i class="fa-solid fa-bullhorn"></i> حجز إعلان
+                </button>
+            </div>
+
+            <textarea id="vip-ads-msg-text" rows="3" placeholder="اكتب اسم الورشة أو المحل وتفاصيل طلبك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs mb-2 hover:bg-amber-400 transition">
+                <i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق
+            </button>
+            <div class="grid grid-cols-2 gap-2">
+                <button type="button" onclick="sendVipAdsWhatsApp()" class="bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs hover:bg-emerald-600/30 transition">عبر واتساب</button>
+                <button type="button" onclick="sendVipAdsEmail()" class="bg-amber-500/20 text-amber-300 font-bold py-2.5 rounded-xl text-xs hover:bg-amber-500/30 transition">عبر الإيميل</button>
+            </div>
         </div>
     </div>
 
@@ -225,13 +240,13 @@
     </div>
 
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
-        <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8">
+        <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8 space-y-6">
             <button onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400 mb-4">لوحة الأدمن وإدارة السجلات</h3>
+            <h3 class="text-lg font-black text-amber-400">لوحة الأدمن وإدارة السجلات</h3>
 
-            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 mb-5 space-y-3">
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
                 <div class="text-xs text-slate-400">
-                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعة: <span class="text-emerald-300 font-bold" dir="ltr">khalafas</span>
+                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعات: <span class="text-emerald-300 font-bold" dir="ltr">khalafas, messages</span>
                 </div>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span id="sheet-status-badge" class="text-[11px] text-slate-400">حالة الاتصال: بانتظار الفحص</span>
@@ -239,7 +254,15 @@
                 </div>
             </div>
 
-            <div id="admin-khalafas-list" class="space-y-3"></div>
+            <div>
+                <h4 class="text-sm font-black text-amber-400 mb-3"><i class="fa-solid fa-inbox"></i> رسائل VIP والإعلانات والشكاوى</h4>
+                <div id="admin-messages-list" class="space-y-2.5"></div>
+            </div>
+
+            <div>
+                <h4 class="text-sm font-black text-amber-400 mb-3"><i class="fa-solid fa-users-gear"></i> سجلات الحرفيين</h4>
+                <div id="admin-khalafas-list" class="space-y-3"></div>
+            </div>
         </div>
     </div>
 
@@ -268,6 +291,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const KHALAFAS_COLLECTION = "khalafas";
+        const MESSAGES_COLLECTION = "messages";
         const RATED_STORAGE_KEY = "khalfa_rated_docs_v1";
         const VOTER_ID_STORAGE_KEY = "khalfa_voter_id_v1";
 
@@ -283,6 +307,7 @@
 
         let selectedRatings = {};
         let khalafas = [];
+        let adminMessages = [];
         let categories = [...DEFAULT_CATEGORIES];
         let areas = [
             "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين",
@@ -300,6 +325,7 @@
 
         let currentCategory = "الكل";
         let currentSort = "default";
+        let currentVipAdsMode = "vip";
 
         function getOrCreateVoterId() {
             try {
@@ -407,6 +433,16 @@
                 .filter(Boolean);
         }
 
+        function formatMessageDate(ts) {
+            const num = Number(ts);
+            if (!Number.isFinite(num) || num <= 0) return "";
+            try {
+                return new Date(num).toLocaleString("ar-IQ");
+            } catch (e) {
+                return "";
+            }
+        }
+
         function renderAreasSelect() {
             const select = document.getElementById('reg-area');
             if (!select) return;
@@ -435,6 +471,25 @@
             if (!newDiv) return;
             select.value === 'new_hours_option' ? newDiv.classList.remove('hidden') : newDiv.classList.add('hidden');
         };
+
+        async function loadMessagesFromFirestore() {
+            const snap = await getDocs(collection(db, MESSAGES_COLLECTION));
+            const items = [];
+            snap.forEach((docSnap, idx) => {
+                const row = docSnap.data() || {};
+                const text = cleanField(row, ['message', 'الرسالة', 'text']);
+                if (!text) return;
+                items.push({
+                    id: docSnap.id,
+                    type: cleanField(row, ['type', 'النوع'], 'رسالة'),
+                    text: text,
+                    createdAt: Number(row.createdAt || idx + 1)
+                });
+            });
+            items.sort((a, b) => b.createdAt - a.createdAt);
+            adminMessages = items;
+            renderAdminMessages();
+        }
 
         window.loadFromFirestore = async function(notifyUser = false) {
             const listEl = document.getElementById('khalafas-list');
@@ -503,6 +558,12 @@
                 renderAreasSelect();
                 renderKhalafas();
                 renderAdminList();
+
+                try {
+                    await loadMessagesFromFirestore();
+                } catch (msgErr) {
+                    console.warn("Messages load warning:", msgErr);
+                }
 
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-emerald-400";
@@ -781,6 +842,90 @@
             }
         };
 
+        window.saveMessageToFirestore = async function(kind) {
+            const isSupport = kind === 'support';
+            const textareaEl = document.getElementById(isSupport ? 'support-msg-text' : 'vip-ads-msg-text');
+            const btnEl = document.getElementById(isSupport ? 'save-support-btn' : 'save-vip-ads-btn');
+            const textVal = (textareaEl?.value || '').trim();
+
+            if (!textVal) {
+                alert("يرجى كتابة نص الرسالة أولاً.");
+                return;
+            }
+
+            let typeLabel = "شكوى ودعم";
+            if (!isSupport) {
+                typeLabel = currentVipAdsMode === 'ads' ? "حجز إعلان" : "اشتراك VIP";
+            }
+
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.textContent = "جاري الحفظ...";
+            }
+
+            try {
+                await addDoc(collection(db, MESSAGES_COLLECTION), {
+                    type: typeLabel,
+                    message: textVal,
+                    createdAt: Date.now()
+                });
+                if (textareaEl) textareaEl.value = "";
+                alert("تم إرسال رسالتك وحفظها في التطبيق بنجاح.");
+                if (isSupport) window.closeSupportModal();
+                else window.closeVipAdsModal();
+                try {
+                    await loadMessagesFromFirestore();
+                } catch (e) {}
+            } catch (err) {
+                console.error("Firestore Message Save Error:", err);
+                alert(`تعذر حفظ الرسالة: ${err.message}`);
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.innerHTML = `<i class="fa-solid fa-paper-plane"></i> إرسال وحفظ في التطبيق`;
+                }
+            }
+        };
+
+        window.deleteAdminMessage = async function(msgId) {
+            if (!msgId) return;
+            const confirmed = confirm("هل تريد حذف هذه الرسالة من قاعدة البيانات؟");
+            if (!confirmed) return;
+            try {
+                await deleteDoc(doc(db, MESSAGES_COLLECTION, msgId));
+                await loadMessagesFromFirestore();
+            } catch (err) {
+                console.error("Delete Message Error:", err);
+                alert(`تعذر حذف الرسالة: ${err.message}`);
+            }
+        };
+
+        function renderAdminMessages() {
+            const container = document.getElementById('admin-messages-list');
+            if (!container) return;
+            if (!adminMessages.length) {
+                container.innerHTML = `<p class="text-xs text-slate-500 bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">لا توجد رسائل محفوظة حالياً.</p>`;
+                return;
+            }
+            container.innerHTML = adminMessages.map(m => {
+                const safeIdJs = escapeJsSingle(m.id);
+                const dateStr = formatMessageDate(m.createdAt);
+                return `
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 font-bold text-[11px]">${escapeHtml(m.type)}</span>
+                        <div class="flex items-center gap-2">
+                            ${dateStr ? `<span class="text-[10px] text-slate-500">${escapeHtml(dateStr)}</span>` : ''}
+                            <button type="button" onclick="deleteAdminMessage('${safeIdJs}')" class="text-rose-400 hover:text-rose-300 text-xs" title="حذف الرسالة">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-slate-200 leading-relaxed whitespace-pre-wrap">${escapeHtml(m.text)}</p>
+                </div>`;
+            }).join('');
+        }
+
         window.toggleAdminVip = async function(kId) {
             const item = khalafas.find(k => k.id === kId);
             if (!item) return;
@@ -922,21 +1067,66 @@
             }
         };
 
+        window.setVipAdsMode = function(mode) {
+            currentVipAdsMode = mode === 'ads' ? 'ads' : 'vip';
+            const vipBtn = document.getElementById('tab-vip-btn');
+            const adsBtn = document.getElementById('tab-ads-btn');
+            const titleEl = document.getElementById('vip-ads-title');
+            const textareaEl = document.getElementById('vip-ads-msg-text');
+
+            if (currentVipAdsMode === 'vip') {
+                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition";
+                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition";
+                if (titleEl) titleEl.textContent = "محادثة حساب VIP المميز";
+                if (textareaEl && !textareaEl.value.trim()) {
+                    textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب الاشتراك في حساب VIP...";
+                }
+            } else {
+                if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition";
+                if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition";
+                if (titleEl) titleEl.textContent = "محادثة حجز الإعلانات";
+                if (textareaEl && !textareaEl.value.trim()) {
+                    textareaEl.placeholder = "اكتب تفاصيل المساحة الإعلانية أو العرض المطلوب في الموصل...";
+                }
+            }
+        };
+
+        window.openVipAdsModal = function(mode = 'vip') {
+            window.setVipAdsMode(mode);
+            document.getElementById('vip-ads-modal').classList.remove('hidden');
+        };
+        window.closeVipAdsModal = function() {
+            document.getElementById('vip-ads-modal').classList.add('hidden');
+        };
+
+        function buildVipAdsMessage() {
+            const rawText = (document.getElementById('vip-ads-msg-text')?.value || '').trim();
+            const prefix = currentVipAdsMode === 'ads' ? "طلب حجز مساحة إعلانية في خلفة: " : "طلب اشتراك في حساب VIP في خلفة: ";
+            return rawText ? `${prefix}${rawText}` : prefix.trim();
+        }
+
+        window.sendVipAdsWhatsApp = function() {
+            window.openStandardWhatsApp(buildVipAdsMessage());
+        };
+
+        window.sendVipAdsEmail = function() {
+            const subject = currentVipAdsMode === 'ads' ? "طلب إعلان - تطبيق خلفة" : "طلب اشتراك VIP - تطبيق خلفة";
+            window.location.href = `mailto:${ADMIN_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildVipAdsMessage())}`;
+        };
+
         window.openRegisterModal = function() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); };
         window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); };
         window.openSupportModal = function() { document.getElementById('support-modal').classList.remove('hidden'); };
         window.closeSupportModal = function() { document.getElementById('support-modal').classList.add('hidden'); };
-        window.openVipModal = function() { document.getElementById('vip-modal').classList.remove('hidden'); };
-        window.closeVipModal = function() { document.getElementById('vip-modal').classList.add('hidden'); };
-        window.openAdvertiseModal = function() { document.getElementById('advertise-modal').classList.remove('hidden'); };
-        window.closeAdvertiseModal = function() { document.getElementById('advertise-modal').classList.add('hidden'); };
         window.openAdminLogin = function() { document.getElementById('admin-login-modal').classList.remove('hidden'); };
         window.closeAdminLogin = function() { document.getElementById('admin-login-modal').classList.add('hidden'); };
         window.checkAdminPassword = function() {
             if (document.getElementById('admin-pass-input').value === '7223') {
                 window.closeAdminLogin();
                 renderAdminList();
+                renderAdminMessages();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+                loadMessagesFromFirestore().catch(() => {});
             } else { alert('رمز المرور خاطئ'); }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
