@@ -364,19 +364,30 @@
         </div>
     </div>
 
+    <!-- نافذة دخول الأدمن عبر Firebase Auth (البريد وكلمة المرور) -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative space-y-3">
             <button type="button" onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-base font-black text-amber-400 mb-4">دخول الأدمن</h3>
-            <input type="password" id="admin-pass-input" placeholder="أدخل رمز المرور" autocomplete="off" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm mb-4 focus:outline-none focus:border-amber-500">
-            <button type="button" onclick="checkAdminPassword()" class="w-full bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-sm">دخول</button>
+            <h3 class="text-base font-black text-amber-400">دخول الأدمن</h3>
+            <p class="text-[11px] text-slate-400">سجّل دخولك بحساب الأدمن في Firebase Authentication.</p>
+            <input type="email" id="admin-email-input" placeholder="البريد الإلكتروني للأدمن" autocomplete="email" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" dir="ltr">
+            <input type="password" id="admin-pass-input" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" dir="ltr">
+            <button type="button" id="admin-login-submit-btn" onclick="checkAdminPassword()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition cursor-pointer">دخول</button>
         </div>
     </div>
 
     <div id="admin-dashboard-modal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden overflow-y-auto p-4">
         <div class="max-w-xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-2xl relative my-8 space-y-6">
             <button type="button" onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
-            <h3 class="text-lg font-black text-amber-400">لوحة الأدمن وإدارة السجلات</h3>
+            <div class="flex items-center justify-between gap-2 flex-wrap pr-1 pl-8">
+                <div>
+                    <h3 class="text-lg font-black text-amber-400">لوحة الأدمن وإدارة السجلات</h3>
+                    <p id="admin-session-email" class="text-[11px] text-emerald-400 font-bold" dir="ltr"></p>
+                </div>
+                <button type="button" onclick="logoutAdminSession()" class="px-3 py-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 font-bold text-xs transition cursor-pointer">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل خروج
+                </button>
+            </div>
 
             <!-- شريط إحصائيات مختصرة في أعلى لوحة الأدمن -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
@@ -514,6 +525,12 @@
             updateDoc,
             deleteDoc
         } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+        import {
+            getAuth,
+            signInWithEmailAndPassword,
+            signOut,
+            onAuthStateChanged
+        } from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDG_iWPziOs1UMnmH5iLpoTm9b6oLB6SHE",
@@ -527,6 +544,7 @@
 
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+        const auth = getAuth(app);
         const KHALAFAS_COLLECTION = "khalafas";
         const MESSAGES_COLLECTION = "messages";
         const LOCAL_ADS_COLLECTION = "local_ads";
@@ -553,6 +571,7 @@
         let adminMessages = [];
         let localAds = [];
         let editingAdId = null;
+        let currentAdminUser = null;
         let activeTopAd = { ...DEFAULT_TOP_AD };
         let categories = [...DEFAULT_CATEGORIES];
         let areas = [
@@ -571,6 +590,36 @@
 
         let currentCategory = "الكل";
         let currentSort = "default";
+
+        function updateAdminSessionUi() {
+            const emailEl = document.getElementById('admin-session-email');
+            if (emailEl) {
+                emailEl.textContent = currentAdminUser?.email ? `حساب Auth: ${currentAdminUser.email}` : '';
+            }
+        }
+
+        function openAdminDashboardView() {
+            updateAdminSessionUi();
+            renderAdminList();
+            renderAdminMessages();
+            renderAdminLocalAds();
+            renderAdminStats();
+            document.getElementById('admin-dashboard-modal').classList.remove('hidden');
+            loadMessagesFromFirestore().catch(() => {});
+            loadLocalAdsFromFirestore().catch(() => {});
+        }
+
+        onAuthStateChanged(auth, (user) => {
+            currentAdminUser = user || null;
+            updateAdminSessionUi();
+            if (currentAdminUser) {
+                const dashModal = document.getElementById('admin-dashboard-modal');
+                if (dashModal && !dashModal.classList.contains('hidden')) {
+                    loadMessagesFromFirestore().catch(() => {});
+                    loadLocalAdsFromFirestore().catch(() => {});
+                }
+            }
+        });
 
         function renderAdminStats() {
             const totalEl = document.getElementById('stat-khalafas-count');
@@ -1194,6 +1243,12 @@
         };
 
         async function loadMessagesFromFirestore() {
+            if (!currentAdminUser) {
+                adminMessages = [];
+                renderAdminMessages();
+                renderAdminStats();
+                return;
+            }
             const snap = await getDocs(collection(db, MESSAGES_COLLECTION));
             const items = [];
             snap.forEach((docSnap, idx) => {
@@ -1661,6 +1716,10 @@
         function renderAdminMessages() {
             const container = document.getElementById('admin-messages-list');
             if (!container) return;
+            if (!currentAdminUser) {
+                container.innerHTML = `<p class="text-xs text-amber-300/90 bg-slate-950 border border-amber-500/20 rounded-xl p-3 text-center">سجّل دخولك بحساب الأدمن في Firebase Auth لعرض الرسائل والشكاوى.</p>`;
+                return;
+            }
             if (!adminMessages.length) {
                 container.innerHTML = `<p class="text-xs text-slate-500 bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">لا توجد رسائل محفوظة حالياً.</p>`;
                 return;
@@ -1827,19 +1886,61 @@
 
         window.openRegisterModal = function() { document.getElementById('form-error-box').classList.add('hidden'); document.getElementById('register-modal').classList.remove('hidden'); };
         window.closeRegisterModal = function() { document.getElementById('register-modal').classList.add('hidden'); };
-        window.openAdminLogin = function() { document.getElementById('admin-login-modal').classList.remove('hidden'); };
+        window.openAdminLogin = function() {
+            if (currentAdminUser) {
+                openAdminDashboardView();
+                return;
+            }
+            document.getElementById('admin-login-modal').classList.remove('hidden');
+        };
         window.closeAdminLogin = function() { document.getElementById('admin-login-modal').classList.add('hidden'); };
-        window.checkAdminPassword = function() {
-            if (document.getElementById('admin-pass-input').value === '7223') {
+        window.checkAdminPassword = async function() {
+            const emailEl = document.getElementById('admin-email-input');
+            const passEl = document.getElementById('admin-pass-input');
+            const btnEl = document.getElementById('admin-login-submit-btn');
+            const email = (emailEl?.value || '').trim();
+            const password = passEl?.value || '';
+
+            if (!email || !password) {
+                window.showAppToast('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                return;
+            }
+
+            if (btnEl) {
+                btnEl.disabled = true;
+                btnEl.textContent = 'جاري الدخول...';
+            }
+
+            try {
+                const cred = await signInWithEmailAndPassword(auth, email, password);
+                currentAdminUser = cred.user;
+                if (passEl) passEl.value = '';
                 window.closeAdminLogin();
-                renderAdminList();
+                window.showAppToast('تم تسجيل دخول الأدمن بنجاح', 'success');
+                openAdminDashboardView();
+            } catch (err) {
+                console.error("Admin Auth Error:", err);
+                window.showAppToast('بيانات الدخول غير صحيحة أو Auth غير مفعّل', 'error');
+            } finally {
+                if (btnEl) {
+                    btnEl.disabled = false;
+                    btnEl.textContent = 'دخول';
+                }
+            }
+        };
+        window.logoutAdminSession = async function() {
+            try {
+                await signOut(auth);
+                currentAdminUser = null;
+                adminMessages = [];
                 renderAdminMessages();
-                renderAdminLocalAds();
                 renderAdminStats();
-                document.getElementById('admin-dashboard-modal').classList.remove('hidden');
-                loadMessagesFromFirestore().catch(() => {});
-                loadLocalAdsFromFirestore().catch(() => {});
-            } else { window.showAppToast('رمز المرور خاطئ', 'error'); }
+                window.closeAdminDashboard();
+                window.showAppToast('تم تسجيل الخروج من لوحة الأدمن', 'info');
+            } catch (err) {
+                console.error("Admin Logout Error:", err);
+                window.showAppToast('تعذر تسجيل الخروج', 'error');
+            }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
     </script>
