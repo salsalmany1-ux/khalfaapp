@@ -25,7 +25,7 @@
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 
-    <!-- تهيئة مبكرة للدوال والإشعارات الداخلية لمنع ظهور اسم النطاق -->
+    <!-- تهيئة مبكرة للدوال والإشعارات الداخلية -->
     <script>
         window.__pendingMessageQueue = [];
         window.__currentVipAdsMode = 'vip';
@@ -60,7 +60,7 @@
             const modal = document.getElementById('confirm-modal');
             const textEl = document.getElementById('confirm-modal-text');
             window.__pendingConfirmCallback = typeof onConfirm === 'function' ? onConfirm : null;
-            if (textEl) textEl.textContent = message || 'هل أنت متأكد من تنفيذ هذا الإجراء؟';
+            if (textEl) textEl.textContent = message || 'متأكد تريد تكمل هذا الإجراء؟';
             if (modal) modal.classList.remove('hidden');
         };
 
@@ -90,14 +90,14 @@
                 if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
                 if (titleEl) titleEl.textContent = "اشتراك VIP المميز";
                 if (textareaEl && !textareaEl.value.trim()) {
-                    textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب الاشتراك في حساب VIP...";
+                    textareaEl.placeholder = "اكتب اسم الورشة أو المحل وطلب اشتراك VIP...";
                 }
             } else {
                 if (adsBtn) adsBtn.className = "py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer";
                 if (vipBtn) vipBtn.className = "py-2 rounded-xl text-xs font-bold bg-slate-950 border border-slate-800 text-slate-300 transition cursor-pointer";
                 if (titleEl) titleEl.textContent = "حجز إعلان";
                 if (textareaEl && !textareaEl.value.trim()) {
-                    textareaEl.placeholder = "اكتب تفاصيل المساحة الإعلانية أو العرض المطلوب في الموصل...";
+                    textareaEl.placeholder = "اكتب تفاصيل الإعلان أو العرض المطلوب...";
                 }
             }
         };
@@ -136,14 +136,14 @@
             const statusEl = document.getElementById(isSupport ? 'support-status' : 'vip-ads-status');
             if (statusEl) {
                 statusEl.className = 'block text-xs rounded-xl px-3 py-2 mb-3 bg-amber-500/15 border border-amber-500/40 text-amber-300';
-                statusEl.textContent = 'جاري تجهيز الاتصال بقاعدة البيانات وإرسال الرسالة...';
+                statusEl.textContent = 'جاري إرسال رسالتك...';
             }
         };
     </script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
 
-    <!-- إشعار منبثق داخلي نظيف دون اسم نطاق -->
+    <!-- إشعار منبثق داخلي -->
     <div id="app-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-[110] hidden max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border text-xs font-bold text-center transition-all duration-300"></div>
 
     <!-- نافذة تأكيد داخلية قبل الحذف -->
@@ -153,7 +153,7 @@
                 <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
             <h3 class="text-base font-black text-slate-100">تأكيد الحذف</h3>
-            <p id="confirm-modal-text" class="text-xs text-slate-300 leading-relaxed">هل أنت متأكد من الحذف؟</p>
+            <p id="confirm-modal-text" class="text-xs text-slate-300 leading-relaxed">متأكد تريد تكمل هذا الإجراء؟</p>
             <div class="grid grid-cols-2 gap-2 pt-1">
                 <button type="button" onclick="closeConfirmModal()" class="py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">
                     إلغاء
@@ -170,7 +170,7 @@
         <img src="./logo.png?v=4" alt="حرفي" class="w-28 h-28 rounded-3xl object-cover shadow-2xl border-2 border-amber-500/50 animate-pulse">
         <div class="text-center">
             <p class="text-lg font-black text-amber-400">حرفي</p>
-            <p class="text-xs text-slate-400 mt-1">جاري تجهيز دليل الحرفيين...</p>
+            <p class="text-xs text-slate-400 mt-1">أهلاً بك، جاري تجهيز الدليل...</p>
         </div>
     </div>
 
@@ -201,7 +201,7 @@
         </div>
     </header>
 
-    <!-- شريط الإعلان العلوي (قابل للتحديث والتعديل مع أولوية وانتهاء تلقائي) -->
+    <!-- شريط الإعلان العلوي -->
     <div id="top-ad-banner" class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
             <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black shrink-0">إعلان</span>
@@ -231,7 +231,7 @@
         <div id="khalafas-list" class="space-y-4">
             <div class="text-center py-12 text-slate-400 text-xs flex flex-col items-center gap-2">
                 <i class="fa-solid fa-spinner fa-spin text-amber-400 text-lg"></i>
-                <p>جاري تحميل السجلات من Cloud Firestore...</p>
+                <p>جاري تحميل الحرفيين...</p>
             </div>
         </div>
     </main>
@@ -331,9 +331,9 @@
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button type="button" onclick="closeSupportModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400 mb-2">الدعم الفني والشكاوى</h3>
-            <p class="text-xs text-slate-400 mb-2">اكتب شكواك أو ملاحظتك هنا وسيتم إرسالها مباشرة إلى لوحة الإدارة.</p>
+            <p class="text-xs text-slate-400 mb-2">اكتب ملاحظتك أو شكواك هنا وتوصل للإدارة مباشرة.</p>
             <div id="support-status" class="hidden text-xs rounded-xl px-3 py-2 mb-3"></div>
-            <textarea id="support-msg-text" rows="3" placeholder="اكتب شكواك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <textarea id="support-msg-text" rows="3" placeholder="اكتب رسالتك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
             <button type="button" id="save-support-btn" onclick="saveMessageToFirestore('support')" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
                 إرسال
             </button>
@@ -345,7 +345,7 @@
         <div class="bg-slate-900 border border-amber-500/30 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
             <button type="button" onclick="closeVipAdsModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 id="vip-ads-title" class="text-lg font-black text-amber-400 mb-1">اشتراك VIP وحجز الإعلانات</h3>
-            <p class="text-xs text-slate-400 mb-3">اختر نوع الطلب واكتب التفاصيل ليتم إرسالها مباشرة إلى لوحة الإدارة.</p>
+            <p class="text-xs text-slate-400 mb-3">اختر نوع الطلب واكتب التفاصيل وتوصل للإدارة مباشرة.</p>
 
             <div class="grid grid-cols-2 gap-2 mb-3">
                 <button type="button" id="tab-vip-btn" onclick="setVipAdsMode('vip')" class="py-2 rounded-xl text-xs font-bold bg-amber-500 text-slate-950 transition cursor-pointer">
@@ -357,20 +357,20 @@
             </div>
 
             <div id="vip-ads-status" class="hidden text-xs rounded-xl px-3 py-2 mb-3"></div>
-            <textarea id="vip-ads-msg-text" rows="3" placeholder="اكتب اسم الورشة أو المحل وتفاصيل طلبك هنا..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
+            <textarea id="vip-ads-msg-text" rows="3" placeholder="اكتب اسم الورشة أو المحل وطلب اشتراك VIP..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm mb-3 focus:outline-none focus:border-amber-500"></textarea>
             <button type="button" id="save-vip-ads-btn" onclick="saveMessageToFirestore(window.__currentVipAdsMode)" class="w-full bg-amber-500 text-slate-950 font-black py-3 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
                 إرسال
             </button>
         </div>
     </div>
 
-    <!-- نافذة دخول الأدمن عبر Firebase Auth (البريد وكلمة المرور) -->
+    <!-- نافذة دخول الأدمن -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative space-y-3">
             <button type="button" onclick="closeAdminLogin()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-base font-black text-amber-400">دخول الأدمن</h3>
-            <p class="text-[11px] text-slate-400">سجّل دخولك بحساب الأدمن في Firebase Authentication.</p>
-            <input type="email" id="admin-email-input" placeholder="البريد الإلكتروني للأدمن" autocomplete="email" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" dir="ltr">
+            <p class="text-[11px] text-slate-400">سجّل دخولك بحساب الإدارة.</p>
+            <input type="email" id="admin-email-input" placeholder="البريد الإلكتروني" autocomplete="email" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" dir="ltr">
             <input type="password" id="admin-pass-input" placeholder="كلمة المرور" autocomplete="current-password" onkeydown="if(event.key==='Enter'){checkAdminPassword();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500" dir="ltr">
             <button type="button" id="admin-login-submit-btn" onclick="checkAdminPassword()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-2.5 rounded-xl text-sm transition cursor-pointer">دخول</button>
         </div>
@@ -410,16 +410,13 @@
             </div>
 
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
-                <div class="text-xs text-slate-400">
-                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعات: <span class="text-emerald-300 font-bold" dir="ltr">khalafas, messages, local_ads</span>
-                </div>
                 <div class="flex flex-wrap items-center justify-between gap-2">
-                    <span id="sheet-status-badge" class="text-[11px] text-slate-400">حالة الاتصال: بانتظار الفحص</span>
-                    <button type="button" onclick="loadFromFirestore(true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">فحص وتحديث الآن</button>
+                    <span id="sheet-status-badge" class="text-[11px] text-slate-400">الحالة: بانتظار التحديث</span>
+                    <button type="button" onclick="loadFromFirestore(true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">تحديث الآن</button>
                 </div>
             </div>
 
-            <!-- نظام إدارة الإعلانات المحلية (إضافة، تعديل، أولوية، مدد سريعة، وانتهاء تلقائي) -->
+            <!-- نظام إدارة الإعلانات المحلية -->
             <div class="bg-slate-950 border border-amber-500/25 rounded-2xl p-4 space-y-4">
                 <div class="flex items-center justify-between gap-2">
                     <h4 id="local-ad-form-title" class="text-sm font-black text-amber-400"><i class="fa-solid fa-bullhorn"></i> إضافة إعلان محلي جديد</h4>
@@ -594,7 +591,7 @@
         function updateAdminSessionUi() {
             const emailEl = document.getElementById('admin-session-email');
             if (emailEl) {
-                emailEl.textContent = currentAdminUser?.email ? `حساب Auth: ${currentAdminUser.email}` : '';
+                emailEl.textContent = currentAdminUser?.email ? `الحساب: ${currentAdminUser.email}` : '';
             }
         }
 
@@ -840,19 +837,19 @@
             const expiresRaw = (document.getElementById('ad-expires-at')?.value || '').trim();
 
             if (placement === 'top_banner' && !bannerText) {
-                window.showAppToast("يرجى كتابة نص الشريط العلوي.", "error");
+                window.showAppToast("اكتب نص الشريط العلوي.", "error");
                 return;
             }
             if (placement === 'feed_card' && !title) {
-                window.showAppToast("يرجى كتابة عنوان البطاقة الإعلانية.", "error");
+                window.showAppToast("اكتب عنوان البطاقة الإعلانية.", "error");
                 return;
             }
             if (imageUrl && !isSafeUrl(imageUrl)) {
-                window.showAppToast("رابط الصورة يجب أن يبدأ بـ http:// أو https://", "error");
+                window.showAppToast("رابط الصورة لازم يبدأ بـ http:// أو https://", "error");
                 return;
             }
             if (linkUrl && !isSafeUrl(linkUrl)) {
-                window.showAppToast("رابط الإعلان يجب أن يبدأ بـ http:// أو https:// أو tel:", "error");
+                window.showAppToast("رابط الإعلان لازم يبدأ بـ http:// أو https:// أو tel:", "error");
                 return;
             }
 
@@ -860,11 +857,11 @@
             if (expiresRaw) {
                 const parsedExp = Date.parse(expiresRaw);
                 if (!Number.isFinite(parsedExp)) {
-                    window.showAppToast("تاريخ الانتهاء غير صالح.", "error");
+                    window.showAppToast("تاريخ الانتهاء غير صحيح.", "error");
                     return;
                 }
                 if (parsedExp <= Date.now()) {
-                    window.showAppToast("اختر تاريخاً ووقتاً مستقبلياً للانتهاء التلقائي.", "error");
+                    window.showAppToast("اختر تاريخاً ووقتاً قادماً للانتهاء التلقائي.", "error");
                     return;
                 }
                 expiresAtTimestamp = parsedExp;
@@ -895,21 +892,21 @@
                         ...payload,
                         active: expiresAtTimestamp > Date.now() ? true : (existing ? existing.active : true)
                     });
-                    window.showAppToast("تم تحديث الإعلان بنجاح", "success");
+                    window.showAppToast("تم تحديث الإعلان", "success");
                 } else {
                     await addDoc(collection(db, LOCAL_ADS_COLLECTION), {
                         ...payload,
                         active: true,
                         createdAt: Date.now()
                     });
-                    window.showAppToast("تم حفظ ونشر الإعلان بنجاح", "success");
+                    window.showAppToast("تم نشر الإعلان", "success");
                 }
 
                 window.cancelLocalAdEdit();
                 await loadLocalAdsFromFirestore();
             } catch (err) {
                 console.error("Save Local Ad Error:", err);
-                window.showAppToast(`تعذر حفظ الإعلان: ${err.message}`, "error");
+                window.showAppToast("تعذر حفظ الإعلان هسه، حاول مرة ثانية.", "error");
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -928,28 +925,28 @@
             }
             try {
                 await updateDoc(doc(db, LOCAL_ADS_COLLECTION, item.id), updatePayload);
-                window.showAppToast(nextActive ? "تم تفعيل الإعلان" : "تم إيقاف الإعلان مؤقتاً", "success");
+                window.showAppToast(nextActive ? "تم تفعيل الإعلان" : "تم إيقاف الإعلان", "success");
                 await loadLocalAdsFromFirestore();
             } catch (err) {
                 console.error("Toggle Local Ad Error:", err);
-                window.showAppToast(`تعذر تحديث حالة الإعلان: ${err.message}`, "error");
+                window.showAppToast("تعذر تحديث حالة الإعلان هسه.", "error");
             }
         };
 
         window.deleteLocalAd = function(adId) {
             const item = localAds.find(a => a.id === adId);
             if (!item) return;
-            window.openConfirmModal(`هل أنت متأكد من حذف الإعلان "${item.title || item.bannerText}"؟`, async () => {
+            window.openConfirmModal(`متأكد تريد حذف إعلان "${item.title || item.bannerText}"؟`, async () => {
                 try {
                     await deleteDoc(doc(db, LOCAL_ADS_COLLECTION, item.id));
                     if (editingAdId === adId) {
                         window.cancelLocalAdEdit();
                     }
-                    window.showAppToast("تم حذف الإعلان بنجاح", "success");
+                    window.showAppToast("تم حذف الإعلان", "success");
                     await loadLocalAdsFromFirestore();
                 } catch (err) {
                     console.error("Delete Local Ad Error:", err);
-                    window.showAppToast(`تعذر حذف الإعلان: ${err.message}`, "error");
+                    window.showAppToast("تعذر حذف الإعلان هسه.", "error");
                 }
             });
         };
@@ -958,7 +955,7 @@
             const container = document.getElementById('admin-local-ads-list');
             if (!container) return;
             if (!localAds.length) {
-                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد إعلانات محلية مضافة بعد.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">ماكو إعلانات مضافة حالياً.</p>`;
                 return;
             }
             container.innerHTML = localAds.map(ad => {
@@ -1073,9 +1070,9 @@
                     document.execCommand('copy');
                     document.body.removeChild(tempArea);
                 }
-                window.showAppToast('تم نسخ بيانات الحرفي للمشاركة', 'success');
+                window.showAppToast('تم نسخ معلومات الحرفي', 'success');
             } catch (copyErr) {
-                window.showAppToast('تعذر نسخ البيانات تلقائياً', 'error');
+                window.showAppToast('تعذر النسخ تلقائياً', 'error');
             }
         };
 
@@ -1274,7 +1271,7 @@
 
             if (statusBadge) {
                 statusBadge.className = "text-[11px] text-amber-300";
-                statusBadge.textContent = "جاري الفحص والتحميل من Firestore...";
+                statusBadge.textContent = "جاري تحديث البيانات...";
             }
 
             try {
@@ -1352,7 +1349,7 @@
 
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-emerald-400";
-                    statusBadge.textContent = `متصل بنجاح بـ Firestore (${loaded.length} سجل)`;
+                    statusBadge.textContent = `محدّث (${loaded.length} سجل)`;
                 }
                 if (notifyUser) {
                     window.showAppToast(`تم تحديث البيانات (${loaded.length} سجل)`, 'success');
@@ -1363,14 +1360,14 @@
                 categories = [...DEFAULT_CATEGORIES];
                 renderCategories();
                 if (listEl) {
-                    listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل البيانات من Firestore، تأكد من قواعد القراءة أو إعدادات المشروع.</div>`;
+                    listEl.innerHTML = `<div class="text-center py-12 text-rose-400 text-xs">تعذر تحميل القائمة حالياً، تأكد من اتصالك بالإنترنت وحاول مرة ثانية.</div>`;
                 }
                 if (statusBadge) {
                     statusBadge.className = "text-[11px] text-rose-400";
-                    statusBadge.textContent = `فشل الاتصال: ${e.message}`;
+                    statusBadge.textContent = "تعذر تحديث البيانات حالياً.";
                 }
                 if (notifyUser) {
-                    window.showAppToast(`فشل الاتصال: ${e.message}`, 'error');
+                    window.showAppToast("تعذر تحديث البيانات حالياً.", 'error');
                 }
                 return { ok: false, error: e.message };
             }
@@ -1406,7 +1403,7 @@
                 const installBtn = document.getElementById('install-btn');
                 if (installBtn) installBtn.classList.add('hidden');
             } else {
-                window.showAppToast('يمكنك تثبيت التطبيق من قائمة المتصفح عبر خيار (إضافة إلى الشاشة الرئيسية).', 'info');
+                window.showAppToast('تقدر تضيف التطبيق للشاشة الرئيسية من قائمة المتصفح.', 'info');
             }
         };
 
@@ -1501,7 +1498,7 @@
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
             if (filtered.length === 0) {
-                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">لا توجد نتائج مطابقة لبحثك.</div>`;
+                list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">ماكو نتائج مطابقة لبحثك حالياً.</div>`;
                 return;
             }
 
@@ -1523,14 +1520,14 @@
                 const ratingFormHtml = alreadyRated
                     ? `<div class="bg-emerald-500/10 border border-emerald-500/30 rounded-xl px-3 py-2 text-[11px] text-emerald-300 flex items-center gap-2">
                         <i class="fa-solid fa-circle-check"></i>
-                        <span>لقد قمت بتقييم هذا الحرفي مسبقاً (مسموح بتقييم واحد فقط لكل مستخدم).</span>
+                        <span>تم تسجيل تقييمك لهذا الحرفي مسبقاً.</span>
                        </div>`
                     : `<div class="flex items-center justify-between gap-2">
-                        <span class="text-[11px] text-slate-300 font-bold">قيّم الحرفي واكتب ريفيو (مرة واحدة):</span>
+                        <span class="text-[11px] text-slate-300 font-bold">شاركنا تقييمك ورأيك:</span>
                         <div id="star-picker-${safeIdDom}" class="flex items-center gap-1">${starsButtons}</div>
                        </div>
                        <div class="flex gap-2">
-                        <input type="text" id="review-input-${safeIdDom}" placeholder="اكتب ريفيو أو ملاحظتك عن الحرفي..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+                        <input type="text" id="review-input-${safeIdDom}" placeholder="اكتب رأيك أو تجربتك مع الحرفي..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
                         <button type="button" id="rate-btn-${safeIdDom}" onclick="submitRatingAndReview('${safeIdJs}')" class="bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-amber-400 font-bold px-3 py-2 rounded-xl text-xs transition shrink-0">
                             إرسال التقييم
                         </button>
@@ -1544,7 +1541,7 @@
                             </div>
                         `).join('')}
                        </div>`
-                    : `<p class="text-[11px] text-slate-500 mt-1.5">لا توجد مراجعات نصية بعد، كن أول من يكتب رأيه.</p>`;
+                    : `<p class="text-[11px] text-slate-500 mt-1.5">ماكو تعليقات بعد، كن أول من يكتب رأيه.</p>`;
 
                 html += `
                 <div class="bg-slate-900 border ${k.vip ? 'border-amber-500/60 shadow-lg' : 'border-slate-800'} rounded-2xl p-4 relative">
@@ -1586,7 +1583,7 @@
             if (!item) return;
 
             if (hasUserAlreadyRated(item)) {
-                window.showAppToast("عذراً، لقد قمت بتقييم هذا الحرفي مسبقاً.", "info");
+                window.showAppToast("قيّمت هذا الحرفي من قبل.", "info");
                 renderKhalafas();
                 return;
             }
@@ -1597,7 +1594,7 @@
             const reviewTextRaw = reviewInput ? reviewInput.value.trim() : "";
 
             if (!reviewTextRaw) {
-                window.showAppToast("يرجى كتابة ريفيو قصير مع اختيار عدد النجوم.", "error");
+                window.showAppToast("اختر النجوم واكتب تعليقاً قصيراً قبل الإرسال.", "error");
                 return;
             }
 
@@ -1629,11 +1626,11 @@
 
                 markLocalRated(item.id);
                 if (reviewInput) reviewInput.value = "";
-                window.showAppToast("تم حفظ التقييم والريفيو بنجاح", "success");
+                window.showAppToast("شكراً لك، تم حفظ تقييمك", "success");
                 await window.loadFromFirestore(false);
             } catch (err) {
                 console.error("Firestore Rating Error:", err);
-                window.showAppToast(`تعذر حفظ التقييم: ${err.message}`, "error");
+                window.showAppToast("ما قدرنا نحفظ التقييم هسه، حاول مرة ثانية.", "error");
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -1650,7 +1647,7 @@
             const textVal = (textareaEl?.value || '').trim();
 
             if (!textVal) {
-                setModalStatus(statusId, 'error', 'يرجى كتابة نص الرسالة أولاً.');
+                setModalStatus(statusId, 'error', 'اكتب نص الرسالة أولاً.');
                 return;
             }
 
@@ -1663,7 +1660,7 @@
                 btnEl.disabled = true;
                 btnEl.textContent = "جاري الإرسال...";
             }
-            setModalStatus(statusId, 'info', 'جاري حفظ الرسالة في قاعدة البيانات...');
+            setModalStatus(statusId, 'info', 'جاري الإرسال...');
 
             try {
                 await addDoc(collection(db, MESSAGES_COLLECTION), {
@@ -1672,8 +1669,8 @@
                     createdAt: Date.now()
                 });
                 if (textareaEl) textareaEl.value = "";
-                setModalStatus(statusId, 'success', 'تم الإرسال بنجاح.');
-                window.showAppToast('تم الإرسال بنجاح', 'success');
+                setModalStatus(statusId, 'success', 'تم إرسال رسالتك بنجاح');
+                window.showAppToast('تم إرسال رسالتك بنجاح', 'success');
                 try {
                     await loadMessagesFromFirestore();
                 } catch (e) {}
@@ -1684,7 +1681,7 @@
                 }, 800);
             } catch (err) {
                 console.error("Firestore Message Save Error:", err);
-                setModalStatus(statusId, 'error', `تعذر الإرسال: ${err.message}`);
+                setModalStatus(statusId, 'error', 'تعذر إرسال الرسالة هسه، حاول مرة ثانية.');
             } finally {
                 if (btnEl) {
                     btnEl.disabled = false;
@@ -1701,14 +1698,14 @@
 
         window.deleteAdminMessage = function(msgId) {
             if (!msgId) return;
-            window.openConfirmModal("هل تريد حذف هذه الرسالة نهائياً؟", async () => {
+            window.openConfirmModal("متأكد تريد حذف هاي الرسالة؟", async () => {
                 try {
                     await deleteDoc(doc(db, MESSAGES_COLLECTION, msgId));
-                    window.showAppToast("تم حذف الرسالة بنجاح", "success");
+                    window.showAppToast("تم حذف الرسالة", "success");
                     await loadMessagesFromFirestore();
                 } catch (err) {
                     console.error("Delete Message Error:", err);
-                    window.showAppToast(`تعذر حذف الرسالة: ${err.message}`, "error");
+                    window.showAppToast("تعذر حذف الرسالة هسه.", "error");
                 }
             });
         };
@@ -1717,11 +1714,11 @@
             const container = document.getElementById('admin-messages-list');
             if (!container) return;
             if (!currentAdminUser) {
-                container.innerHTML = `<p class="text-xs text-amber-300/90 bg-slate-950 border border-amber-500/20 rounded-xl p-3 text-center">سجّل دخولك بحساب الأدمن في Firebase Auth لعرض الرسائل والشكاوى.</p>`;
+                container.innerHTML = `<p class="text-xs text-amber-300/90 bg-slate-950 border border-amber-500/20 rounded-xl p-3 text-center">سجّل دخولك لعرض الرسائل والشكاوى.</p>`;
                 return;
             }
             if (!adminMessages.length) {
-                container.innerHTML = `<p class="text-xs text-slate-500 bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">لا توجد رسائل محفوظة حالياً.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-500 bg-slate-950 border border-slate-800 rounded-xl p-3 text-center">ماكو رسائل حالياً.</p>`;
                 return;
             }
             container.innerHTML = adminMessages.map(m => {
@@ -1752,25 +1749,25 @@
                 await updateDoc(doc(db, KHALAFAS_COLLECTION, item.id), {
                     "VIP": nextVipLabel
                 });
-                window.showAppToast(nextVipBool ? "تم تفعيل VIP بنجاح" : "تم إلغاء VIP بنجاح", "success");
+                window.showAppToast(nextVipBool ? "تم تفعيل VIP" : "تم إلغاء VIP", "success");
                 await window.loadFromFirestore(false);
             } catch (err) {
                 console.error("Admin VIP Toggle Error:", err);
-                window.showAppToast(`تعذر تحديث حالة VIP: ${err.message}`, "error");
+                window.showAppToast("تعذر تحديث حالة VIP هسه.", "error");
             }
         };
 
         window.deleteAdminKhalfa = function(kId) {
             const item = khalafas.find(k => k.id === kId);
             if (!item) return;
-            window.openConfirmModal(`هل أنت متأكد من حذف السجل "${item.name}" نهائياً؟`, async () => {
+            window.openConfirmModal(`متأكد تريد حذف "${item.name}" نهائياً؟`, async () => {
                 try {
                     await deleteDoc(doc(db, KHALAFAS_COLLECTION, item.id));
-                    window.showAppToast("تم حذف السجل بنجاح", "success");
+                    window.showAppToast("تم حذف السجل", "success");
                     await window.loadFromFirestore(false);
                 } catch (err) {
                     console.error("Admin Delete Error:", err);
-                    window.showAppToast(`تعذر حذف السجل: ${err.message}`, "error");
+                    window.showAppToast("تعذر حذف السجل هسه.", "error");
                 }
             });
         };
@@ -1779,7 +1776,7 @@
             const adminList = document.getElementById('admin-khalafas-list');
             if (!adminList) return;
             if (khalafas.length === 0) {
-                adminList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">لا توجد سجلات معروضة حالياً.</p>`;
+                adminList.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">ماكو سجلات حالياً.</p>`;
                 return;
             }
             adminList.innerHTML = khalafas.map(k => {
@@ -1788,7 +1785,7 @@
                     ? `<div class="mt-2 pt-2 border-t border-slate-800/80 space-y-1">
                         ${k.reviewsList.slice().reverse().map(r => `<p class="text-[11px] text-amber-200/90 bg-slate-900/90 rounded px-2 py-1">${escapeHtml(r)}</p>`).join('')}
                        </div>`
-                    : `<p class="text-[11px] text-slate-500 mt-1">لا يوجد ريفيو نصي</p>`;
+                    : `<p class="text-[11px] text-slate-500 mt-1">ماكو تعليقات بعد.</p>`;
 
                 return `
                 <div class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-xs space-y-2.5">
@@ -1827,17 +1824,17 @@
             const errorBox = document.getElementById('form-error-box');
             const errorText = document.getElementById('form-error-text');
 
-            if (!name) { errorText.textContent = 'يرجى إدخال الاسم أو اسم الورشة.'; errorBox.classList.remove('hidden'); return; }
-            if (!cat) { errorText.textContent = 'يرجى اختيار التخصص أو المهنة.'; errorBox.classList.remove('hidden'); return; }
-            if (cat === 'new_option' && !newCatInput) { errorText.textContent = 'يرجى كتابة اسم التخصص الجديد.'; errorBox.classList.remove('hidden'); return; }
-            if (!area) { errorText.textContent = 'يرجى اختيار المنطقة أو القضاء.'; errorBox.classList.remove('hidden'); return; }
-            if (area === 'new_area_option' && !newAreaInput) { errorText.textContent = 'يرجى كتابة اسم المنطقة أو الحي الجديد.'; errorBox.classList.remove('hidden'); return; }
-            if (!workingHours) { errorText.textContent = 'يرجى اختيار ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
-            if (workingHours === 'new_hours_option' && !newHoursInput) { errorText.textContent = 'يرجى كتابة ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
+            if (!name) { errorText.textContent = 'اكتب اسمك أو اسم الورشة.'; errorBox.classList.remove('hidden'); return; }
+            if (!cat) { errorText.textContent = 'اختر التخصص أو المهنة.'; errorBox.classList.remove('hidden'); return; }
+            if (cat === 'new_option' && !newCatInput) { errorText.textContent = 'اكتب التخصص الجديد.'; errorBox.classList.remove('hidden'); return; }
+            if (!area) { errorText.textContent = 'اختر المنطقة أو القضاء.'; errorBox.classList.remove('hidden'); return; }
+            if (area === 'new_area_option' && !newAreaInput) { errorText.textContent = 'اكتب اسم المنطقة أو الحي.'; errorBox.classList.remove('hidden'); return; }
+            if (!workingHours) { errorText.textContent = 'اختر ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
+            if (workingHours === 'new_hours_option' && !newHoursInput) { errorText.textContent = 'اكتب ساعات العمل.'; errorBox.classList.remove('hidden'); return; }
 
             const phoneRegex = /^07\d{9}$/;
             if (!phoneRegex.test(phone)) {
-                errorText.textContent = 'رقم الهاتف يجب أن يتكون من 11 رقماً ويبدأ بـ 07.';
+                errorText.textContent = 'رقم الهاتف لازم 11 رقم ويبدأ بـ 07.';
                 errorBox.classList.remove('hidden');
                 return;
             }
@@ -1866,7 +1863,7 @@
 
             try {
                 await addDoc(collection(db, KHALAFAS_COLLECTION), rowObj);
-                window.showAppToast('تمت الإضافة بنجاح', 'success');
+                window.showAppToast('تمت إضافتك للدليل بنجاح', 'success');
                 window.closeRegisterModal();
                 document.getElementById('register-form').reset();
                 document.getElementById('new-category-div').classList.add('hidden');
@@ -1876,7 +1873,7 @@
                 await window.loadFromFirestore(false);
             } catch (err) {
                 console.error("Firestore Add Error:", err);
-                errorText.textContent = `تعذر إتمام الإضافة: ${err.message}`;
+                errorText.textContent = 'تعذر إرسال الطلب هسه، حاول مرة ثانية.';
                 errorBox.classList.remove('hidden');
             } finally {
                 submitBtn.disabled = false;
@@ -1902,13 +1899,13 @@
             const password = passEl?.value || '';
 
             if (!email || !password) {
-                window.showAppToast('يرجى إدخال البريد الإلكتروني وكلمة المرور', 'error');
+                window.showAppToast('أدخل البريد الإلكتروني وكلمة المرور.', 'error');
                 return;
             }
 
             if (btnEl) {
                 btnEl.disabled = true;
-                btnEl.textContent = 'جاري الدخول...';
+                btnEl.textContent = 'جاري تسجيل الدخول...';
             }
 
             try {
@@ -1916,11 +1913,11 @@
                 currentAdminUser = cred.user;
                 if (passEl) passEl.value = '';
                 window.closeAdminLogin();
-                window.showAppToast('تم تسجيل دخول الأدمن بنجاح', 'success');
+                window.showAppToast('أهلاً بك، تم تسجيل الدخول', 'success');
                 openAdminDashboardView();
             } catch (err) {
                 console.error("Admin Auth Error:", err);
-                window.showAppToast('بيانات الدخول غير صحيحة أو Auth غير مفعّل', 'error');
+                window.showAppToast('البريد الإلكتروني أو كلمة المرور غير صحيحة.', 'error');
             } finally {
                 if (btnEl) {
                     btnEl.disabled = false;
@@ -1936,10 +1933,10 @@
                 renderAdminMessages();
                 renderAdminStats();
                 window.closeAdminDashboard();
-                window.showAppToast('تم تسجيل الخروج من لوحة الأدمن', 'info');
+                window.showAppToast('تم تسجيل الخروج', 'info');
             } catch (err) {
                 console.error("Admin Logout Error:", err);
-                window.showAppToast('تعذر تسجيل الخروج', 'error');
+                window.showAppToast('تعذر تسجيل الخروج هسه.', 'error');
             }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
