@@ -201,12 +201,13 @@
         </div>
     </header>
 
-    <div class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
+    <!-- شريط الإعلان العلوي (قابل للتحديث والتعديل مع أولوية وانتهاء تلقائي) -->
+    <div id="top-ad-banner" class="bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-amber-500/10 border-y border-amber-500/20 px-4 py-2 text-xs flex items-center justify-between text-amber-300">
         <div class="flex items-center gap-2 truncate">
-            <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black">إعلان</span>
-            <span>سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!</span>
+            <span class="bg-amber-500 text-slate-950 px-1.5 py-0.5 rounded text-[10px] font-black shrink-0">إعلان</span>
+            <span id="top-ad-text" class="truncate">سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!</span>
         </div>
-        <button type="button" onclick="openVipAdsModal('ads')" class="text-amber-400 font-bold hover:underline shrink-0 mr-2 cursor-pointer">أعلن معنا</button>
+        <button type="button" id="top-ad-cta" onclick="handleTopAdAction()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2 cursor-pointer">أعلن معنا</button>
     </div>
 
     <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
@@ -220,9 +221,10 @@
 
             <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
                 <span class="text-slate-400 shrink-0"><i class="fa-solid fa-filter text-amber-400"></i> فرز حسب:</span>
-                <button onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
-                <button onclick="setSortFilter('newest')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="newest">الأحدث</button>
-                <button onclick="setSortFilter('top_rated')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="top_rated">الأعلى تقييماً</button>
+                <button type="button" onclick="setSortFilter('default')" class="sort-btn px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold shrink-0 transition" data-sort="default">الافتراضي (VIP)</button>
+                <button type="button" onclick="setSortFilter('vip_only')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="vip_only"><i class="fa-solid fa-crown text-amber-400"></i> VIP فقط</button>
+                <button type="button" onclick="setSortFilter('newest')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="newest">الأحدث</button>
+                <button type="button" onclick="setSortFilter('top_rated')" class="sort-btn px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 shrink-0 transition" data-sort="top_rated">الأعلى تقييماً</button>
             </div>
         </div>
 
@@ -378,12 +380,95 @@
 
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
                 <div class="text-xs text-slate-400">
-                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعات: <span class="text-emerald-300 font-bold" dir="ltr">khalafas, messages</span>
+                    المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعات: <span class="text-emerald-300 font-bold" dir="ltr">khalafas, messages, local_ads</span>
                 </div>
                 <div class="flex flex-wrap items-center justify-between gap-2">
                     <span id="sheet-status-badge" class="text-[11px] text-slate-400">حالة الاتصال: بانتظار الفحص</span>
                     <button type="button" onclick="loadFromFirestore(true)" class="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 font-bold px-3 py-1.5 rounded-xl text-xs hover:bg-emerald-500/30 transition">فحص وتحديث الآن</button>
                 </div>
+            </div>
+
+            <!-- نظام إدارة الإعلانات المحلية (إضافة، تعديل، أولوية، مدد سريعة، وانتهاء تلقائي) -->
+            <div class="bg-slate-950 border border-amber-500/25 rounded-2xl p-4 space-y-4">
+                <div class="flex items-center justify-between gap-2">
+                    <h4 id="local-ad-form-title" class="text-sm font-black text-amber-400"><i class="fa-solid fa-bullhorn"></i> إضافة إعلان محلي جديد</h4>
+                    <button type="button" id="cancel-ad-edit-btn" onclick="cancelLocalAdEdit()" class="hidden px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-[11px] cursor-pointer">
+                        إلغاء التعديل
+                    </button>
+                </div>
+
+                <form id="local-ad-form" onsubmit="saveLocalAd(event)" class="space-y-3 text-xs">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div>
+                            <label class="block text-slate-400 mb-1">مكان الإعلان</label>
+                            <select id="ad-placement" onchange="toggleAdPlacementFields()" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500">
+                                <option value="feed_card">بطاقة داخل القائمة</option>
+                                <option value="top_banner">إعلان الشريط العلوي</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">أولوية العرض (الأعلى أولاً)</label>
+                            <input type="number" id="ad-priority" value="1" min="0" max="999" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">نص الزر (اختياري)</label>
+                            <input type="text" id="ad-cta-label" placeholder="مثال: تواصل الآن / أعلن معنا" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div id="ad-feed-fields" class="space-y-2.5">
+                        <div>
+                            <label class="block text-slate-400 mb-1">عنوان الإعلان <span class="text-amber-400">*</span></label>
+                            <input type="text" id="ad-title" placeholder="مثال: خصم 20% على صيانة المكيفات في الموصل" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">وصف قصير للإعلان</label>
+                            <textarea id="ad-desc" rows="2" placeholder="تفاصيل العرض أو اسم المحل أو الشركة..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">رابط صورة الإعلان (اختياري)</label>
+                            <input type="url" id="ad-image-url" placeholder="https://example.com/ad-banner.jpg" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500" dir="ltr">
+                        </div>
+                    </div>
+
+                    <div id="ad-banner-fields" class="hidden space-y-2.5">
+                        <div>
+                            <label class="block text-slate-400 mb-1">نص الشريط العلوي <span class="text-amber-400">*</span></label>
+                            <input type="text" id="ad-banner-text" placeholder="مثال: عروض خاصة لمحلات ومكاتب الموصل الآن!" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="block text-slate-400 mb-1">رابط الإعلان أو واتساب/هاتف (اختياري)</label>
+                            <input type="text" id="ad-link-url" placeholder="https://... أو https://wa.me/9647..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500" dir="ltr">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 mb-1">تاريخ ووقت الانتهاء التلقائي (اختياري)</label>
+                            <input type="datetime-local" id="ad-expires-at" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 focus:outline-none focus:border-amber-500" dir="ltr">
+                            <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
+                                <button type="button" onclick="setAdExpiryPreset(3)" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-amber-500/20 border border-slate-800 hover:border-amber-500/40 text-amber-300 font-bold text-[10px] transition cursor-pointer">
+                                    3 أيام
+                                </button>
+                                <button type="button" onclick="setAdExpiryPreset(7)" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-amber-500/20 border border-slate-800 hover:border-amber-500/40 text-amber-300 font-bold text-[10px] transition cursor-pointer">
+                                    أسبوع
+                                </button>
+                                <button type="button" onclick="setAdExpiryPreset(30)" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-amber-500/20 border border-slate-800 hover:border-amber-500/40 text-amber-300 font-bold text-[10px] transition cursor-pointer">
+                                    شهر
+                                </button>
+                                <button type="button" onclick="setAdExpiryPreset(0)" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 font-bold text-[10px] transition cursor-pointer">
+                                    مسح
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="save-local-ad-btn" class="w-full bg-amber-500 text-slate-950 font-black py-2.5 rounded-xl text-xs hover:bg-amber-400 transition cursor-pointer">
+                        حفظ ونشر الإعلان
+                    </button>
+                </form>
+
+                <div id="admin-local-ads-list" class="space-y-2 pt-2 border-t border-slate-800"></div>
             </div>
 
             <div>
@@ -424,8 +509,16 @@
         const db = getFirestore(app);
         const KHALAFAS_COLLECTION = "khalafas";
         const MESSAGES_COLLECTION = "messages";
+        const LOCAL_ADS_COLLECTION = "local_ads";
         const RATED_STORAGE_KEY = "hirfi_rated_docs_v1";
         const VOTER_ID_STORAGE_KEY = "hirfi_voter_id_v1";
+        const EXPIRING_SOON_MS = 24 * 60 * 60 * 1000;
+
+        const DEFAULT_TOP_AD = {
+            text: "سجل ورشتك أو محلك في الموصل الآن وضاعف زبائنك بسهولة!",
+            ctaLabel: "أعلن معنا",
+            linkUrl: ""
+        };
 
         const LOGO_URL = new URL('./logo.png?v=4', window.location.href).href;
 
@@ -438,6 +531,9 @@
         let selectedRatings = {};
         let khalafas = [];
         let adminMessages = [];
+        let localAds = [];
+        let editingAdId = null;
+        let activeTopAd = { ...DEFAULT_TOP_AD };
         let categories = [...DEFAULT_CATEGORIES];
         let areas = [
             "الجانب الأيسر - حي الزهور", "الجانب الأيسر - حي البكر", "الجانب الأيسر - حي المثنى", "الجانب الأيسر - حي المحددين",
@@ -455,6 +551,451 @@
 
         let currentCategory = "الكل";
         let currentSort = "default";
+
+        function isSafeUrl(urlStr) {
+            const raw = String(urlStr || "").trim();
+            if (!raw) return "";
+            if (/^https?:\/\//i.test(raw)) return raw;
+            if (/^tel:[+\d]+$/i.test(raw)) return raw;
+            return "";
+        }
+
+        function toDateTimeLocalValue(timestampMs) {
+            const d = new Date(timestampMs);
+            if (!Number.isFinite(d.getTime())) return "";
+            const pad = (n) => String(n).padStart(2, '0');
+            return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+        }
+
+        window.setAdExpiryPreset = function(days) {
+            const input = document.getElementById('ad-expires-at');
+            if (!input) return;
+            const numDays = Number(days || 0);
+            if (!numDays) {
+                input.value = "";
+                return;
+            }
+            const targetMs = Date.now() + (numDays * 24 * 60 * 60 * 1000);
+            input.value = toDateTimeLocalValue(targetMs);
+        };
+
+        function isAdExpired(ad) {
+            const exp = Number(ad?.expiresAt || 0);
+            if (!Number.isFinite(exp) || exp <= 0) return false;
+            return Date.now() >= exp;
+        }
+
+        function isAdExpiringSoon(ad) {
+            const exp = Number(ad?.expiresAt || 0);
+            if (!Number.isFinite(exp) || exp <= 0) return false;
+            const remaining = exp - Date.now();
+            return remaining > 0 && remaining <= EXPIRING_SOON_MS;
+        }
+
+        function isAdCurrentlyVisible(ad) {
+            return Boolean(ad?.active) && !isAdExpired(ad);
+        }
+
+        function getSortedVisibleAds(placement) {
+            return localAds
+                .filter(ad => ad.placement === placement && isAdCurrentlyVisible(ad))
+                .sort((a, b) => {
+                    if (b.priority !== a.priority) return b.priority - a.priority;
+                    return b.createdAt - a.createdAt;
+                });
+        }
+
+        function refreshAdsVisibility() {
+            applyTopBannerAd();
+            renderKhalafas();
+            renderAdminLocalAds();
+        }
+
+        function syncAdFormModeUi() {
+            const titleEl = document.getElementById('local-ad-form-title');
+            const submitBtn = document.getElementById('save-local-ad-btn');
+            const cancelBtn = document.getElementById('cancel-ad-edit-btn');
+            if (editingAdId) {
+                if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> تعديل إعلان محلي`;
+                if (submitBtn) submitBtn.textContent = "حفظ التعديلات";
+                if (cancelBtn) cancelBtn.classList.remove('hidden');
+            } else {
+                if (titleEl) titleEl.innerHTML = `<i class="fa-solid fa-bullhorn"></i> إضافة إعلان محلي جديد`;
+                if (submitBtn) submitBtn.textContent = "حفظ ونشر الإعلان";
+                if (cancelBtn) cancelBtn.classList.add('hidden');
+            }
+        }
+
+        window.startEditLocalAd = function(adId) {
+            const ad = localAds.find(a => a.id === adId);
+            if (!ad) return;
+            editingAdId = ad.id;
+            syncAdFormModeUi();
+
+            const placementEl = document.getElementById('ad-placement');
+            const priorityEl = document.getElementById('ad-priority');
+            const ctaEl = document.getElementById('ad-cta-label');
+            const titleEl = document.getElementById('ad-title');
+            const descEl = document.getElementById('ad-desc');
+            const imgEl = document.getElementById('ad-image-url');
+            const bannerEl = document.getElementById('ad-banner-text');
+            const linkEl = document.getElementById('ad-link-url');
+            const expEl = document.getElementById('ad-expires-at');
+
+            if (placementEl) placementEl.value = ad.placement;
+            window.toggleAdPlacementFields();
+            if (priorityEl) priorityEl.value = String(ad.priority ?? 1);
+            if (ctaEl) ctaEl.value = ad.ctaLabel || '';
+            if (titleEl) titleEl.value = ad.placement === 'feed_card' ? (ad.title || '') : '';
+            if (descEl) descEl.value = ad.description || '';
+            if (imgEl) imgEl.value = ad.imageUrl || '';
+            if (bannerEl) bannerEl.value = ad.bannerText || (ad.placement === 'top_banner' ? ad.title : '') || '';
+            if (linkEl) linkEl.value = ad.linkUrl || '';
+            if (expEl) expEl.value = ad.expiresAt ? toDateTimeLocalValue(ad.expiresAt) : '';
+
+            document.getElementById('local-ad-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.cancelLocalAdEdit = function() {
+            editingAdId = null;
+            document.getElementById('local-ad-form')?.reset();
+            const priorityEl = document.getElementById('ad-priority');
+            if (priorityEl) priorityEl.value = "1";
+            window.toggleAdPlacementFields();
+            syncAdFormModeUi();
+        };
+
+        window.toggleAdPlacementFields = function() {
+            const placement = document.getElementById('ad-placement')?.value || 'feed_card';
+            const feedFields = document.getElementById('ad-feed-fields');
+            const bannerFields = document.getElementById('ad-banner-fields');
+            if (placement === 'top_banner') {
+                if (feedFields) feedFields.classList.add('hidden');
+                if (bannerFields) bannerFields.classList.remove('hidden');
+            } else {
+                if (feedFields) feedFields.classList.remove('hidden');
+                if (bannerFields) bannerFields.classList.add('hidden');
+            }
+        };
+
+        window.handleTopAdAction = function() {
+            const safeUrl = isSafeUrl(activeTopAd.linkUrl);
+            if (safeUrl) {
+                window.open(safeUrl, '_blank', 'noopener,noreferrer');
+            } else {
+                window.openVipAdsModal('ads');
+            }
+        };
+
+        function applyTopBannerAd() {
+            const textEl = document.getElementById('top-ad-text');
+            const ctaEl = document.getElementById('top-ad-cta');
+            const bannerAd = getSortedVisibleAds('top_banner')[0];
+
+            if (bannerAd) {
+                activeTopAd = {
+                    text: bannerAd.bannerText || bannerAd.title || DEFAULT_TOP_AD.text,
+                    ctaLabel: bannerAd.ctaLabel || "التفاصيل",
+                    linkUrl: bannerAd.linkUrl || ""
+                };
+            } else {
+                activeTopAd = { ...DEFAULT_TOP_AD };
+            }
+
+            if (textEl) textEl.textContent = activeTopAd.text;
+            if (ctaEl) ctaEl.textContent = activeTopAd.ctaLabel;
+        }
+
+        async function loadLocalAdsFromFirestore() {
+            const snap = await getDocs(collection(db, LOCAL_ADS_COLLECTION));
+            const items = [];
+            snap.forEach((docSnap, idx) => {
+                const row = docSnap.data() || {};
+                const placement = cleanField(row, ['placement'], 'feed_card') === 'top_banner' ? 'top_banner' : 'feed_card';
+                const title = cleanField(row, ['title', 'عنوان'], '');
+                const bannerText = cleanField(row, ['bannerText', 'message', 'نص'], '');
+                if (!title && !bannerText) return;
+
+                const activeRaw = row.active;
+                const isActive = activeRaw === undefined ? true : Boolean(activeRaw);
+                const expiresAtNum = Number(row.expiresAt || 0);
+                const priorityNum = Number(row.priority);
+
+                items.push({
+                    id: docSnap.id,
+                    placement,
+                    title,
+                    bannerText,
+                    description: cleanField(row, ['description', 'وصف'], ''),
+                    imageUrl: cleanField(row, ['imageUrl', 'صورة'], ''),
+                    linkUrl: cleanField(row, ['linkUrl', 'رابط'], ''),
+                    ctaLabel: cleanField(row, ['ctaLabel', 'زر'], placement === 'top_banner' ? 'أعلن معنا' : 'تواصل الآن'),
+                    active: isActive,
+                    priority: Number.isFinite(priorityNum) ? priorityNum : 1,
+                    expiresAt: Number.isFinite(expiresAtNum) && expiresAtNum > 0 ? expiresAtNum : 0,
+                    createdAt: Number(row.createdAt || idx + 1)
+                });
+            });
+            items.sort((a, b) => {
+                if (b.priority !== a.priority) return b.priority - a.priority;
+                return b.createdAt - a.createdAt;
+            });
+            localAds = items;
+            refreshAdsVisibility();
+        }
+
+        window.saveLocalAd = async function(e) {
+            e.preventDefault();
+            const placement = document.getElementById('ad-placement')?.value === 'top_banner' ? 'top_banner' : 'feed_card';
+            const priorityRaw = Number(document.getElementById('ad-priority')?.value ?? 1);
+            const priorityVal = Number.isFinite(priorityRaw) ? Math.max(0, Math.min(999, Math.round(priorityRaw))) : 1;
+            const ctaLabel = (document.getElementById('ad-cta-label')?.value || '').trim();
+            const title = (document.getElementById('ad-title')?.value || '').trim();
+            const description = (document.getElementById('ad-desc')?.value || '').trim();
+            const imageUrl = (document.getElementById('ad-image-url')?.value || '').trim();
+            const bannerText = (document.getElementById('ad-banner-text')?.value || '').trim();
+            const linkUrl = (document.getElementById('ad-link-url')?.value || '').trim();
+            const expiresRaw = (document.getElementById('ad-expires-at')?.value || '').trim();
+
+            if (placement === 'top_banner' && !bannerText) {
+                window.showAppToast("يرجى كتابة نص الشريط العلوي.", "error");
+                return;
+            }
+            if (placement === 'feed_card' && !title) {
+                window.showAppToast("يرجى كتابة عنوان البطاقة الإعلانية.", "error");
+                return;
+            }
+            if (imageUrl && !isSafeUrl(imageUrl)) {
+                window.showAppToast("رابط الصورة يجب أن يبدأ بـ http:// أو https://", "error");
+                return;
+            }
+            if (linkUrl && !isSafeUrl(linkUrl)) {
+                window.showAppToast("رابط الإعلان يجب أن يبدأ بـ http:// أو https:// أو tel:", "error");
+                return;
+            }
+
+            let expiresAtTimestamp = 0;
+            if (expiresRaw) {
+                const parsedExp = Date.parse(expiresRaw);
+                if (!Number.isFinite(parsedExp)) {
+                    window.showAppToast("تاريخ الانتهاء غير صالح.", "error");
+                    return;
+                }
+                if (parsedExp <= Date.now()) {
+                    window.showAppToast("اختر تاريخاً ووقتاً مستقبلياً للانتهاء التلقائي.", "error");
+                    return;
+                }
+                expiresAtTimestamp = parsedExp;
+            }
+
+            const btn = document.getElementById('save-local-ad-btn');
+            if (btn) {
+                btn.disabled = true;
+                btn.textContent = "جاري الحفظ...";
+            }
+
+            const payload = {
+                placement,
+                priority: priorityVal,
+                title: placement === 'feed_card' ? title : bannerText,
+                bannerText: placement === 'top_banner' ? bannerText : "",
+                description,
+                imageUrl,
+                linkUrl,
+                ctaLabel: ctaLabel || (placement === 'top_banner' ? 'التفاصيل' : 'تواصل الآن'),
+                expiresAt: expiresAtTimestamp
+            };
+
+            try {
+                if (editingAdId) {
+                    const existing = localAds.find(a => a.id === editingAdId);
+                    await updateDoc(doc(db, LOCAL_ADS_COLLECTION, editingAdId), {
+                        ...payload,
+                        active: expiresAtTimestamp > Date.now() ? true : (existing ? existing.active : true)
+                    });
+                    window.showAppToast("تم تحديث الإعلان بنجاح", "success");
+                } else {
+                    await addDoc(collection(db, LOCAL_ADS_COLLECTION), {
+                        ...payload,
+                        active: true,
+                        createdAt: Date.now()
+                    });
+                    window.showAppToast("تم حفظ ونشر الإعلان بنجاح", "success");
+                }
+
+                window.cancelLocalAdEdit();
+                await loadLocalAdsFromFirestore();
+            } catch (err) {
+                console.error("Save Local Ad Error:", err);
+                window.showAppToast(`تعذر حفظ الإعلان: ${err.message}`, "error");
+            } finally {
+                if (btn) {
+                    btn.disabled = false;
+                    syncAdFormModeUi();
+                }
+            }
+        };
+
+        window.toggleLocalAdActive = async function(adId) {
+            const item = localAds.find(a => a.id === adId);
+            if (!item) return;
+            const nextActive = !item.active;
+            const updatePayload = { active: nextActive };
+            if (nextActive && isAdExpired(item)) {
+                updatePayload.expiresAt = 0;
+            }
+            try {
+                await updateDoc(doc(db, LOCAL_ADS_COLLECTION, item.id), updatePayload);
+                window.showAppToast(nextActive ? "تم تفعيل الإعلان" : "تم إيقاف الإعلان مؤقتاً", "success");
+                await loadLocalAdsFromFirestore();
+            } catch (err) {
+                console.error("Toggle Local Ad Error:", err);
+                window.showAppToast(`تعذر تحديث حالة الإعلان: ${err.message}`, "error");
+            }
+        };
+
+        window.deleteLocalAd = function(adId) {
+            const item = localAds.find(a => a.id === adId);
+            if (!item) return;
+            window.openConfirmModal(`هل أنت متأكد من حذف الإعلان "${item.title || item.bannerText}"؟`, async () => {
+                try {
+                    await deleteDoc(doc(db, LOCAL_ADS_COLLECTION, item.id));
+                    if (editingAdId === adId) {
+                        window.cancelLocalAdEdit();
+                    }
+                    window.showAppToast("تم حذف الإعلان بنجاح", "success");
+                    await loadLocalAdsFromFirestore();
+                } catch (err) {
+                    console.error("Delete Local Ad Error:", err);
+                    window.showAppToast(`تعذر حذف الإعلان: ${err.message}`, "error");
+                }
+            });
+        };
+
+        function renderAdminLocalAds() {
+            const container = document.getElementById('admin-local-ads-list');
+            if (!container) return;
+            if (!localAds.length) {
+                container.innerHTML = `<p class="text-xs text-slate-500 text-center py-2">لا توجد إعلانات محلية مضافة بعد.</p>`;
+                return;
+            }
+            container.innerHTML = localAds.map(ad => {
+                const safeIdJs = escapeJsSingle(ad.id);
+                const placeLabel = ad.placement === 'top_banner' ? 'شريط علوي' : 'بطاقة قائمة';
+                const heading = ad.placement === 'top_banner' ? (ad.bannerText || ad.title) : ad.title;
+                const expired = isAdExpired(ad);
+                const expiringSoon = !expired && ad.active && isAdExpiringSoon(ad);
+                const statusBadge = expired
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/15 text-rose-300">منتهي</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold ${ad.active ? 'bg-emerald-500/15 text-emerald-300' : 'bg-slate-800 text-slate-400'}">${ad.active ? 'نشط' : 'متوقف'}</span>`;
+                const soonBadge = expiringSoon
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">ينتهي خلال أقل من 24 ساعة</span>`
+                    : '';
+                const expiryStr = ad.expiresAt ? formatMessageDate(ad.expiresAt) : '';
+                return `
+                <div class="bg-slate-900 border ${editingAdId === ad.id ? 'border-amber-500' : 'border-slate-800'} rounded-xl p-3 text-xs space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 flex-wrap">
+                            <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 font-bold text-[10px]">${escapeHtml(placeLabel)}</span>
+                            <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 font-bold text-[10px]">أولوية: ${escapeHtml(String(ad.priority))}</span>
+                            ${statusBadge}
+                            ${soonBadge}
+                            ${expiryStr ? `<span class="text-[10px] ${expired ? 'text-rose-400' : expiringSoon ? 'text-amber-300 font-bold' : 'text-slate-400'}">ينتهي: ${escapeHtml(expiryStr)}</span>` : ''}
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <button type="button" onclick="startEditLocalAd('${safeIdJs}')" class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 font-bold text-[11px] cursor-pointer">
+                                تعديل
+                            </button>
+                            <button type="button" onclick="toggleLocalAdActive('${safeIdJs}')" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] cursor-pointer">
+                                ${ad.active && !expired ? 'إيقاف' : 'تفعيل'}
+                            </button>
+                            <button type="button" onclick="deleteLocalAd('${safeIdJs}')" class="px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 font-bold text-[11px] cursor-pointer">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p class="font-bold text-slate-100">${escapeHtml(heading)}</p>
+                    ${ad.description ? `<p class="text-slate-400 text-[11px]">${escapeHtml(ad.description)}</p>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function renderFeedAdCard() {
+            const cardAd = getSortedVisibleAds('feed_card')[0];
+            if (!cardAd) {
+                return `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4"><div id="container-193518952cb65746281f7b50a674ba6c"></div></div>`;
+            }
+
+            const safeImg = isSafeUrl(cardAd.imageUrl);
+            const safeLink = isSafeUrl(cardAd.linkUrl);
+            const imgHtml = safeImg
+                ? `<img src="${escapeHtml(safeImg)}" alt="${escapeHtml(cardAd.title)}" class="w-full h-40 object-cover rounded-xl border border-slate-800 mb-3">`
+                : '';
+            const actionHtml = safeLink
+                ? `<a href="${escapeHtml(safeLink)}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 bg-amber-500 text-slate-950 font-black px-4 py-2 rounded-xl text-xs hover:bg-amber-400 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> ${escapeHtml(cardAd.ctaLabel || 'تواصل الآن')}
+                   </a>`
+                : `<button type="button" onclick="openVipAdsModal('ads')" class="inline-flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/40 text-amber-300 font-bold px-3.5 py-2 rounded-xl text-xs hover:bg-amber-500/25 transition cursor-pointer">
+                    <i class="fa-solid fa-bullhorn"></i> ${escapeHtml(cardAd.ctaLabel || 'احجز إعلانك')}
+                   </button>`;
+
+            return `
+            <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-amber-950/20 border border-amber-500/40 rounded-2xl p-4 my-4 shadow-lg">
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="bg-amber-500 text-slate-950 px-2 py-0.5 rounded-lg text-[10px] font-black">إعلان مميز</span>
+                    <span class="text-[11px] text-amber-400/90 font-bold">الموصل</span>
+                </div>
+                ${imgHtml}
+                <h3 class="text-base font-black text-slate-100">${escapeHtml(cardAd.title)}</h3>
+                ${cardAd.description ? `<p class="text-xs text-slate-300 mt-1.5 leading-relaxed">${escapeHtml(cardAd.description)}</p>` : ''}
+                <div class="mt-3 pt-2.5 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                    ${actionHtml}
+                </div>
+            </div>`;
+        }
+
+        window.shareKhalfaCard = async function(kId) {
+            const item = khalafas.find(k => k.id === kId);
+            if (!item) return;
+
+            const shareText = [
+                `حرفي - دليل الحرفيين في الموصل`,
+                `الاسم: ${item.name}`,
+                `التخصص: ${item.category}`,
+                `المنطقة: ${item.area}`,
+                `ساعات العمل: ${item.workingHours}`,
+                item.phone ? `الهاتف: ${item.phone}` : ''
+            ].filter(Boolean).join('\n');
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: `${item.name} - حرفي`,
+                        text: shareText,
+                        url: window.location.href
+                    });
+                    return;
+                } catch (err) {
+                    if (err && err.name === 'AbortError') return;
+                }
+            }
+
+            try {
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    await navigator.clipboard.writeText(`${shareText}\n${window.location.href}`);
+                } else {
+                    const tempArea = document.createElement('textarea');
+                    tempArea.value = `${shareText}\n${window.location.href}`;
+                    document.body.appendChild(tempArea);
+                    tempArea.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(tempArea);
+                }
+                window.showAppToast('تم نسخ بيانات الحرفي للمشاركة', 'success');
+            } catch (copyErr) {
+                window.showAppToast('تعذر نسخ البيانات تلقائياً', 'error');
+            }
+        };
 
         function setModalStatus(elId, type, text) {
             const el = document.getElementById(elId);
@@ -703,6 +1244,13 @@
                 areas = Array.from(areaSet);
                 renderCategories();
                 renderAreasSelect();
+
+                try {
+                    await loadLocalAdsFromFirestore();
+                } catch (adErr) {
+                    console.warn("Local ads load warning:", adErr);
+                }
+
                 renderKhalafas();
                 renderAdminList();
 
@@ -776,6 +1324,8 @@
             getOrCreateVoterId();
             renderAreasSelect();
             renderCategories();
+            window.toggleAdPlacementFields();
+            syncAdFormModeUi();
             setTimeout(hideSplashScreen, 3500);
         });
 
@@ -783,10 +1333,17 @@
             getOrCreateVoterId();
             renderAreasSelect();
             renderCategories();
+            window.toggleAdPlacementFields();
+            syncAdFormModeUi();
             const splashGuard = setTimeout(hideSplashScreen, 3500);
             await window.loadFromFirestore(false);
             clearTimeout(splashGuard);
             hideSplashScreen();
+            setInterval(() => {
+                if (localAds.length > 0) {
+                    refreshAdsVisibility();
+                }
+            }, 30000);
             setTimeout(() => {
                 if (window.AdProvider) { window.AdProvider.push({}); }
             }, 800);
@@ -842,11 +1399,12 @@
 
             let filtered = khalafas.filter(k => {
                 let matchesCat = currentCategory === 'الكل' || k.category === currentCategory;
+                let matchesVip = currentSort !== 'vip_only' || k.vip;
                 let matchesSearch = k.name.toLowerCase().includes(search) || k.area.toLowerCase().includes(search) || k.category.toLowerCase().includes(search);
-                return matchesCat && matchesSearch;
+                return matchesCat && matchesVip && matchesSearch;
             });
 
-            if (currentSort === 'default') filtered.sort((a, b) => Number(b.vip) - Number(a.vip));
+            if (currentSort === 'default' || currentSort === 'vip_only') filtered.sort((a, b) => Number(b.vip) - Number(a.vip));
             else if (currentSort === 'newest') filtered.sort((a, b) => b.sortOrder - a.sortOrder);
             else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
 
@@ -913,6 +1471,9 @@
                     <div class="flex items-center gap-2 mt-3 pt-2 border-t border-slate-800">
                         <a href="tel:${escapeHtml(k.phone)}" class="flex-1 bg-amber-500 text-slate-950 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-solid fa-phone"></i> اتصال</a>
                         <a href="https://api.whatsapp.com/send?phone=${encodeURIComponent(normalizeIraqPhone(k.phone))}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600/20 text-emerald-400 font-bold py-2.5 rounded-xl text-xs text-center"><i class="fa-brands fa-whatsapp"></i> واتساب</a>
+                        <button type="button" onclick="shareKhalfaCard('${safeIdJs}')" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3.5 py-2.5 rounded-xl text-xs transition cursor-pointer" title="مشاركة">
+                            <i class="fa-solid fa-share-nodes"></i> مشاركة
+                        </button>
                     </div>
 
                     <div class="mt-3 pt-3 border-t border-slate-800/90 space-y-2">
@@ -922,7 +1483,7 @@
                 </div>`;
 
                 if (index === 1) {
-                    html += `<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center my-4"><div id="container-193518952cb65746281f7b50a674ba6c"></div></div>`;
+                    html += renderFeedAdCard();
                 }
             });
             list.innerHTML = html;
@@ -1236,8 +1797,10 @@
                 window.closeAdminLogin();
                 renderAdminList();
                 renderAdminMessages();
+                renderAdminLocalAds();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
                 loadMessagesFromFirestore().catch(() => {});
+                loadLocalAdsFromFirestore().catch(() => {});
             } else { window.showAppToast('رمز المرور خاطئ', 'error'); }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
