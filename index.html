@@ -378,6 +378,26 @@
             <button type="button" onclick="closeAdminDashboard()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100"><i class="fa-solid fa-xmark text-lg"></i></button>
             <h3 class="text-lg font-black text-amber-400">لوحة الأدمن وإدارة السجلات</h3>
 
+            <!-- شريط إحصائيات مختصرة في أعلى لوحة الأدمن -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-center">
+                    <p id="stat-khalafas-count" class="text-lg font-black text-slate-100">0</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">إجمالي الحرفيين</p>
+                </div>
+                <div class="bg-slate-950 border border-amber-500/25 rounded-2xl p-3 text-center">
+                    <p id="stat-vip-count" class="text-lg font-black text-amber-400">0</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">حسابات VIP</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 rounded-2xl p-3 text-center">
+                    <p id="stat-messages-count" class="text-lg font-black text-sky-400">0</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">الرسائل والشكاوى</p>
+                </div>
+                <div class="bg-slate-950 border border-emerald-500/25 rounded-2xl p-3 text-center">
+                    <p id="stat-active-ads-count" class="text-lg font-black text-emerald-400">0</p>
+                    <p class="text-[11px] text-slate-400 mt-0.5">إعلانات نشطة</p>
+                </div>
+            </div>
+
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 space-y-3">
                 <div class="text-xs text-slate-400">
                     المشروع: <span class="text-amber-300 font-bold" dir="ltr">khalfaapp-9e928</span> | المجموعات: <span class="text-emerald-300 font-bold" dir="ltr">khalafas, messages, local_ads</span>
@@ -552,6 +572,18 @@
         let currentCategory = "الكل";
         let currentSort = "default";
 
+        function renderAdminStats() {
+            const totalEl = document.getElementById('stat-khalafas-count');
+            const vipEl = document.getElementById('stat-vip-count');
+            const msgsEl = document.getElementById('stat-messages-count');
+            const adsEl = document.getElementById('stat-active-ads-count');
+
+            if (totalEl) totalEl.textContent = String(khalafas.length);
+            if (vipEl) vipEl.textContent = String(khalafas.filter(k => k.vip).length);
+            if (msgsEl) msgsEl.textContent = String(adminMessages.length);
+            if (adsEl) adsEl.textContent = String(localAds.filter(ad => isAdCurrentlyVisible(ad)).length);
+        }
+
         function isSafeUrl(urlStr) {
             const raw = String(urlStr || "").trim();
             if (!raw) return "";
@@ -609,6 +641,7 @@
             applyTopBannerAd();
             renderKhalafas();
             renderAdminLocalAds();
+            renderAdminStats();
         }
 
         function syncAdFormModeUi() {
@@ -1177,6 +1210,7 @@
             items.sort((a, b) => b.createdAt - a.createdAt);
             adminMessages = items;
             renderAdminMessages();
+            renderAdminStats();
         }
 
         window.loadFromFirestore = async function(notifyUser = false) {
@@ -1253,6 +1287,7 @@
 
                 renderKhalafas();
                 renderAdminList();
+                renderAdminStats();
 
                 try {
                     await loadMessagesFromFirestore();
@@ -1326,6 +1361,7 @@
             renderCategories();
             window.toggleAdPlacementFields();
             syncAdFormModeUi();
+            renderAdminStats();
             setTimeout(hideSplashScreen, 3500);
         });
 
@@ -1335,6 +1371,7 @@
             renderCategories();
             window.toggleAdPlacementFields();
             syncAdFormModeUi();
+            renderAdminStats();
             const splashGuard = setTimeout(hideSplashScreen, 3500);
             await window.loadFromFirestore(false);
             clearTimeout(splashGuard);
@@ -1798,6 +1835,7 @@
                 renderAdminList();
                 renderAdminMessages();
                 renderAdminLocalAds();
+                renderAdminStats();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
                 loadMessagesFromFirestore().catch(() => {});
                 loadLocalAdsFromFirestore().catch(() => {});
