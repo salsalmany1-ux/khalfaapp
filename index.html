@@ -25,10 +25,58 @@
     <script data-cfasync="false" src="https://bicea.org/14/ae734d399f99ccbfebb79cc0cbcea269"></script>
     <script async="async" data-cfasync="false" src="https://bicea.org/21/193518952cb65746281f7b50a674ba6c"></script>
 
-    <!-- تهيئة مبكرة للدوال لمنع أي تأخير قبل تحميل Firebase Module -->
+    <!-- تهيئة مبكرة للدوال والإشعارات الداخلية لمنع ظهور اسم النطاق -->
     <script>
         window.__pendingMessageQueue = [];
         window.__currentVipAdsMode = 'vip';
+        window.__toastTimer = null;
+        window.__pendingConfirmCallback = null;
+
+        window.showAppToast = function(message, type = 'info') {
+            let toast = document.getElementById('app-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'app-toast';
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[110] hidden max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border text-xs font-bold text-center transition-all duration-300';
+                document.body.appendChild(toast);
+            }
+
+            if (type === 'error') {
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[110] block max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border border-rose-500/50 bg-slate-900 text-rose-300 text-xs font-bold text-center transition-all duration-300';
+            } else if (type === 'success') {
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[110] block max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border border-emerald-500/50 bg-slate-900 text-emerald-300 text-xs font-bold text-center transition-all duration-300';
+            } else {
+                toast.className = 'fixed top-20 left-1/2 -translate-x-1/2 z-[110] block max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border border-amber-500/50 bg-slate-900 text-amber-300 text-xs font-bold text-center transition-all duration-300';
+            }
+
+            toast.textContent = String(message || '');
+            clearTimeout(window.__toastTimer);
+            window.__toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3200);
+        };
+
+        window.openConfirmModal = function(message, onConfirm) {
+            const modal = document.getElementById('confirm-modal');
+            const textEl = document.getElementById('confirm-modal-text');
+            window.__pendingConfirmCallback = typeof onConfirm === 'function' ? onConfirm : null;
+            if (textEl) textEl.textContent = message || 'هل أنت متأكد من تنفيذ هذا الإجراء؟';
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeConfirmModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            window.__pendingConfirmCallback = null;
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.executeConfirmModal = async function() {
+            const cb = window.__pendingConfirmCallback;
+            window.closeConfirmModal();
+            if (typeof cb === 'function') {
+                await cb();
+            }
+        };
 
         window.setVipAdsMode = function(mode) {
             window.__currentVipAdsMode = mode === 'ads' ? 'ads' : 'vip';
@@ -94,6 +142,28 @@
     </script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- إشعار منبثق داخلي نظيف دون اسم نطاق -->
+    <div id="app-toast" class="fixed top-20 left-1/2 -translate-x-1/2 z-[110] hidden max-w-sm w-[90%] px-4 py-3 rounded-2xl shadow-2xl border text-xs font-bold text-center transition-all duration-300"></div>
+
+    <!-- نافذة تأكيد داخلية قبل الحذف -->
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[105] hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-rose-500/40 rounded-3xl max-w-sm w-full p-6 shadow-2xl text-center space-y-4">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-400 flex items-center justify-center mx-auto text-lg">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-base font-black text-slate-100">تأكيد الحذف</h3>
+            <p id="confirm-modal-text" class="text-xs text-slate-300 leading-relaxed">هل أنت متأكد من الحذف؟</p>
+            <div class="grid grid-cols-2 gap-2 pt-1">
+                <button type="button" onclick="closeConfirmModal()" class="py-2.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 transition cursor-pointer">
+                    إلغاء
+                </button>
+                <button type="button" onclick="executeConfirmModal()" class="py-2.5 rounded-xl text-xs font-black bg-rose-600 text-white hover:bg-rose-500 transition cursor-pointer">
+                    تأكيد الحذف
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- شاشة التحميل -->
     <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
@@ -647,7 +717,7 @@
                     statusBadge.textContent = `متصل بنجاح بـ Firestore (${loaded.length} سجل)`;
                 }
                 if (notifyUser) {
-                    alert(`تم الاتصال بـ Firestore وتحديث البيانات (${loaded.length} سجل).`);
+                    window.showAppToast(`تم تحديث البيانات (${loaded.length} سجل)`, 'success');
                 }
                 return { ok: true, count: loaded.length };
             } catch (e) {
@@ -662,7 +732,7 @@
                     statusBadge.textContent = `فشل الاتصال: ${e.message}`;
                 }
                 if (notifyUser) {
-                    alert(`فشل الاتصال بـ Firestore: ${e.message}`);
+                    window.showAppToast(`فشل الاتصال: ${e.message}`, 'error');
                 }
                 return { ok: false, error: e.message };
             }
@@ -698,7 +768,7 @@
                 const installBtn = document.getElementById('install-btn');
                 if (installBtn) installBtn.classList.add('hidden');
             } else {
-                alert('يمكنك تثبيت التطبيق من قائمة المتصفح عبر خيار (إضافة إلى الشاشة الرئيسية).');
+                window.showAppToast('يمكنك تثبيت التطبيق من قائمة المتصفح عبر خيار (إضافة إلى الشاشة الرئيسية).', 'info');
             }
         };
 
@@ -863,7 +933,7 @@
             if (!item) return;
 
             if (hasUserAlreadyRated(item)) {
-                alert("عذراً، لقد قمت بتقييم هذا الخلفة مسبقاً. يسمح بتقييم واحد فقط لكل مستخدم.");
+                window.showAppToast("عذراً، لقد قمت بتقييم هذا الخلفة مسبقاً.", "info");
                 renderKhalafas();
                 return;
             }
@@ -874,7 +944,7 @@
             const reviewTextRaw = reviewInput ? reviewInput.value.trim() : "";
 
             if (!reviewTextRaw) {
-                alert("يرجى كتابة ريفيو قصير مع اختيار عدد النجوم.");
+                window.showAppToast("يرجى كتابة ريفيو قصير مع اختيار عدد النجوم.", "error");
                 return;
             }
 
@@ -906,11 +976,11 @@
 
                 markLocalRated(item.id);
                 if (reviewInput) reviewInput.value = "";
-                alert("تم حفظ التقييم والريفيو بنجاح");
+                window.showAppToast("تم حفظ التقييم والريفيو بنجاح", "success");
                 await window.loadFromFirestore(false);
             } catch (err) {
                 console.error("Firestore Rating Error:", err);
-                alert(`تعذر حفظ التقييم: ${err.message}`);
+                window.showAppToast(`تعذر حفظ التقييم: ${err.message}`, "error");
             } finally {
                 if (btn) {
                     btn.disabled = false;
@@ -949,7 +1019,8 @@
                     createdAt: Date.now()
                 });
                 if (textareaEl) textareaEl.value = "";
-                setModalStatus(statusId, 'success', 'تم الإرسال بنجاح وحفظ الرسالة في لوحة الإدارة.');
+                setModalStatus(statusId, 'success', 'تم الإرسال بنجاح.');
+                window.showAppToast('تم الإرسال بنجاح', 'success');
                 try {
                     await loadMessagesFromFirestore();
                 } catch (e) {}
@@ -957,7 +1028,7 @@
                     setModalStatus(statusId, '', '');
                     if (isSupport) window.closeSupportModal();
                     else window.closeVipAdsModal();
-                }, 900);
+                }, 800);
             } catch (err) {
                 console.error("Firestore Message Save Error:", err);
                 setModalStatus(statusId, 'error', `تعذر الإرسال: ${err.message}`);
@@ -975,17 +1046,18 @@
             queued.forEach(k => window.__realSaveMessageToFirestore(k));
         }
 
-        window.deleteAdminMessage = async function(msgId) {
+        window.deleteAdminMessage = function(msgId) {
             if (!msgId) return;
-            const confirmed = confirm("هل تريد حذف هذه الرسالة من قاعدة البيانات؟");
-            if (!confirmed) return;
-            try {
-                await deleteDoc(doc(db, MESSAGES_COLLECTION, msgId));
-                await loadMessagesFromFirestore();
-            } catch (err) {
-                console.error("Delete Message Error:", err);
-                alert(`تعذر حذف الرسالة: ${err.message}`);
-            }
+            window.openConfirmModal("هل تريد حذف هذه الرسالة نهائياً؟", async () => {
+                try {
+                    await deleteDoc(doc(db, MESSAGES_COLLECTION, msgId));
+                    window.showAppToast("تم حذف الرسالة بنجاح", "success");
+                    await loadMessagesFromFirestore();
+                } catch (err) {
+                    console.error("Delete Message Error:", err);
+                    window.showAppToast(`تعذر حذف الرسالة: ${err.message}`, "error");
+                }
+            });
         };
 
         function renderAdminMessages() {
@@ -1004,7 +1076,7 @@
                         <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-300 font-bold text-[11px]">${escapeHtml(m.type)}</span>
                         <div class="flex items-center gap-2">
                             ${dateStr ? `<span class="text-[10px] text-slate-500">${escapeHtml(dateStr)}</span>` : ''}
-                            <button type="button" onclick="deleteAdminMessage('${safeIdJs}')" class="text-rose-400 hover:text-rose-300 text-xs" title="حذف الرسالة">
+                            <button type="button" onclick="deleteAdminMessage('${safeIdJs}')" class="text-rose-400 hover:text-rose-300 text-xs cursor-pointer" title="حذف الرسالة">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
@@ -1023,27 +1095,27 @@
                 await updateDoc(doc(db, KHALAFAS_COLLECTION, item.id), {
                     "VIP": nextVipLabel
                 });
-                alert(nextVipBool ? "تم تفعيل VIP بنجاح" : "تم إلغاء VIP بنجاح");
+                window.showAppToast(nextVipBool ? "تم تفعيل VIP بنجاح" : "تم إلغاء VIP بنجاح", "success");
                 await window.loadFromFirestore(false);
             } catch (err) {
                 console.error("Admin VIP Toggle Error:", err);
-                alert(`تعذر تحديث حالة VIP: ${err.message}`);
+                window.showAppToast(`تعذر تحديث حالة VIP: ${err.message}`, "error");
             }
         };
 
-        window.deleteAdminKhalfa = async function(kId) {
+        window.deleteAdminKhalfa = function(kId) {
             const item = khalafas.find(k => k.id === kId);
             if (!item) return;
-            const confirmed = confirm(`هل أنت متأكد من حذف السجل "${item.name}" نهائياً من قاعدة البيانات؟`);
-            if (!confirmed) return;
-            try {
-                await deleteDoc(doc(db, KHALAFAS_COLLECTION, item.id));
-                alert("تم حذف السجل بنجاح");
-                await window.loadFromFirestore(false);
-            } catch (err) {
-                console.error("Admin Delete Error:", err);
-                alert(`تعذر حذف السجل: ${err.message}`);
-            }
+            window.openConfirmModal(`هل أنت متأكد من حذف السجل "${item.name}" نهائياً؟`, async () => {
+                try {
+                    await deleteDoc(doc(db, KHALAFAS_COLLECTION, item.id));
+                    window.showAppToast("تم حذف السجل بنجاح", "success");
+                    await window.loadFromFirestore(false);
+                } catch (err) {
+                    console.error("Admin Delete Error:", err);
+                    window.showAppToast(`تعذر حذف السجل: ${err.message}`, "error");
+                }
+            });
         };
 
         function renderAdminList() {
@@ -1072,10 +1144,10 @@
                     </div>
 
                     <div class="flex items-center gap-2 pt-1">
-                        <button type="button" onclick="toggleAdminVip('${safeIdJs}')" class="flex-1 px-3 py-1.5 rounded-lg font-bold transition ${k.vip ? 'bg-slate-800 text-amber-300 border border-amber-500/30 hover:bg-slate-700' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'}">
+                        <button type="button" onclick="toggleAdminVip('${safeIdJs}')" class="flex-1 px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${k.vip ? 'bg-slate-800 text-amber-300 border border-amber-500/30 hover:bg-slate-700' : 'bg-amber-500 text-slate-950 hover:bg-amber-400'}">
                             ${k.vip ? 'إلغاء VIP' : 'تفعيل VIP'}
                         </button>
-                        <button type="button" onclick="deleteAdminKhalfa('${safeIdJs}')" class="px-3 py-1.5 rounded-lg font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 transition">
+                        <button type="button" onclick="deleteAdminKhalfa('${safeIdJs}')" class="px-3 py-1.5 rounded-lg font-bold bg-rose-500/15 text-rose-400 border border-rose-500/30 hover:bg-rose-500/25 transition cursor-pointer">
                             <i class="fa-solid fa-trash"></i> حذف
                         </button>
                     </div>
@@ -1137,7 +1209,7 @@
 
             try {
                 await addDoc(collection(db, KHALAFAS_COLLECTION), rowObj);
-                alert('تمت الإضافة بنجاح');
+                window.showAppToast('تمت الإضافة بنجاح', 'success');
                 window.closeRegisterModal();
                 document.getElementById('register-form').reset();
                 document.getElementById('new-category-div').classList.add('hidden');
@@ -1166,7 +1238,7 @@
                 renderAdminMessages();
                 document.getElementById('admin-dashboard-modal').classList.remove('hidden');
                 loadMessagesFromFirestore().catch(() => {});
-            } else { alert('رمز المرور خاطئ'); }
+            } else { window.showAppToast('رمز المرور خاطئ', 'error'); }
         };
         window.closeAdminDashboard = function() { document.getElementById('admin-dashboard-modal').classList.add('hidden'); };
     </script>
