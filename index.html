@@ -78,6 +78,16 @@
             }
         };
 
+        window.openPrivacyModal = function() {
+            const modal = document.getElementById('privacy-modal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closePrivacyModal = function() {
+            const modal = document.getElementById('privacy-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
         window.setVipAdsMode = function(mode) {
             window.__currentVipAdsMode = mode === 'ads' ? 'ads' : 'vip';
             const vipBtn = document.getElementById('tab-vip-btn');
@@ -165,6 +175,50 @@
         </div>
     </div>
 
+    <!-- نافذة سياسة الخصوصية -->
+    <div id="privacy-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-sm z-[105] hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative space-y-4 max-h-[85vh] overflow-y-auto">
+            <button type="button" onclick="closePrivacyModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-100 cursor-pointer">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="flex items-center gap-2.5">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-400 flex items-center justify-center">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-black text-amber-400">سياسة الخصوصية</h3>
+                    <p class="text-[11px] text-slate-400">تطبيق حرفي - دليل الحرفيين في الموصل</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
+                <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3.5 space-y-1">
+                    <p class="font-bold text-amber-300">1. المعلومات التي نعرضها ونجمعها</p>
+                    <p class="text-slate-400">عند التسجيل كحرفي، يتم حفظ اسم الحرفي أو الورشة، التخصص، المنطقة، ساعات العمل، ورقم الهاتف ليتمكن المستخدمون من التواصل والبحث في الدليل. كما تُحفظ التقييمات والمراجعات والرسائل المرسلة للإدارة.</p>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3.5 space-y-1">
+                    <p class="font-bold text-amber-300">2. كيفية استخدام البيانات</p>
+                    <p class="text-slate-400">تُستخدم البيانات لتشغيل الدليل، تحسين نتائج البحث والفرز، ومنع تكرار التقييمات غير المشروعة، والرد على طلبات الدعم والشكاوى وحجوزات VIP والإعلانات.</p>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3.5 space-y-1">
+                    <p class="font-bold text-amber-300">3. التخزين المحلي والروابط الخارجية</p>
+                    <p class="text-slate-400">يستخدم التطبيق التخزين المحلي في المتصفح لحفظ حالة التقييمات وتجربة الاستخدام، وقد يتضمن روابط خارجية للاتصال أو واتساب أو الإعلانات التي تخضع لسياسات جهاتها.</p>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800/90 rounded-2xl p-3.5 space-y-1">
+                    <p class="font-bold text-amber-300">4. طلب التعديل أو الحذف</p>
+                    <p class="text-slate-400">يمكن للحرفيين أو المستخدمين التواصل مع الإدارة عبر نافذة الدعم والشكاوى لطلب تعديل أو إزالة أي بيانات خاصة بهم.</p>
+                </div>
+            </div>
+
+            <button type="button" onclick="closePrivacyModal()" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs transition cursor-pointer">
+                فهمت
+            </button>
+        </div>
+    </div>
+
     <!-- شاشة التحميل -->
     <div id="splash-screen" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center gap-4 transition-opacity duration-500">
         <img src="./logo.png?v=4" alt="حرفي" class="w-28 h-28 rounded-3xl object-cover shadow-2xl border-2 border-amber-500/50 animate-pulse">
@@ -210,7 +264,7 @@
         <button type="button" id="top-ad-cta" onclick="handleTopAdAction()" class="text-amber-400 font-bold hover:underline shrink-0 mr-2 cursor-pointer">أعلن معنا</button>
     </div>
 
-    <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-24">
+    <main class="max-w-2xl mx-auto w-full p-4 flex-1 pb-28">
         <div class="space-y-3 mb-4">
             <div class="relative">
                 <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-400"></i>
@@ -234,6 +288,13 @@
                 <p>جاري تحميل الحرفيين...</p>
             </div>
         </div>
+
+        <footer class="mt-8 pt-4 border-t border-slate-900 flex items-center justify-between text-[11px] text-slate-500">
+            <span>حرفي - دليل الحرفيين في الموصل</span>
+            <button type="button" onclick="openPrivacyModal()" class="text-slate-400 hover:text-amber-400 font-bold transition cursor-pointer">
+                سياسة الخصوصية
+            </button>
+        </footer>
     </main>
 
     <div class="fixed bottom-6 left-6 right-6 z-30 flex items-center justify-between pointer-events-none">
@@ -1495,7 +1556,13 @@
 
             if (currentSort === 'default' || currentSort === 'vip_only') filtered.sort((a, b) => Number(b.vip) - Number(a.vip));
             else if (currentSort === 'newest') filtered.sort((a, b) => b.sortOrder - a.sortOrder);
-            else if (currentSort === 'top_rated') filtered.sort((a, b) => b.rating - a.rating);
+            else if (currentSort === 'top_rated') {
+                filtered.sort((a, b) => {
+                    if (b.rating !== a.rating) return b.rating - a.rating;
+                    if (b.ratingsCount !== a.ratingsCount) return b.ratingsCount - a.ratingsCount;
+                    return b.sortOrder - a.sortOrder;
+                });
+            }
 
             if (filtered.length === 0) {
                 list.innerHTML = `<div class="text-center py-12 text-slate-500 text-xs">ماكو نتائج مطابقة لبحثك حالياً.</div>`;
