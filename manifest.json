@@ -1,19 +1,15 @@
 {
-  "id": "/khalfaapp/",
   "name": "حرفي - دليل الحرفيين في الموصل",
   "short_name": "حرفي",
   "description": "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
   "start_url": "/khalfaapp/",
   "scope": "/khalfaapp/",
-  "display_override": ["standalone"],
   "display": "standalone",
   "orientation": "portrait",
   "dir": "rtl",
   "lang": "ar",
   "background_color": "#020617",
   "theme_color": "#f59e0b",
-  "categories": ["utilities", "business"],
-  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/khalfaapp/logo.png?v=4",
