@@ -1,0 +1,28 @@
+{
+  "id": "./",
+  "name": "حرفي - دليل الحرفيين",
+  "short_name": "حرفي",
+  "description": "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#f59e0b",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "./logo.png?v=4",
+      "sizes": "2000x2000",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./logo.png?v=4",
+      "sizes": "2000x2000",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
