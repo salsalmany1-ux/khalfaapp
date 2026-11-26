@@ -1193,12 +1193,17 @@
             return inLocal || inDoc;
         }
 
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js').catch((err) => {
-                    console.warn('SW registration failed:', err);
-                });
+        function registerHirfiServiceWorker() {
+            if (!('serviceWorker' in navigator)) return;
+            navigator.serviceWorker.register('/khalfaapp/sw.js', { scope: '/khalfaapp/' }).catch((err) => {
+                console.warn('SW registration failed:', err);
             });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', registerHirfiServiceWorker);
+        } else {
+            registerHirfiServiceWorker();
         }
 
         function escapeHtml(str) {
