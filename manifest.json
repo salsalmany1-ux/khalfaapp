@@ -11,6 +11,7 @@
   "lang": "ar",
   "background_color": "#020617",
   "theme_color": "#f59e0b",
+  "categories": ["utilities", "business"],
   "icons": [
     {
       "src": "/khalfaapp/logo.png?v=4",
