@@ -1,28 +1,23 @@
-{
-  "id": "./",
-  "name": "حرفي - دليل الحرفيين",
-  "short_name": "حرفي",
-  "description": "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#020617",
-  "theme_color": "#f59e0b",
-  "lang": "ar",
-  "dir": "rtl",
-  "icons": [
+"screenshots": [
     {
-      "src": "./logo.png?v=4",
-      "sizes": "2000x2000",
+      "src": "./screenshot-1.png",
+      "sizes": "1080x2400",
       "type": "image/png",
-      "purpose": "any"
+      "form_factor": "narrow",
+      "label": "واجهة دليل الحرفيين والبحث والتقييم في الموصل"
     },
     {
-      "src": "./logo.png?v=4",
-      "sizes": "2000x2000",
+      "src": "./screenshot-2.png",
+      "sizes": "1080x2400",
       "type": "image/png",
-      "purpose": "maskable"
+      "form_factor": "narrow",
+      "label": "نموذج تسجيل الحرفيين والورش"
+    },
+    {
+      "src": "./screenshot-3.png",
+      "sizes": "1080x2400",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "الدعم الفني والشكاوى"
     }
   ]
-}
