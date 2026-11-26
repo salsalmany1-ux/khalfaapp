@@ -1,21 +1,21 @@
 "screenshots": [
     {
       "src": "./screenshot-1.png",
-      "sizes": "1080x2400",
+      "sizes": "229x512",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "واجهة دليل الحرفيين والبحث والتقييم في الموصل"
     },
     {
       "src": "./screenshot-2.png",
-      "sizes": "1080x2400",
+      "sizes": "229x512",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "نموذج تسجيل الحرفيين والورش"
     },
     {
       "src": "./screenshot-3.png",
-      "sizes": "1080x2400",
+      "sizes": "229x512",
       "type": "image/png",
       "form_factor": "narrow",
       "label": "الدعم الفني والشكاوى"
