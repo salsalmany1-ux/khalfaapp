@@ -14,19 +14,13 @@
   "icons": [
     {
       "src": "/khalfaapp/logo.png?v=4",
-      "sizes": "192x192",
+      "sizes": "2000x2000",
       "type": "image/png",
       "purpose": "any"
     },
     {
       "src": "/khalfaapp/logo.png?v=4",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/khalfaapp/logo.png?v=4",
-      "sizes": "512x512",
+      "sizes": "2000x2000",
       "type": "image/png",
       "purpose": "maskable"
     }
