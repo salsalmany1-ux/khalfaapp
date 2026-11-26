@@ -8,7 +8,7 @@
 
     <link rel="icon" type="image/png" href="./logo.png?v=4">
     <link rel="apple-touch-icon" href="./logo.png?v=4">
-    <link rel="manifest" id="manifest-placeholder">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#f59e0b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -617,8 +617,6 @@
             linkUrl: ""
         };
 
-        const LOGO_URL = new URL('./logo.png?v=4', window.location.href).href;
-
         const DEFAULT_CATEGORIES = [
             "الكل", "كهربائي", "مجاري", "تكييف وتبريد", "نجار",
             "حداد", "ألمنيوم وجص", "صيانة موبايل", "دش وستلايت",
@@ -1194,35 +1192,6 @@
             const inDoc = Array.isArray(item.ratedBy) && item.ratedBy.includes(voterId);
             return inLocal || inDoc;
         }
-
-        const manifestData = {
-            id: "./",
-            name: "حرفي - دليل الحرفيين",
-            short_name: "حرفي",
-            description: "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
-            start_url: "./",
-            scope: "./",
-            display: "standalone",
-            orientation: "portrait",
-            background_color: "#020617",
-            theme_color: "#f59e0b",
-            icons: [
-                {
-                    src: LOGO_URL,
-                    sizes: "2000x2000",
-                    type: "image/png",
-                    purpose: "any"
-                },
-                {
-                    src: LOGO_URL,
-                    sizes: "2000x2000",
-                    type: "image/png",
-                    purpose: "maskable"
-                }
-            ]
-        };
-        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
-        document.getElementById('manifest-placeholder').setAttribute('href', URL.createObjectURL(manifestBlob));
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
