@@ -1,23 +1,34 @@
-"screenshots": [
+{
+  "id": "/khalfaapp/",
+  "name": "حرفي - دليل الحرفيين في الموصل",
+  "short_name": "حرفي",
+  "description": "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
+  "start_url": "/khalfaapp/",
+  "scope": "/khalfaapp/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "dir": "rtl",
+  "lang": "ar",
+  "background_color": "#020617",
+  "theme_color": "#f59e0b",
+  "icons": [
     {
-      "src": "./screenshot-1.png",
-      "sizes": "229x512",
+      "src": "/khalfaapp/logo.png?v=4",
+      "sizes": "192x192",
       "type": "image/png",
-      "form_factor": "narrow",
-      "label": "واجهة دليل الحرفيين والبحث والتقييم في الموصل"
+      "purpose": "any"
     },
     {
-      "src": "./screenshot-2.png",
-      "sizes": "229x512",
+      "src": "/khalfaapp/logo.png?v=4",
+      "sizes": "512x512",
       "type": "image/png",
-      "form_factor": "narrow",
-      "label": "نموذج تسجيل الحرفيين والورش"
+      "purpose": "any"
     },
     {
-      "src": "./screenshot-3.png",
-      "sizes": "229x512",
+      "src": "/khalfaapp/logo.png?v=4",
+      "sizes": "512x512",
       "type": "image/png",
-      "form_factor": "narrow",
-      "label": "الدعم الفني والشكاوى"
+      "purpose": "maskable"
     }
   ]
+}
