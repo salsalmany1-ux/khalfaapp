@@ -5,6 +5,7 @@
   "description": "دليل الحرفيين والصيانة في الموصل للبحث والتواصل وتقييم الفنيين والورش بسهولة.",
   "start_url": "/khalfaapp/",
   "scope": "/khalfaapp/",
+  "display_override": ["standalone"],
   "display": "standalone",
   "orientation": "portrait",
   "dir": "rtl",
