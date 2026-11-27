@@ -23,5 +23,28 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "screenshots": [
+    {
+      "src": "/khalfaapp/screenshot-1.png",
+      "sizes": "229x512",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "واجهة دليل الحرفيين في الموصل"
+    },
+    {
+      "src": "/khalfaapp/screenshot-2.png",
+      "sizes": "229x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "عرض تطبيق حرفي على الشاشات الواسعة"
+    }
+    {
+      "src": "/khalfaapp/screenshot-3.png",
+      "sizes": "229x512",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "عرض تطبيق حرفي على الشاشات الواسعة"
+    }
   ]
 }
