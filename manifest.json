@@ -36,15 +36,15 @@
       "src": "/khalfaapp/screenshot-2.png",
       "sizes": "229x512",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "عرض تطبيق حرفي على الشاشات الواسعة"
-    }
+      "form_factor": "narrow",
+      "label": "البحث والتواصل مع الفنيين في الموصل"
+    },
     {
       "src": "/khalfaapp/screenshot-3.png",
       "sizes": "229x512",
       "type": "image/png",
-      "form_factor": "wide",
-      "label": "عرض تطبيق حرفي على الشاشات الواسعة"
+      "form_factor": "narrow",
+      "label": "تقييم الحرفيين والورش"
     }
   ]
 }
